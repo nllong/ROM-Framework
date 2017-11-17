@@ -73,7 +73,25 @@ cor(Y, results$cv.fit)**2 # cross-validated R2
 yhat = predict(final_model, newdata=xtest)
 plot(ytest, yhat, main="Cross Validation of Linear Model", xlab='Actual Outlet Temperature', ylab='Modeled Outlet Temperature')
 abline(a=0, b=1, col="blue")
+
+summary(final_model)
 ```
+
+For a simple model that calculates the temperature of the return for the ambient loop you can use the equation below. This was the result of the stepwise regression. I was hoping that it would remove more variables, but it obviously didn't.
+
+    Tout,amb = 37.71 - 20.91 * day_of_week + 52.05 * Hour - 35.81 * Month + 450.66 * m_dot + 1333.66 * Tin,amb - 62.54 * RHoutside + 20.58 * Tdb,outside + 128.23 Tsetpoint,amb
+  
+    where:
+        day_of_week = 0: sunday, 1: monday, ..., 6: saturday
+        Hour: hour of day (0..23)
+        Month: Month of year (1,2,3, 10,11,12)
+        m_dot: Mass flow rate (kg/s)
+        Tin,amb: Inlet water temperature, (deg C)
+        RHoutside: Outdoor relative humidity (percent)
+        Tdb,outside: Outdoor drybulb temperature (deg C)
+        Tsetpoint, amb = Fix to 20 for now, but need to discuss
+      
+      
 
 ## Classification Tree
 ```{r tree-based}
