@@ -1,0 +1,91 @@
+---
+title: "Ambient Modeling"
+author: "Nicholas Long"
+date: "11/17/2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(MASS)
+library(relaimpo)
+library(bootstrap)
+library(rpart)
+library(randomForest)
+options(warn=-1)
+```
+
+## Background
+Enter background here
+
+## Data Analysis
+
+```{r data-import, messages=FALSE, warnings=FALSE}
+results = read.csv('../results.csv')
+```
+
+The deviation from setpoint.
+
+```{r setpoint-01}
+plot(results$District.Heating.Outlet.Temperature, results$ambient_loop_temperature_setpoint.setpoint_temperature)
+```
+
+## Linear Model
+
+```{r mlm-01}
+colnames(results)
+y = results[,'District.Heating.Outlet.Temperature']
+x = results[,c('Day.of.Week', 'Hour', 'Month', 'District.Heating.Mass.Flow.Rate', 'District.Heating.Inlet.Temperature', 'Site.Outdoor.Air.Relative.Humidity', 'Site.Outdoor.Air.Drybulb.Temperature', 'ambient_loop_temperature_setpoint.setpoint_temperature')]
+
+drop = sample(c(1:length(y)), 0.20*length(y))
+keep = setdiff(c(1:length(y)), drop)
+
+xtest = x[drop,]
+ytest = y[drop]
+xmodel = x[keep,]
+ymodel = y[keep]    
+
+model = lm(ymodel ~ .,data=xmodel)
+final_model = stepAIC(model, direction="both")
+summary(final_model)
+plot(final_model)
+
+# cross validation
+theta.fit = function(x,y){lsfit(x,y)}
+theta.predict = function(fit,x){cbind(1,x)%*%fit$coef} 
+X = as.matrix(xmodel)
+Y = as.matrix(ymodel) 
+
+results = crossval(X,Y,theta.fit,theta.predict,ngroup=10)
+cor(Y, final_model$fitted.values)**2 
+cor(Y, results$cv.fit)**2 # cross-validated R2
+# cros validated was 0.97 R2
+
+yhat = predict(final_model, newdata=xtest)
+plot(ytest, yhat, main="Cross Validation of Linear Model", xlab='Actual Outlet Temperature', ylab='Modeled Outlet Temperature')
+abline(a=0, b=1, col="blue")
+```
+
+## Classification Tree
+```{r tree-based}
+fit = rpart(ymodel ~ ., method="anova", data=xmodel)
+plot(fit, uniform=TRUE, main="Classification Tree for Ambient Loop Temperature")
+text(fit, use.n=TRUE, all=TRUE, cex=.6)
+yhat = predict(fit, newdata=xtest)
+plot(ytest, yhat)
+abline(a=0, b=1, col="blue")
+```
+
+
+## Random Forest
+```{r tree-based-rf}
+fit = randomForest(ymodel ~ ., data=xmodel, importance=TRUE, ntree=100)
+# print(fit)
+importance(fit) 
+plot(fit)
+
+yhat = predict(fit, newdata=xtest)
+plot(ytest, yhat, main="Cross Validation of Random Forest", xlab='Actual Outlet Temperature', ylab='Modeled Outlet Temperature')
+abline(a=0, b=1, col="blue")
+```
+

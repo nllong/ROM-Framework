@@ -1,0 +1,10 @@
+{
+  "_id": "3be0e980-b724-46e9-858d-c9fa019417fa",
+  "name": "25 deg",
+  "run_start_time": "2017-11-17T04:33:56.213Z",
+  "run_end_time": "2017-11-17T04:34:49.224Z",
+  "status": "completed",
+  "status_message": "completed normal",
+  "ambient_loop_temperature_setpoint.setpoint_temperature": 25.0,
+  "data_point_uuid": "/data_points/3be0e980-b724-46e9-858d-c9fa019417fa"
+}
