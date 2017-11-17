@@ -21,13 +21,22 @@ Enter background here
 ## Data Analysis
 
 ```{r data-import, messages=FALSE, warnings=FALSE}
+# make sure to run the ruby post_process.rb script to stitch together the results.csv file
 results = read.csv('../results.csv')
+
+# only deal with results that have no cooling and are in the months of jan, feb, mar, oct, nov, dev
+results = results[ results$District.Cooling.Mass.Flow.Rate == 0 & results$Month %in% c(1, 2, 3, 10, 11, 12), ]
+
+
+results = results[sample(1:nrow(results), 50000,),]
 ```
 
-The deviation from setpoint.
+The deviation from setpoint. Note that this is both summer and winter. The temperatures are higher in summer than setpoint because it is in 'cooling' mode.
 
 ```{r setpoint-01}
-plot(results$District.Heating.Outlet.Temperature, results$ambient_loop_temperature_setpoint.setpoint_temperature)
+plot(results$ambient_loop_temperature_setpoint.setpoint_temperature, 
+     results$District.Heating.Outlet.Temperature, main="Outlet vs Setpoint", 
+     xlab="Outlet Setpoint Temperature", ylab="Actual Outlet Temperature" )
 ```
 
 ## Linear Model

@@ -3,3 +3,5 @@ analysis/.RData
 analysis/.Rhistory
 .idea
 Gemfile.lock
+.Rproj.user
+results.csv
