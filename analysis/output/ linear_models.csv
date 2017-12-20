@@ -1,0 +1,7 @@
+"","y","equation"
+"1","ETS.Heating.Outlet.Temperature","y = -2.0769 - 0.0201 * Day.of.Week - 0.001 * Hour - 0.0039 * Month + 0.9266 * ETS.Heating.Inlet.Temperature - 0.0054 * Site.Outdoor.Air.Relative.Humidity + 0.0213 * Site.Outdoor.Air.Drybulb.Temperature"
+"2","District.Heating.Hot.Water.Energy","y = 2015.3076 + 177.9572 * Day.of.Week - 154.7646 * Hour + 12.321 * Month + 6.472 * ETS.Heating.Inlet.Temperature + 22.8356 * Site.Outdoor.Air.Relative.Humidity - 155.87 * Site.Outdoor.Air.Drybulb.Temperature"
+"3","HeatingElectricity","y = 995.7774 + 68.6511 * Day.of.Week - 62.0199 * Hour + 5.8208 * Month - 6.3191 * ETS.Heating.Inlet.Temperature + 8.8533 * Site.Outdoor.Air.Relative.Humidity - 60.485 * Site.Outdoor.Air.Drybulb.Temperature"
+"4","ETS.Cooling.Outlet.Temperature","y = 5.6585 - 0.0226 * Day.of.Week + 0.0373 * Hour + 0.0215 * Month + 0.9727 * ETS.Cooling.Inlet.Temperature + 0.0083 * Site.Outdoor.Air.Relative.Humidity + 0.0238 * Site.Outdoor.Air.Drybulb.Temperature"
+"5","District.Cooling.Chilled.Water.Energy","y = -12232.8083 + 52.9302 * Day.of.Week - 149.9407 * Hour + 646.3926 * Month + 18.5763 * ETS.Cooling.Inlet.Temperature + 62.7163 * Site.Outdoor.Air.Relative.Humidity + 753.0751 * Site.Outdoor.Air.Drybulb.Temperature"
+"6","CoolingElectricity","y = -3344.6803 + 12.4349 * Day.of.Week - 35.6776 * Hour + 134.8536 * Month + 53.1002 * ETS.Cooling.Inlet.Temperature + 12.3383 * Site.Outdoor.Air.Relative.Humidity + 154.163 * Site.Outdoor.Air.Drybulb.Temperature"
