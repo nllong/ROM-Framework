@@ -1,30 +1,28 @@
 # connect to R from python
 
-# pyenv virtualenv 3.6.3 modelica-3.6.3
-# install.packages('randomForest')
-# pip install rpy2
+# pyenv virtualenv 2.7.14 modelica-2.7.14
+# In R run: install.packages('randomForest')
+# pip install rpy2==2.8.6
 
-import rpy2.robjects as robjects
-from rpy2.robjects.packages import importr
-importr('randomForest')
+import argparse
 
-def yhat(model_name, month, day, dayofweek):
-	data = { 
-		"Day": 1, 
-		"Day.of.Week": 1, 
-		"Month": 1,
-		"Hour": 9,
-		"Site.Outdoor.Air.Drybulb.Temperature": -0.6,
-		"Site.Outdoor.Air.Relative.Humidity": 89,
-		"ETS.Heating.Inlet.Temperature": 23.0854,
-		"ETS.Cooling.Inlet.Temperature": 18.9123,
-	}
-	dataf = robjects.DataFrame(data)
+from rf_models import ETSModel
 
-	robjects.r('load("rf_%s_model.RData")' % model_name)
-	
-	rf = robjects.r('rf')
-	predict = robjects.r.predict
-	return predict(rf, newdata=dataf)[0]
+parser = argparse.ArgumentParser()
+parser.add_argument("--model", default='system', help="Model Name: system, ambient, or outlet")
+parser.add_argument("--season", default='heating', help="Season: heating or cooling")
+parser.add_argument("-d", "--day_of_week", type=int, default=0, help="Day of Week: 0-Sun to 6-Sat")
+parser.add_argument("-m", "--month", type=int, default=1, help="Month: 1-Jan to 12-Dec")
+parser.add_argument("-H", "--hour", type=int, default=9, help="Hour of Day: 0 to 23")
+parser.add_argument("-T", "--outdoor_drybulb", type=float, default=29.5,
+                    help="Outdoor Drybulb Temperature")
+parser.add_argument("-RH", "--outdoor_rh", type=float, default=50,
+                    help="Percent Outdoor Relative Humidity")
+parser.add_argument("-i", "--inlet_temp", type=float, default=20, help="Inlet Temperature")
 
-print(yhat('HeatingElectricity', 1, 1, 1))
+args = parser.parse_args()
+
+model = ETSModel(0, 0)
+# model = ETSModel(args.model, args.season)
+print model.yhat(args.month, args.hour, args.day_of_week, args.outdoor_drybulb, args.outdoor_rh,
+                 args.inlet_temp)

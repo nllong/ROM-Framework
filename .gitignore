@@ -1,3 +1,4 @@
+analysis/models/.python-version
 analysis/.Rproj.user
 analysis/.RData
 analysis/.Rhistory
@@ -5,3 +6,4 @@ analysis/.Rhistory
 Gemfile.lock
 .Rproj.user
 results.csv
+*.pyc

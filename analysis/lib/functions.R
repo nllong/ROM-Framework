@@ -199,8 +199,10 @@ fit_cart_and_cv = function(name, xdata, ydata, nsim){
 fit_rf_and_cv = function(name, xdata, ydata){
   test_data = subset_test_data(xdata, ydata, 0.20)
   
-  rf = foreach(ntree=rep(25, 4), .combine=combine, .multicombine=TRUE, .packages='randomForest') %dopar% {
-    randomForest(test_data$ymodel ~ ., data=test_data$xmodel, importance=TRUE, ntree=ntree)
+  rf = foreach(ntree=rep(25, 4), .combine=combine, 
+               .multicombine=TRUE, .packages='randomForest') %dopar% {
+    randomForest(test_data$ymodel ~ ., data=test_data$xmodel, 
+                 importance=TRUE, ntree=ntree)
   }      
   
   yhat = predict(rf, newdata=test_data$xtest)

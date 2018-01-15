@@ -197,6 +197,10 @@ for(yvar in yvars){
   cooling_models_rf[[paste(yvar,'_rsq',sep='')]] = rf$rsq
 }
 
+# create heating and cooling models in one data driven model
+models_rf = list()
+
+
 
 
 ##########################
