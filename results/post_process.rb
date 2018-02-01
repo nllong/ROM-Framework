@@ -56,7 +56,7 @@ File.open('results.csv', 'w') do |new_file|
       File.readlines(file).each.with_index do |line, index|
         if file_index.zero? && index.zero?
           # write out the header into the new file
-          new_file << "#{line.chomp},#{new_header.join(',')}\n"
+          new_file << "#{line.gsub(' ','').chomp},#{new_header.join(',')}\n"
         elsif index.zero?
           # ignore the headers in the other files
           next

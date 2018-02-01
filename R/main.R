@@ -13,7 +13,7 @@ source('./lib/functions.R')
 source('./lib/boxplots.R')
 
 output_dir = './output/'; dir.create(file.path(output_dir), showWarnings = FALSE)
-models_dir = './models/'; dir.create(file.path(models_dir), showWarnings = FALSE)
+models_dir = '../models/'; dir.create(file.path(models_dir), showWarnings = FALSE)
 
 
 # make sure to run the ruby post_process.rb script to stitch together the results.csv file

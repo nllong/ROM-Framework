@@ -1,10 +1,13 @@
-analysis/models/.python-version
-analysis/.Rproj.user
-analysis/.RData
-analysis/.Rhistory
 .idea
-Gemfile.lock
 .Rproj.user
-results.csv
+.RData
+.Rhistory
 *.pyc
+python/.python-version
+R/.Rproj.user
+R/.RData
+R/.Rhistory
+results/Gemfile.lock
+results/results.csv
+
 
