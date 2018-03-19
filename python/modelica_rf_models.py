@@ -1,7 +1,7 @@
 # Make sure that the python path is set, such as by running
 # export PYTHONPATH=`pwd`
 
-from rf_models import ETSModel
+from ets_model import ETSModel
 
 
 # def run_model(model, season, month, hour, day_of_week, t_outdoor, rh, inlet_temp):
@@ -15,5 +15,5 @@ def run_model(values):
     rh = float(values[6])
     inlet_temp = float(values[7])
 
-    model = ETSModel(model, season)
+    model = ETSModel('output/5564b7d5-4def-498b-ad5b-d4f12a463275/models', model, season)
     return model.yhat(month, hour, day_of_week, t_outdoor, rh, inlet_temp)

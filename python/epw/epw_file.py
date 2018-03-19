@@ -66,12 +66,12 @@ class EpwFile:
         self.column_names = [c['name'] for c in self.columns]
         self.start_day_of_week = '0' # Sunday
 
-            # '', '', 'atmos_pressure', 'ext_horz_rad', 'ext_dir_rad',
-            # 'horz_ir_sky', 'glo_horz_rad', 'dir_norm_rad', 'dif_horz_rad',
-            # 'glo_horz_illum', 'dir_norm_illum', 'dif_horz_illum', 'zen_lum', 'wind_dir',
-            # 'wind_spd', 'tot_sky_cvr', 'opaq_sky_cvr', 'visibility', 'ceiling_hgt',
-            # 'pres_weath_obs', 'pres_weath_codes', 'precip_wtr', 'aerosol_opt_depth',
-            # 'snow_depth', ' days_since_last_snow', 'albedo', 'rain', 'rain_quantity']
+        # '', '', 'atmos_pressure', 'ext_horz_rad', 'ext_dir_rad',
+        # 'horz_ir_sky', 'glo_horz_rad', 'dir_norm_rad', 'dif_horz_rad',
+        # 'glo_horz_illum', 'dir_norm_illum', 'dif_horz_illum', 'zen_lum', 'wind_dir',
+        # 'wind_spd', 'tot_sky_cvr', 'opaq_sky_cvr', 'visibility', 'ceiling_hgt',
+        # 'pres_weath_obs', 'pres_weath_codes', 'precip_wtr', 'aerosol_opt_depth',
+        # 'snow_depth', ' days_since_last_snow', 'albedo', 'rain', 'rain_quantity']
         # Date,HH:MM,Datasource,DryBulb {C},DewPoint {C},RelHum {%},Atmos Pressure {Pa},ExtHorzRad {Wh/m2},ExtDirRad {Wh/m2},HorzIRSky {Wh/m2},GloHorzRad {Wh/m2},DirNormRad {Wh/m2},DifHorzRad {Wh/m2},GloHorzIllum {lux},DirNormIllum {lux},DifHorzIllum {lux},ZenLum {Cd/m2},WindDir {deg},WindSpd {m/s},TotSkyCvr {.1},OpaqSkyCvr {.1},Visibility {km},Ceiling Hgt {m},PresWeathObs,PresWeathCodes,Precip Wtr {mm},Aerosol Opt Depth {.001},SnowDepth {cm},Days Last Snow,Albedo {.01},Rain {mm},Rain Quantity {hr}
         with open(filepath, 'rb') as csvfile:
             reader = csv.reader(csvfile)

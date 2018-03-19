@@ -3,11 +3,12 @@
 .RData
 .Rhistory
 *.pyc
+*.pkl
 python/.python-version
 R/.Rproj.user
 R/.RData
 R/.Rhistory
 results/Gemfile.lock
-results/results.csv
+results/**/results.csv
 
 
