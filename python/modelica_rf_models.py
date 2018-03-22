@@ -2,7 +2,7 @@
 # export PYTHONPATH=`pwd`
 
 from ets_model import ETSModel
-
+import os
 
 # def run_model(model, season, month, hour, day_of_week, t_outdoor, rh, inlet_temp):
 def run_model(values):
@@ -15,5 +15,6 @@ def run_model(values):
     rh = float(values[6])
     inlet_temp = float(values[7])
 
-    model = ETSModel('output/5564b7d5-4def-498b-ad5b-d4f12a463275/models', model, season)
+    dirname = os.path.dirname(os.path.abspath(__file__))
+    model = ETSModel(dirname + '/output/5564b7d5-4def-498b-ad5b-d4f12a463275/models', model, season)
     return model.yhat(month, hour, day_of_week, t_outdoor, rh, inlet_temp)
