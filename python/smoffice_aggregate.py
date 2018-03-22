@@ -30,7 +30,8 @@ yhat_covariates = []
 for inlet_temp in inlet_temps:
     time_series = [
         [
-            'datetime', 'month', 'day', 'hour', 'minute', 'day_of_week', 'inlet_temp',
+            'datetime', 'month', 'day', 'hour', 'minute', 'day_of_week',
+            'dry_bulb', 'rh', 'inlet_temp',
             'heating_system', 'heating_ambient', 'heating_outlet', 'cooling_system',
             'cooling_ambient', 'cooling_outlet'
         ]
@@ -56,8 +57,16 @@ for inlet_temp in inlet_temps:
         yhat_covariates.append(new_row)
 
         new_row = [
-                      "%s/%s/2017 %s:00" % (datum['month'], datum['day'], datum['hour'] - 1),
-                  ] + new_row
+            "%s/%s/2017 %s:00" % (datum['month'], datum['day'], datum['hour'] - 1),
+            datum['month'],
+            datum['day'],
+            datum['hour'] - 1,
+            datum['minute'],
+            day_of_week,
+            datum['dry_bulb'],
+            datum['rh'],
+            inlet_temp,
+        ]
         time_series.append(new_row)
 
     heating_system_model_res = heating_system_model.yhat_array(yhat_covariates)
