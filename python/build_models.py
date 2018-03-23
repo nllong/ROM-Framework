@@ -2,8 +2,9 @@
 #
 # Author: Nicholas Long (nicholas.l.long@colorado.edu)
 
-import os
 import argparse
+import os
+import zipfile
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -12,7 +13,7 @@ from scipy import stats
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 
-from lib.shared import pickle_file, save_dict_to_csv
+from lib.shared import pickle_file, save_dict_to_csv, zipdir
 
 # path = os.path.realpath(__file__)
 # isn't the current path this anyway?
@@ -29,7 +30,8 @@ from lib.shared import pickle_file, save_dict_to_csv
 # Number of Samples: 10
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-a", "--analysis_id", default="3ff422c2-ca11-44db-b955-b39a47b011e7", help="ID of the Analysis Models")
+parser.add_argument("-a", "--analysis_id", default="3ff422c2-ca11-44db-b955-b39a47b011e7",
+                    help="ID of the Analysis Models")
 args = parser.parse_args()
 
 # Setup directories
@@ -150,5 +152,10 @@ def build_forest(data_file):
 
     save_dict_to_csv(model_results, 'output/%s/model_results.csv' % args.analysis_id)
 
-build_forest('output/%s/simulation_results.csv' % args.analysis_id)
+    # zip up the models
+    zipf = zipfile.ZipFile('output/%s/models/models.zip' % args.analysis_id, 'w', zipfile.ZIP_DEFLATED)
+    zipdir('output/%s/models/' % args.analysis_id, zipf, '.pkl')
+    zipf.close()
 
+
+build_forest('output/%s/simulation_results.csv' % args.analysis_id)

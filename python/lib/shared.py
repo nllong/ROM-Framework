@@ -34,3 +34,23 @@ def save_dict_to_csv(data, filename):
         writer = csv.DictWriter(cfile, data[0].keys())
         writer.writeheader()
         writer.writerows(data)
+
+
+def zipdir(path, ziph, extension=None):
+    """
+    Flattened zip directory
+    :param path:
+    :param ziph:
+    :param extension:
+    :return:
+    """
+    # ziph is zipfile handle
+    for root, dirs, files in os.walk(path):
+        for a_file in files:
+            filename = os.path.join(root, a_file)
+            if extension:
+                if a_file.endswith(extension):
+                    ziph.write(filename, os.path.basename(filename))
+            else:
+                ziph.write(filename, os.path.basename(filename))
+
