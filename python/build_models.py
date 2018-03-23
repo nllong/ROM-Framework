@@ -33,6 +33,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-a", "--analysis_id", default="3ff422c2-ca11-44db-b955-b39a47b011e7",
                     help="ID of the Analysis Models")
 args = parser.parse_args()
+print("Started build_models.py with args: %s" % args)
 
 # Setup directories
 if not os.path.exists('output/%s/images' % args.analysis_id):
@@ -139,7 +140,7 @@ def build_forest(data_file):
                                                         train_size=0.7)
 
     for response in responses:
-        trained_model = RandomForestRegressor(n_estimators=50, n_jobs=-1)
+        trained_model = RandomForestRegressor(n_estimators=10, n_jobs=-1)
         trained_model.fit(train_x, train_y[response])
 
         pickle_file(trained_model, 'output/%s/models/%s' % (args.analysis_id, response))
