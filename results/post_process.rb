@@ -28,14 +28,46 @@ parser = OptionParser.new do|opts|
 end
 parser.parse!
 
-unless options[:download] || options[:post_process] 
+unless options[:download] || options[:post_process]
   puts "Pass either --download or --post-process"
   exit
 end
 
-if options[:post_process] && !options[:analysis_id]
-  puts "Must pass analysis_id (-a <analysis_id>) when post_processing results"
+def post_process_analysis_id(analysis_id)
+  # Go through the directories and update the reports to add in the last column of data.
+  File.open("#{analysis_id}/results.csv", 'w') do |new_file|
+    Dir["#{analysis_id}/**/*.csv"].each.with_index do |file, file_index|
+      puts "Processing file #{file}"
+      dir = File.dirname(file)
+      json_file = "#{dir}/variables.json"
+      puts json_file
+      if File.exist? json_file
+        json = JSON.parse(File.read(json_file))
+        new_header = []
+        new_data = []
+        json.keys.each do |key|
+          next if ['name', 'status', 'data_point_uuid', 'run_start_time', 'run_end_time', 'status_message'].include? key
+          new_header << key
+          new_data << json[key]
+        end
+
+        # puts "New data are: #{new_header} : #{new_data}"
+        File.readlines(file).each.with_index do |line, index|
+          if file_index.zero? && index.zero?
+            # write out the header into the new file
+            new_file << "#{line.gsub(' ','').chomp},#{new_header.join(',')}\n"
+          elsif index.zero?
+            # ignore the headers in the other files
+            next
+          else
+            new_file << "#{line.chomp},#{new_data.join(',')}\n"
+          end
+        end
+      end
+    end
+  end
 end
+
 
 if options[:download]
   api = OpenStudio::Analysis::ServerApi.new(hostname: options[:server])
@@ -70,36 +102,12 @@ if options[:download]
 end
 
 if options[:post_process]
-  # Go through the directories and update the reports to add in the last column of data.
-  File.open("#{options[:analysis_id]}/results.csv", 'w') do |new_file|
-    Dir["#{options[:analysis_id]}/**/*.csv"].each.with_index do |file, file_index|
-      puts "Processing file #{file}"
-      dir = File.dirname(file)
-      json_file = "#{dir}/variables.json"
-      puts json_file
-      if File.exist? json_file
-        json = JSON.parse(File.read(json_file))
-        new_header = []
-        new_data = []
-        json.keys.each do |key|
-          next if ['name', 'status', 'data_point_uuid', 'run_start_time', 'run_end_time', 'status_message'].include? key
-          new_header << key
-          new_data << json[key]
-        end
-
-        # puts "New data are: #{new_header} : #{new_data}"
-        File.readlines(file).each.with_index do |line, index|
-          if file_index.zero? && index.zero?
-            # write out the header into the new file
-            new_file << "#{line.gsub(' ','').chomp},#{new_header.join(',')}\n"
-          elsif index.zero?
-            # ignore the headers in the other files
-            next
-          else
-            new_file << "#{line.chomp},#{new_data.join(',')}\n"
-          end
-        end
-      end
+  if options[:analysis_id]
+    post_process_analysis_id(options[:analysis_id])
+  else
+    puts "No analysis_id passed, post processing all the results"
+    Dir['*'].select {|f| File.directory? f}.each do |dir|
+      post_process_analysis_id(dir)
     end
   end
 end

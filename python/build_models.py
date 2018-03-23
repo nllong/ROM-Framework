@@ -3,6 +3,7 @@
 # Author: Nicholas Long (nicholas.l.long@colorado.edu)
 
 import os
+import argparse
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -17,18 +18,26 @@ from lib.shared import pickle_file, save_dict_to_csv
 # isn't the current path this anyway?
 # os.chdir(path)
 
-# With delta T variations
-# ANALYSIS_ID = '5564b7d5-4def-498b-ad5b-d4f12a463275'
+# Name: Small Office Building
+# Covariates: Inlet Temperature
+# Analysis ID: 3ff422c2-ca11-44db-b955-b39a47b011e7
+# Number of Samples: 100
 
-# Initial model, simple building
-ANALYSIS_ID = '3ff422c2-ca11-44db-b955-b39a47b011e7'
+# Name: Small Office Building
+# Covariates: Inlet Temperature, Delta T
+# Analysis ID: 5564b7d5-4def-498b-ad5b-d4f12a463275
+# Number of Samples: 10
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-a", "--analysis_id", default="3ff422c2-ca11-44db-b955-b39a47b011e7", help="ID of the Analysis Models")
+args = parser.parse_args()
 
 # Setup directories
-if not os.path.exists('output/%s/images' % ANALYSIS_ID):
-    os.makedirs('output/%s/images' % ANALYSIS_ID)
+if not os.path.exists('output/%s/images' % args.analysis_id):
+    os.makedirs('output/%s/images' % args.analysis_id)
 
-if not os.path.exists('output/%s/models' % ANALYSIS_ID):
-    os.makedirs('output/%s/models' % ANALYSIS_ID)
+if not os.path.exists('output/%s/models' % args.analysis_id):
+    os.makedirs('output/%s/models' % args.analysis_id)
 
 
 def evaluate_forest(model, model_name, x_data, y_data, covariates):
@@ -46,7 +55,7 @@ def evaluate_forest(model, model_name, x_data, y_data, covariates):
 
     plt.scatter(y_data, yhat)
     plt.subplots_adjust(left=0.125)
-    plt.savefig('output/%s/images/%s.png' % (ANALYSIS_ID, model_name))
+    plt.savefig('output/%s/images/%s.png' % (args.analysis_id, model_name))
     plt.xlabel('y')
     plt.ylabel('yhat')
     plt.clf()
@@ -71,7 +80,7 @@ def evaluate_forest(model, model_name, x_data, y_data, covariates):
     plt.yticks(range(len(indices)), covariates_array[indices])
     plt.xlabel('Relative Importance')
     plt.subplots_adjust(left=0.5)
-    plt.savefig('output/%s/images/%s_importance.png' % (ANALYSIS_ID, model_name))
+    plt.savefig('output/%s/images/%s_importance.png' % (args.analysis_id, model_name))
     plt.clf()
 
     return performance
@@ -104,6 +113,7 @@ def build_forest(data_file):
     #     (dataset.DistrictHeatingMassFlowRate != 0) | (dataset.DistrictCoolingMassFlowRate != 0)
     # ]
 
+    # TODO: Read this from a JSON file in the results directory
     # covariates of interest
     covariates = [
         'Month',
@@ -130,7 +140,7 @@ def build_forest(data_file):
         trained_model = RandomForestRegressor(n_estimators=50, n_jobs=-1)
         trained_model.fit(train_x, train_y[response])
 
-        pickle_file(trained_model, 'output/%s/models/%s' % (ANALYSIS_ID, response))
+        pickle_file(trained_model, 'output/%s/models/%s' % (args.analysis_id, response))
 
         # Evaluate the forest when building them
         model_results.append(
@@ -138,8 +148,8 @@ def build_forest(data_file):
         )
         print "Training dataset size is %s" % len(train_x)
 
-    save_dict_to_csv(model_results, 'output/%s/model_results.csv' % ANALYSIS_ID)
+    save_dict_to_csv(model_results, 'output/%s/model_results.csv' % args.analysis_id)
 
 
-build_forest('../results/%s/results.csv' % ANALYSIS_ID)
+build_forest('../results/%s/results.csv' % args.analysis_id)
 
