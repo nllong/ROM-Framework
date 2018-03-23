@@ -9,6 +9,4 @@ R/.Rproj.user
 R/.RData
 R/.Rhistory
 results/Gemfile.lock
-results/**/results.csv
-
-
+python/output/*/simulation_results.csv

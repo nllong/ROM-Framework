@@ -34,8 +34,10 @@ unless options[:download] || options[:post_process]
 end
 
 def post_process_analysis_id(analysis_id)
+  save_dir = "../python/output/#{analysis_id}/"
+  FileUtils.mkdir_p save_dir
   # Go through the directories and update the reports to add in the last column of data.
-  File.open("#{analysis_id}/results.csv", 'w') do |new_file|
+  File.open("#{save_dir}/simulation_results.csv", 'w') do |new_file|
     Dir["#{analysis_id}/**/*.csv"].each.with_index do |file, file_index|
       puts "Processing file #{file}"
       dir = File.dirname(file)

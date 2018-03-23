@@ -150,6 +150,5 @@ def build_forest(data_file):
 
     save_dict_to_csv(model_results, 'output/%s/model_results.csv' % args.analysis_id)
 
-
-build_forest('../results/%s/results.csv' % args.analysis_id)
+build_forest('output/%s/simulation_results.csv' % args.analysis_id)
 
