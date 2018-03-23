@@ -1,6 +1,6 @@
 # pyenv virtualenv 2.7.14 modelica-2.7.14
-import pickle
 from lib.shared import unpickle_file
+import gc
 
 def is_int(value):
     try:
@@ -26,7 +26,9 @@ class ETSModel:
         else:
             model_name = self._lookup_model_name(model, season)
 
+        gc.disable()
         self.model = unpickle_file('%s/%s' % (path_to_models, model_name))
+        gc.enable()
 
     def _model_int_to_str(self, model_int, season_int):
         """
@@ -94,5 +96,4 @@ class ETSModel:
 
         data = [[month, hour, dayofweek, t_outdoor, rh, inlet_temp]]
         predictions = self.model.predict(data)
-        print predictions
         return predictions[0]

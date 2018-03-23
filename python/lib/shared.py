@@ -1,7 +1,7 @@
 import csv
 import gzip
 import os
-import pickle
+import cPickle
 
 
 def pickle_file(obj, filename, gzipfile=False):
@@ -16,7 +16,7 @@ def pickle_file(obj, filename, gzipfile=False):
         gfile = gzip.open('%s.pklzip' % filename, 'wb')
     else:
         gfile = open('%s.pkl' % filename, 'wb')
-    pickle.dump(obj, gfile)
+    cPickle.dump(obj, gfile)
     gfile.close()
 
 
@@ -26,7 +26,7 @@ def unpickle_file(filename):
         gfile = gzip.open(filename, 'rb')
     else:
         gfile = open(filename, 'rb')
-    return pickle.load(gfile)
+    return cPickle.load(gfile)
 
 
 def save_dict_to_csv(data, filename):
