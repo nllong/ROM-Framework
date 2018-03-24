@@ -20,6 +20,6 @@ before_script:
   - sleep 3 # give xvfb some time to start
 script:
   - ./ci/travis/build.sh all
-  - cd python && python smoffice.py -a 5564b7d5-4def-498b-ad5b-d4f12a463275 && cd ..
+  - cd python && python smoffice.py -a 3ff422c2-ca11-44db-b955-b39a47b011e7 && cd ..
 after_success:
   - ./ci/travis/deploy-artifacts.sh
