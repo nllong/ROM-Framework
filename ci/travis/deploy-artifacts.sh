@@ -29,12 +29,15 @@ The built models for this PR are here:
 
 $(join_by $'\n' ${model_str[@]})
 
+Description of the model covariates and responses can be found here:
+
+https://github.com/nllong/ambient-loop-analysis/blob/${TRAVIS_BRANCH}/python/analyses.json
 EOF
 )
 
-#    curl -H "Authorization: token ${GITHUB_TOKEN}" -X POST \
-#         -d "{\"body\": \"${github_body}\"}" \
-#         "https://api.github.com/repos/${TRAVIS_REPO_SLUG}/issues/${TRAVIS_PULL_REQUEST}/comments"
+    curl -H "Authorization: token ${GITHUB_TOKEN}" -X POST \
+         -d "{\"body\": \"${github_body}\"}" \
+         "https://api.github.com/repos/${TRAVIS_REPO_SLUG}/issues/${TRAVIS_PULL_REQUEST}/comments"
 
 fi
 

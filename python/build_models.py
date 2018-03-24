@@ -14,6 +14,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 
 from lib.shared import pickle_file, save_dict_to_csv, zipdir
+from lib.analyses import Analyses
 
 # path = os.path.realpath(__file__)
 # isn't the current path this anyway?
@@ -26,14 +27,15 @@ from lib.shared import pickle_file, save_dict_to_csv, zipdir
 
 # Name: Small Office Building
 # Covariates: Inlet Temperature, Delta T
-# Analysis ID: 5564b7d5-4def-498b-ad5b-d4f12a463275
+# Analysis ID: 5564b7d5-4def-498b-ad5b-d4f12a46327
 # Number of Samples: 10
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-a", "--analysis_id", default="3ff422c2-ca11-44db-b955-b39a47b011e7",
                     help="ID of the Analysis Models")
 args = parser.parse_args()
-print("Started build_models.py with args: %s" % args)
+print("Passed build_models.py args: %s" % args)
+
 
 # Setup directories
 if not os.path.exists('output/%s/images' % args.analysis_id):
@@ -42,6 +44,7 @@ if not os.path.exists('output/%s/images' % args.analysis_id):
 if not os.path.exists('output/%s/models' % args.analysis_id):
     os.makedirs('output/%s/models' % args.analysis_id)
 
+# Read in the Analysis information from the analyses.json
 
 def evaluate_forest(model, model_name, x_data, y_data, covariates):
     """
@@ -89,7 +92,7 @@ def evaluate_forest(model, model_name, x_data, y_data, covariates):
     return performance
 
 
-def build_forest(data_file):
+def build_forest(data_file, covariates, responses):
     model_results = []
 
     # data_file_to_csv()
@@ -103,7 +106,6 @@ def build_forest(data_file):
         'DistrictCoolingInletTemperature': 'ETSCoolingOutletTemperature',
     })
 
-    print dataset.columns.values
     # We are now regressing on the entire dataset and not limiting based on the heating / cooling
     # mode.
 
@@ -115,26 +117,6 @@ def build_forest(data_file):
     # dataset = dataset[
     #     (dataset.DistrictHeatingMassFlowRate != 0) | (dataset.DistrictCoolingMassFlowRate != 0)
     # ]
-
-    # TODO: Read this from a JSON file in the results directory
-    # covariates of interest
-    covariates = [
-        'Month',
-        'Hour',
-        'DayofWeek',
-        'SiteOutdoorAirDrybulbTemperature',
-        'SiteOutdoorAirRelativeHumidity',
-        'ETSInletTemperature',
-        # 'ambient_loop_temperature_setpoint.design_delta',
-    ]
-    responses = [
-        'HeatingElectricity',
-        'CoolingElectricity',
-        'ETSHeatingOutletTemperature',
-        'ETSCoolingOutletTemperature',
-        'DistrictCoolingChilledWaterEnergy',
-        'DistrictHeatingHotWaterEnergy',
-    ]
 
     train_x, test_x, train_y, test_y = train_test_split(dataset[covariates], dataset[responses],
                                                         train_size=0.7)
@@ -159,4 +141,11 @@ def build_forest(data_file):
     zipf.close()
 
 
-build_forest('output/%s/simulation_results.csv' % args.analysis_id)
+print("Loading analyses.json")
+analysis_file = Analyses('./analyses.json')
+if analysis_file.set_analysis(args.analysis_id):
+    build_forest(
+        'output/%s/simulation_results.csv' % args.analysis_id,
+        analysis_file.covariate_names,
+        analysis_file.response_names
+    )
