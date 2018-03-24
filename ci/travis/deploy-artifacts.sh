@@ -5,6 +5,8 @@ function join_by { local IFS="$1"; shift; echo "$*"; }
 
 if [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then
     if [ "${TRAVIS_BRANCH}" == "master" ]; then
+        aws s3 cp --recursive ./python/output s3://openstudio-metamodels/small_office/release/
+    elif [ "${TRAVIS_BRANCH}" == "develop" ]; then
         aws s3 cp --recursive ./python/output s3://openstudio-metamodels/small_office/latest/
     else
         aws s3 cp --recursive ./python/output s3://openstudio-metamodels/small_office/$TRAVIS_BUILD_NUMBER/
@@ -25,7 +27,7 @@ else
     help_url=https://github.com/nllong/ambient-loop-analysis/blob/${TRAVIS_BRANCH}/python/analyses.json
 
     github_body=$(cat << EOF
-The built models for this PR are here:\n\n$(join_by ', ' ${model_str[@]})\n\nDescription of the model covariates and responses can be found here:${help_url}
+The built models for this PR are here:\n\n$(join_by ' , ' ${model_str[@]})\n\nDescription of the model covariates and responses can be found here:${help_url}
 EOF
 )
 
