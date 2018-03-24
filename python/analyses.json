@@ -1,0 +1,149 @@
+[
+  {
+    "id": "3ff422c2-ca11-44db-b955-b39a47b011e7",
+    "description": "100 Simulations, varying inlet tempatures",
+    "building_type": "Small Office",
+    "covariates": [
+      {
+        "name": "Month",
+        "display_name": "Month",
+        "units": ""
+      },
+      {
+        "name": "Hour",
+        "display_name": "Month",
+        "units": ""
+      },
+      {
+        "name": "DayofWeek",
+        "display_name": "Month",
+        "units": ""
+      },
+      {
+        "name": "SiteOutdoorAirDrybulbTemperature",
+        "display_name": "Dry Bulb Temperature",
+        "units": "C"
+      },
+      {
+        "name": "SiteOutdoorAirRelativeHumidity",
+        "display_name": "Relative Humidity",
+        "units": "%"
+      },
+      {
+        "name": "ETSInletTemperature",
+        "display_name": "Ambient Loop Inlet Temperature",
+        "units": "C"
+      }
+    ],
+    "responses": [
+      {
+        "name": "HeatingElectricity",
+        "display_name": "Heating Electric Energy",
+        "units": "J"
+      },
+      {
+        "name": "CoolingElectricity",
+        "display_name": "Cooling Electric Energy",
+        "units": "J"
+      },
+      {
+        "name": "DistrictCoolingChilledWaterEnergy",
+        "display_name": "Ambient Loop Cooling Energy",
+        "units": "J"
+      },
+      {
+        "name": "DistrictHeatingHotWaterEnergy",
+        "display_name": "Ambient Loop Heating Energy",
+        "units": "J"
+      },
+      {
+        "name": "ETSHeatingOutletTemperature",
+        "display_name": "Building Heating Outlet Temperature",
+        "units": "C"
+      },
+      {
+        "name": "ETSCoolingOutletTemperature",
+        "display_name": "Building Cooling Outlet Temperature",
+        "units": "C"
+      }
+    ],
+    "model_count": 100
+  },
+  {
+    "id": "5564b7d5-4def-498b-ad5b-d4f12a463275",
+    "description": "10 Simulations, varying inlet temperature and delta-T",
+    "building_type": "Small Office",
+    "covariates": [
+      {
+        "name": "Month",
+        "display_name": "Month",
+        "units": ""
+      },
+      {
+        "name": "Hour",
+        "display_name": "Month",
+        "units": ""
+      },
+      {
+        "name": "DayofWeek",
+        "display_name": "Month",
+        "units": ""
+      },
+      {
+        "name": "SiteOutdoorAirDrybulbTemperature",
+        "display_name": "Dry Bulb Temperature",
+        "units": "C"
+      },
+      {
+        "name": "SiteOutdoorAirRelativeHumidity",
+        "display_name": "Relative Humidity",
+        "units": "%"
+      },
+      {
+        "name": "ETSInletTemperature",
+        "display_name": "Ambient Loop Inlet Temperature",
+        "units": "C"
+      },
+      {
+        "name": "ambient_loop_temperature_setpoint.design_delta",
+        "display_name": "Design Delta T",
+        "units": "delta C"
+      }
+    ],
+    "responses": [
+      {
+        "name": "HeatingElectricity",
+        "display_name": "Heating Electric Energy",
+        "units": "J"
+      },
+      {
+        "name": "CoolingElectricity",
+        "display_name": "Cooling Electric Energy",
+        "units": "J"
+      },
+      {
+        "name": "DistrictCoolingChilledWaterEnergy",
+        "display_name": "Ambient Loop Cooling Energy",
+        "units": "J"
+      },
+      {
+        "name": "DistrictHeatingHotWaterEnergy",
+        "display_name": "Ambient Loop Heating Energy",
+        "units": "J"
+      },
+      {
+        "name": "ETSHeatingOutletTemperature",
+        "display_name": "Building Heating Outlet Temperature",
+        "units": "C"
+      },
+      {
+        "name": "ETSCoolingOutletTemperature",
+        "display_name": "Building Cooling Outlet Temperature",
+        "units": "C"
+      }
+    ],
+    "model_count": 10
+  }
+]
+
+

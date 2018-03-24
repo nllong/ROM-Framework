@@ -1,7 +1,7 @@
 import csv
 import gzip
 import os
-import pickle
+import cPickle
 
 
 def pickle_file(obj, filename, gzipfile=False):
@@ -16,7 +16,7 @@ def pickle_file(obj, filename, gzipfile=False):
         gfile = gzip.open('%s.pklzip' % filename, 'wb')
     else:
         gfile = open('%s.pkl' % filename, 'wb')
-    pickle.dump(obj, gfile)
+    cPickle.dump(obj, gfile)
     gfile.close()
 
 
@@ -26,7 +26,7 @@ def unpickle_file(filename):
         gfile = gzip.open(filename, 'rb')
     else:
         gfile = open(filename, 'rb')
-    return pickle.load(gfile)
+    return cPickle.load(gfile)
 
 
 def save_dict_to_csv(data, filename):
@@ -34,3 +34,23 @@ def save_dict_to_csv(data, filename):
         writer = csv.DictWriter(cfile, data[0].keys())
         writer.writeheader()
         writer.writerows(data)
+
+
+def zipdir(path, ziph, extension=None):
+    """
+    Flattened zip directory
+    :param path:
+    :param ziph:
+    :param extension:
+    :return:
+    """
+    # ziph is zipfile handle
+    for root, dirs, files in os.walk(path):
+        for a_file in files:
+            filename = os.path.join(root, a_file)
+            if extension:
+                if a_file.endswith(extension):
+                    ziph.write(filename, os.path.basename(filename))
+            else:
+                ziph.write(filename, os.path.basename(filename))
+

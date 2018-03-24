@@ -9,7 +9,7 @@ from datetime import datetime
 from ets_model import ETSModel
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--analysis_id", default="3ff422c2-ca11-44db-b955-b39a47b011e7", help="ID of the Analysis Models")
+parser.add_argument("-a", "--analysis_id", default="3ff422c2-ca11-44db-b955-b39a47b011e7", help="ID of the Analysis Models")
 parser.add_argument("--model", default='system', help="Model Name: system, ambient, or outlet")
 parser.add_argument("--season", default='heating', help="Season: heating or cooling")
 parser.add_argument("-d", "--day_of_week", type=int, default=0, help="Day of Week: 0-Sun to 6-Sat")

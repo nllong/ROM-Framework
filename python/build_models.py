@@ -2,7 +2,9 @@
 #
 # Author: Nicholas Long (nicholas.l.long@colorado.edu)
 
+import argparse
 import os
+import zipfile
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -11,25 +13,38 @@ from scipy import stats
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
 
-from lib.shared import pickle_file, save_dict_to_csv
+from lib.shared import pickle_file, save_dict_to_csv, zipdir
+from lib.analyses import Analyses
 
 # path = os.path.realpath(__file__)
 # isn't the current path this anyway?
 # os.chdir(path)
 
-# With delta T variations
-# ANALYSIS_ID = '5564b7d5-4def-498b-ad5b-d4f12a463275'
+# Name: Small Office Building
+# Covariates: Inlet Temperature
+# Analysis ID: 3ff422c2-ca11-44db-b955-b39a47b011e7
+# Number of Samples: 100
 
-# Initial model, simple building
-ANALYSIS_ID = '3ff422c2-ca11-44db-b955-b39a47b011e7'
+# Name: Small Office Building
+# Covariates: Inlet Temperature, Delta T
+# Analysis ID: 5564b7d5-4def-498b-ad5b-d4f12a46327
+# Number of Samples: 10
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-a", "--analysis_id", default="3ff422c2-ca11-44db-b955-b39a47b011e7",
+                    help="ID of the Analysis Models")
+args = parser.parse_args()
+print("Passed build_models.py args: %s" % args)
+
 
 # Setup directories
-if not os.path.exists('output/%s/images' % ANALYSIS_ID):
-    os.makedirs('output/%s/images' % ANALYSIS_ID)
+if not os.path.exists('output/%s/images' % args.analysis_id):
+    os.makedirs('output/%s/images' % args.analysis_id)
 
-if not os.path.exists('output/%s/models' % ANALYSIS_ID):
-    os.makedirs('output/%s/models' % ANALYSIS_ID)
+if not os.path.exists('output/%s/models' % args.analysis_id):
+    os.makedirs('output/%s/models' % args.analysis_id)
 
+# Read in the Analysis information from the analyses.json
 
 def evaluate_forest(model, model_name, x_data, y_data, covariates):
     """
@@ -46,7 +61,7 @@ def evaluate_forest(model, model_name, x_data, y_data, covariates):
 
     plt.scatter(y_data, yhat)
     plt.subplots_adjust(left=0.125)
-    plt.savefig('output/%s/images/%s.png' % (ANALYSIS_ID, model_name))
+    plt.savefig('output/%s/images/%s.png' % (args.analysis_id, model_name))
     plt.xlabel('y')
     plt.ylabel('yhat')
     plt.clf()
@@ -71,13 +86,13 @@ def evaluate_forest(model, model_name, x_data, y_data, covariates):
     plt.yticks(range(len(indices)), covariates_array[indices])
     plt.xlabel('Relative Importance')
     plt.subplots_adjust(left=0.5)
-    plt.savefig('output/%s/images/%s_importance.png' % (ANALYSIS_ID, model_name))
+    plt.savefig('output/%s/images/%s_importance.png' % (args.analysis_id, model_name))
     plt.clf()
 
     return performance
 
 
-def build_forest(data_file):
+def build_forest(data_file, covariates, responses):
     model_results = []
 
     # data_file_to_csv()
@@ -91,7 +106,6 @@ def build_forest(data_file):
         'DistrictCoolingInletTemperature': 'ETSCoolingOutletTemperature',
     })
 
-    print dataset.columns.values
     # We are now regressing on the entire dataset and not limiting based on the heating / cooling
     # mode.
 
@@ -104,33 +118,14 @@ def build_forest(data_file):
     #     (dataset.DistrictHeatingMassFlowRate != 0) | (dataset.DistrictCoolingMassFlowRate != 0)
     # ]
 
-    # covariates of interest
-    covariates = [
-        'Month',
-        'Hour',
-        'DayofWeek',
-        'SiteOutdoorAirDrybulbTemperature',
-        'SiteOutdoorAirRelativeHumidity',
-        'ETSInletTemperature',
-        # 'ambient_loop_temperature_setpoint.design_delta',
-    ]
-    responses = [
-        'HeatingElectricity',
-        'CoolingElectricity',
-        'ETSHeatingOutletTemperature',
-        'ETSCoolingOutletTemperature',
-        'DistrictCoolingChilledWaterEnergy',
-        'DistrictHeatingHotWaterEnergy',
-    ]
-
     train_x, test_x, train_y, test_y = train_test_split(dataset[covariates], dataset[responses],
                                                         train_size=0.7)
 
     for response in responses:
-        trained_model = RandomForestRegressor(n_estimators=50, n_jobs=-1)
+        trained_model = RandomForestRegressor(n_estimators=10, n_jobs=-1)
         trained_model.fit(train_x, train_y[response])
 
-        pickle_file(trained_model, 'output/%s/models/%s' % (ANALYSIS_ID, response))
+        pickle_file(trained_model, 'output/%s/models/%s' % (args.analysis_id, response))
 
         # Evaluate the forest when building them
         model_results.append(
@@ -138,8 +133,19 @@ def build_forest(data_file):
         )
         print "Training dataset size is %s" % len(train_x)
 
-    save_dict_to_csv(model_results, 'output/%s/model_results.csv' % ANALYSIS_ID)
+    save_dict_to_csv(model_results, 'output/%s/model_results.csv' % args.analysis_id)
+
+    # zip up the models
+    zipf = zipfile.ZipFile('output/%s/models/models.zip' % args.analysis_id, 'w', zipfile.ZIP_DEFLATED)
+    zipdir('output/%s/models/' % args.analysis_id, zipf, '.pkl')
+    zipf.close()
 
 
-build_forest('../results/%s/results.csv' % ANALYSIS_ID)
-
+print("Loading analyses.json")
+analysis_file = Analyses('./analyses.json')
+if analysis_file.set_analysis(args.analysis_id):
+    build_forest(
+        'output/%s/simulation_results.csv' % args.analysis_id,
+        analysis_file.covariate_names,
+        analysis_file.response_names
+    )

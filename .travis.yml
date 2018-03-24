@@ -1,0 +1,25 @@
+sudo: true
+language: python
+python:
+  - 2.7
+rvm:
+  - 2.2.4
+env:
+  global:
+    - DISPLAY=:0.0
+before_install:
+  - rvm get stable --auto-dotfiles
+  - rvm install 2.2.4
+  - gem install bundler -v 1.16.1
+install:
+  - cd python && pip install -r requirements.txt && cd ..
+  - cd results && bundle install && cd ..
+before_script:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3 # give xvfb some time to start
+script:
+  - ./ci/travis/build.sh all
+  - cd python && python smoffice.py -a 3ff422c2-ca11-44db-b955-b39a47b011e7 && cd ..
+after_success:
+  - ./ci/travis/deploy-artifacts.sh
