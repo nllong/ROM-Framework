@@ -11,7 +11,7 @@ if [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then
     fi
 else
     # must be a pull request, post back to github
-    aws s3 cp --recursive ./python/output s3://openstudio-metamodels/small_office/${TRAVIS_BUILD_NUMBER}/
+#    aws s3 cp --recursive ./python/output s3://openstudio-metamodels/small_office/${TRAVIS_BUILD_NUMBER}/
 
     model_str=()
     results=(python/output/*/models/)
@@ -22,16 +22,10 @@ else
     done
 
     echo "${model_str[@]}"
+    help_url=https://github.com/nllong/ambient-loop-analysis/blob/${TRAVIS_BRANCH}/python/analyses.json
 
-    github_body=$(cat <<EOF
-
-The built models for this PR are here:
-
-$(join_by $'\n' ${model_str[@]})
-
-Description of the model covariates and responses can be found here:
-
-https://github.com/nllong/ambient-loop-analysis/blob/${TRAVIS_BRANCH}/python/analyses.json
+    github_body=$(cat << EOF
+The built models for this PR are here:\n\n$(join_by ', ' ${model_str[@]})\n\nDescription of the model covariates and responses can be found here:${help_url}
 EOF
 )
 
@@ -40,4 +34,3 @@ EOF
          "https://api.github.com/repos/${TRAVIS_REPO_SLUG}/issues/${TRAVIS_PULL_REQUEST}/comments"
 
 fi
-
