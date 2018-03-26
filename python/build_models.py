@@ -126,14 +126,24 @@ def build_forest(data_file, covariates, responses):
     plt.figure()
     lag_plot(single_simulation['ETSInletTemperature'])
     plt.savefig('output/%s/images/ETSInletTemperature_lag.png' % (args.analysis_id))
+    plt.clf()
 
     plt.figure()
     lag_plot(single_simulation['DistrictHeatingMassFlowRate'])
     plt.savefig('output/%s/images/DistrictHeatingMassFlowRate_lag.png' % (args.analysis_id))
+    plt.clf()
 
+    series = dataset[['DistrictHeatingMassFlowRate']]
     plt.figure()
-    dataset[['DistrictHeatingMassFlowRate','DistrictCoolingMassFlowRate']].plot.box()
-    plt.savefig('output/%s/images/BoxPlots.png' % (args.analysis_id))
+    series[series.DistrictHeatingMassFlowRate > 0].plot.box()
+    plt.savefig('output/%s/images/HeatingMassFlowBoxPlots.png' % (args.analysis_id))
+    plt.clf()
+
+    series = dataset[['DistrictCoolingMassFlowRate']]
+    plt.figure()
+    series[series.DistrictCoolingMassFlowRate > 0].plot.box()
+    plt.savefig('output/%s/images/CoolingMassFlowBoxPlots.png' % (args.analysis_id))
+    plt.clf()
 
     train_x, test_x, train_y, test_y = train_test_split(dataset[covariates], dataset[responses],
                                                         train_size=0.7)

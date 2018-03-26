@@ -70,7 +70,7 @@
     "model_count": 100
   },
   {
-    "id": "5564b7d5-4def-498b-ad5b-d4f12a463275",
+    "id": "66fb9766-26e7-4bed-bdf9-0fbfbc8d6c7e",
     "description": "10 Simulations, varying inlet temperature and delta-T",
     "building_type": "Small Office",
     "covariates": [
@@ -103,11 +103,6 @@
         "name": "ETSInletTemperature",
         "display_name": "Ambient Loop Inlet Temperature",
         "units": "C"
-      },
-      {
-        "name": "ambient_loop_temperature_setpoint.design_delta",
-        "display_name": "Design Delta T",
-        "units": "delta C"
       },
       {
         "name": "DistrictHeatingMassFlowRate",

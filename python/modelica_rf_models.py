@@ -16,5 +16,5 @@ def run_model(values):
     inlet_temp = float(values[7])
 
     dirname = os.path.dirname(os.path.abspath(__file__))
-    model = ETSModel(dirname + '/output/5564b7d5-4def-498b-ad5b-d4f12a463275/models', model, season)
+    model = ETSModel(dirname + '/output/3ff422c2-ca11-44db-b955-b39a47b011e7/models', model, season)
     return model.yhat(month, hour, day_of_week, t_outdoor, rh, inlet_temp)

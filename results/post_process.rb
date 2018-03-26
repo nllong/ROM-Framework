@@ -11,11 +11,11 @@ options = {
 parser = OptionParser.new do|opts|
   opts.banner = "Usage: years.rb [options]"
   opts.on('-s', '--server host', 'Server Host URL') do |server|
-    options[:server] = server;
+    options[:server] = server
   end
 
-  opts.on('-a', '--analysis id', 'Analysis ID to Post Process') do |id|
-    options[:analysis_id] = id;
+  opts.on('-a', '--analysis id', 'Analysis ID to Download or Post Process') do |id|
+    options[:analysis_id] = id
   end
 
   opts.on('--download', 'Download Data') do
@@ -30,6 +30,11 @@ parser.parse!
 
 unless options[:download] || options[:post_process]
   puts "Pass either --download or --post-process"
+  exit
+end
+
+if options[:download] && !options[:analysis_id]
+  puts "If --download, then must pass analysis_id to download (e.g. -a <id> --download)"
   exit
 end
 
@@ -75,17 +80,17 @@ if options[:download]
   api = OpenStudio::Analysis::ServerApi.new(hostname: options[:server])
   if api.alive?
     project_id = api.get_project_ids.last # This should be the last analysis that was run
-    analysis_id = api.get_analyses(project_id).last
 
-    Dir.mkdir analysis_id unless Dir.exist? analysis_id
+    Dir.mkdir options[:analysis_id] unless Dir.exist? options[:analysis_id]
 
-    puts "Processing results for analysis id: #{analysis_id}"
+    puts "Downloading results for analysis id: #{options[:analysis_id]}"
 
-    if api.get_analysis_status(analysis_id, 'batch_run') == 'completed'
-      results = api.get_analysis_results(analysis_id)
+    if api.get_analysis_status(options[:analysis_id], 'batch_run') == 'completed'
+      results = api.get_analysis_results(options[:analysis_id])
 
       results[:data].each do |dp|
-        dir = "#{analysis_id}/#{dp[:_id]}"
+        dir = "#{options[:analysis_id]}/#{dp[:_id]}"
+        puts "Saving results for simulation into directory: #{dir}"
 
         Dir.mkdir dir unless Dir.exist? dir
 
@@ -94,6 +99,7 @@ if options[:download]
 
         # save off the timeseries into the new directory
         api.download_datapoint_report(dp[:_id], 'ambient_loop_reports_report_timeseries.csv', dir)
+        api.download_datapoint(dp[:_id], dir)
       end
     else
       puts "Simulations are still running. Try again later"
