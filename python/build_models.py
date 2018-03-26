@@ -9,6 +9,7 @@ import zipfile
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from pandas.plotting import lag_plot
 from scipy import stats
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
@@ -117,6 +118,22 @@ def build_forest(data_file, covariates, responses):
     # dataset = dataset[
     #     (dataset.DistrictHeatingMassFlowRate != 0) | (dataset.DistrictCoolingMassFlowRate != 0)
     # ]
+
+    # Analyze the dataset
+    # get the first UUID in the dataset
+    simulation_id = dataset['_id'][0]
+    single_simulation = dataset[dataset._id == simulation_id]
+    plt.figure()
+    lag_plot(single_simulation['ETSInletTemperature'])
+    plt.savefig('output/%s/images/ETSInletTemperature_lag.png' % (args.analysis_id))
+
+    plt.figure()
+    lag_plot(single_simulation['DistrictHeatingMassFlowRate'])
+    plt.savefig('output/%s/images/DistrictHeatingMassFlowRate_lag.png' % (args.analysis_id))
+
+    plt.figure()
+    dataset[['DistrictHeatingMassFlowRate','DistrictCoolingMassFlowRate']].plot.box()
+    plt.savefig('output/%s/images/BoxPlots.png' % (args.analysis_id))
 
     train_x, test_x, train_y, test_y = train_test_split(dataset[covariates], dataset[responses],
                                                         train_size=0.7)
