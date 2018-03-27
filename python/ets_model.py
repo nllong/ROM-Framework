@@ -83,7 +83,7 @@ class ETSModel:
         return predictions
 
 
-    def yhat(self, month, hour, dayofweek, t_outdoor, rh, inlet_temp):
+    def yhat(self, month, hour, dayofweek, t_outdoor, rh, inlet_temp, mass_flow_heating=None, mass_flow_cooling=None):
         # The covariates need to be in the same order
         # covariates = [
         #     'Month',
@@ -94,6 +94,12 @@ class ETSModel:
         #     'ETSInletTemperature',
         # ]
 
-        data = [[month, hour, dayofweek, t_outdoor, rh, inlet_temp]]
+        data = [month, hour, dayofweek, t_outdoor, rh, inlet_temp]
+        if mass_flow_heating is not None:
+            data.append(mass_flow_heating)
+
+        if mass_flow_cooling is not None:
+            data.append(mass_flow_cooling)
+        data = [data]
         predictions = self.model.predict(data)
         return predictions[0]
