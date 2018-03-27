@@ -1,5 +1,7 @@
 # Ambient Loop Reduced Order Models
 
+[![Build Status](https://travis-ci.org/nllong/ambient-loop-analysis.svg?branch=develop)](https://travis-ci.org/nllong/ambient-loop-analysis)
+
 ## Instructions
 
 The Ambient Loop Reduced Order Models are written in Python and primarily use the RandomForest
