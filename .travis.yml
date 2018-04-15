@@ -21,5 +21,6 @@ before_script:
 script:
   - ./ci/travis/build.sh all
   - cd python && python smoffice.py -a 3ff422c2-ca11-44db-b955-b39a47b011e7 && cd ..
+  - cd python && python smoffice.py -a 66fb9766-26e7-4bed-bdf9-0fbfbc8d6c7e --mass-flow-heating 4 && cd ..
 after_success:
   - ./ci/travis/deploy-artifacts.sh

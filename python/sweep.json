@@ -1,0 +1,27 @@
+{
+  "variables": [
+    {
+      "name": "Month",
+      "data_source": "weather_file"
+    },
+    {
+      "name": "ETSInletTemperature",
+      "data_source": "distribution",
+      "distribution": {
+        "minimum": 15,
+        "maximum": 25,
+        "number_of_samples": 10
+      }
+    },
+    {
+      "name": "DistrictHeatingMassFlowRate",
+      "data_source": "value",
+      "value": 0.5
+    },
+    {
+      "name": "DistrictCoolingMassFlowRate",
+      "data_source": "value",
+      "value": 0.5
+    }
+  ]
+}

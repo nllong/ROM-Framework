@@ -1,13 +1,42 @@
 import json
 import os
 
+import numpy
 
-class Analyses:
-    """
-    Parse the file that defines the ROMs that have been created.
 
-    TODO: Rename this to ROMs or metamodels or something else
-    """
+# {
+#   "variables": [
+#     {
+#       "name": "Month",
+#       "data_source": "weather_file"
+#     },
+#     {
+#       "name": "ETSInletTemperature",
+#       "data_source": "distribution",
+#       "distribution": {
+#         "minimum": 15,
+#         "maximum": 25,
+#         "number_of_samples": 10
+#       }
+#     },
+#     {
+#       "name": "DistrictHeatingMassFlowRate",
+#       "data_source": "value",
+#       "value": 0.5
+#     },
+#     {
+#       "name": "DistrictCoolingMassFlowRate",
+#       "data_source": "distribution",
+#       "distribution": {
+#         "minimum": 0.02,
+#         "maximum": 4,
+#         "number_of_samples": 10
+#       }
+#     }
+#   ]
+# }
+
+class AnalysisDefinition:
     def __init__(self, filename):
         self.filename = None
         self.file = None
@@ -22,32 +51,26 @@ class Analyses:
 
         self.filename = filename
         self.file = json.load(open(self.filename))
+        self.process_file()
 
-    def set_analysis(self, id):
+    def process_file(self):
         """
-        # TODO: need to pass in which models should be loaded, if any. Perhaps, make an explicit
-        # call to load the models
-
-        :param id: str, Analysis ID
-        :return: boolean
+        Process the file. Convert any distributions into selected values and save
+        back into the dict
         """
+        for variable in self.file['variables']:
+            if variable['data_source'] == 'distribution':
+                # assuming that the minimum, maximum, and number_of_samples are defined
+                variable['values'] = numpy.linspace(
+                    variable['distribution']['minimum'],
+                    variable['distribution']['maximum'],
+                    variable['distribution']['number_of_samples']
+                ).tolist()
 
-        for idx, analysis in enumerate(self.file):
-            if analysis['id'] == id:
-                self.set_i = idx
-                return True
+        print self.file
 
-        return False
-
-    def load_models(self):
-        """
-        Load in the metamodels/roms
-        """
-
-
-
-
-
+        # read in the static values and the generated values to generate the input for
+        # the metamodels
 
     @property
     def analysis(self):

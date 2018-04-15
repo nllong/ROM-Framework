@@ -119,7 +119,8 @@
       {
         "name": "HeatingElectricity",
         "display_name": "Heating Electric Energy",
-        "units": "J"
+        "units": "J",
+        "filename": "HeatingElectricity.pkl"
       },
       {
         "name": "CoolingElectricity",
