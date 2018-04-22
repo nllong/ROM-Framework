@@ -8,7 +8,7 @@ import csv
 import datetime
 
 from epw.epw_file import EpwFile
-from ets_model import ETSModel
+from python.lib.ets_model import ETSModel
 
 # read a weather file
 ANALYSIS_ID = "3ff422c2-ca11-44db-b955-b39a47b011e7"
@@ -69,12 +69,12 @@ for inlet_temp in inlet_temps:
         ]
         time_series.append(new_row)
 
-    heating_system_model_res = heating_system_model.yhat_array(yhat_covariates)
-    heating_ambient_model_res = heating_ambient_model.yhat_array(yhat_covariates)
-    heating_outlet_temp_model_res = heating_outlet_temp_model.yhat_array(yhat_covariates)
-    cooling_system_model_res = cooling_system_model.yhat_array(yhat_covariates)
-    cooling_ambient_model_res = cooling_ambient_model.yhat_array(yhat_covariates)
-    cooling_outlet_temp_model_res = cooling_outlet_temp_model.yhat_array(yhat_covariates)
+    heating_system_model_res = heating_system_model.yhat(yhat_covariates)
+    heating_ambient_model_res = heating_ambient_model.yhat(yhat_covariates)
+    heating_outlet_temp_model_res = heating_outlet_temp_model.yhat(yhat_covariates)
+    cooling_system_model_res = cooling_system_model.yhat(yhat_covariates)
+    cooling_ambient_model_res = cooling_ambient_model.yhat(yhat_covariates)
+    cooling_outlet_temp_model_res = cooling_outlet_temp_model.yhat(yhat_covariates)
 
     # Add in the RF model results
     for idx, time_serie in enumerate(time_series):

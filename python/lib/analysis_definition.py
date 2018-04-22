@@ -1,7 +1,9 @@
 import json
 import os
 
-import numpy
+import numpy as np
+import pandas as pd
+from epw.epw_file import EpwFile
 
 
 # {
@@ -32,54 +34,97 @@ import numpy
 #         "maximum": 4,
 #         "number_of_samples": 10
 #       }
-#     }
+#     },
+#     {
+#       "name": "SomeOtherField",
+#       "data_source": "values",
+#       "values": [0.5, 0.75, 1.0]
+#     },
 #   ]
 # }
 
 class AnalysisDefinition:
-    def __init__(self, filename):
+    """
+    Pass in a definition file and a weather file to generate distributions of models
+    """
+    def __init__(self, definition_file, weather_file):
         self.filename = None
+        self.weather_file = None
         self.file = None
         self.analyses = []
         self.set_i = None
+        self.lookup_prepend = None
 
-        self.load_file(filename)
+        self.load_files(definition_file, weather_file)
 
-    def load_file(self, filename):
-        if not os.path.exists(filename):
-            raise Exception("File does not exist: %s" % filename)
+    def load_files(self, definition_file, weather_file):
+        if not os.path.exists(definition_file):
+            raise Exception("File does not exist: %s" % definition_file)
 
-        self.filename = filename
+        self.filename = definition_file
+        self.weather_file = EpwFile(weather_file)
         self.file = json.load(open(self.filename))
-        self.process_file()
+        self.lookup_prepend = self.file['lookup_prepend']
 
-    def process_file(self):
+        # print json.dumps(self.file, indent=2)
+
+    def load_weather_file(self):
         """
-        Process the file. Convert any distributions into selected values and save
-        back into the dict
+        Load in the weather file and convert the field names to what is expected in the
+        JSON file
+        :return:
         """
+        data = self.weather_file.as_dataframe()
+        for variable in self.file['variables']:
+            if variable['data_source'] == 'epw':
+                data = data.rename(columns={ variable['data_source_field']: variable['name'] })
+
+        return data
+
+    def as_dataframe(self):
+        """
+        Return the dataframe with all the data needed to run the analysis defined in the
+        json file
+
+        :return: pandas dataframe
+        """
+        seed_df = self.load_weather_file()
+
+        # Add in the static variables
+        for variable in self.file['variables']:
+            if variable['data_source'] == 'value':
+                seed_df[variable['name']] = variable['value']
+
+        # Now add in the combinitorials
         for variable in self.file['variables']:
             if variable['data_source'] == 'distribution':
-                # assuming that the minimum, maximum, and number_of_samples are defined
-                variable['values'] = numpy.linspace(
+                df_to_append = seed_df.copy(deep=True)
+                values = np.linspace(
                     variable['distribution']['minimum'],
                     variable['distribution']['maximum'],
                     variable['distribution']['number_of_samples']
                 ).tolist()
 
-        print self.file
+                for index, value in enumerate(values):
+                    if index == 0:
+                        # first time through add the variable to seed_df, no need to append
+                        seed_df[variable['name']] = value
+                    else:
+                        df_to_append[variable['name']] = value
+                        seed_df = pd.concat([seed_df, df_to_append])
 
-        # read in the static values and the generated values to generate the input for
-        # the metamodels
+            if variable['data_source'] == 'values':
+                df_to_append = seed_df.copy(deep=True)
 
-    @property
-    def analysis(self):
-        if self.set_i is None:
-            raise Exception(
-                "Attempting to access analysis without setting. Run analysis.set_analysis(<id>)"
-            )
+                for index, value in enumerate(variable['values']):
+                    if index == 0:
+                        # first time through add the variable to seed_df, no need to append
+                        seed_df[variable['name']] = value
+                    else:
+                        df_to_append[variable['name']] = value
+                        seed_df = pd.concat([seed_df, df_to_append])
 
-        return self.file[self.set_i]
+        return seed_df
 
     @property
     def covariate_names(self):
