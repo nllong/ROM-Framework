@@ -6,7 +6,7 @@ import argparse
 # pip install rpy2==2.8.6
 from datetime import datetime
 
-from python.lib.ets_model import ETSModel
+from lib.ets_model import ETSModel
 
 # parse the anlaysis.json and determine the model
 
