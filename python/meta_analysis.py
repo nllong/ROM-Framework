@@ -14,6 +14,8 @@ if not os.path.exists('output/%s/lookup_tables' % ANALYSIS_ID):
 # Load in the models for analysis
 reduced_order_model = Analyses('./analyses.json')
 reduced_order_model.set_analysis(ANALYSIS_ID)
+# Load the exising models
+reduced_order_model.load_models()
 
 # Load in the analysis definition
 analysis = AnalysisDefinition('sweep-massflow-cooling.json', 'lib/epw/USA_CO_Golden-NREL.724666_TMY3.epw')

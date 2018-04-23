@@ -11,8 +11,11 @@ import numpy as np
 import pandas as pd
 from pandas.plotting import lag_plot
 from scipy import stats
+from sklearn import linear_model
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import r2_score
+from scipy.stats import spearmanr, pearsonr
 
 from lib.shared import pickle_file, save_dict_to_csv, zipdir
 from lib.analyses import Analyses
@@ -60,12 +63,17 @@ def evaluate_forest(model, model_name, x_data, y_data, covariates):
     """
     yhat = model.predict(x_data)
 
+
     plt.scatter(y_data, yhat)
     plt.subplots_adjust(left=0.125)
     plt.savefig('output/%s/images/%s.png' % (args.analysis_id, model_name))
     plt.xlabel('y')
     plt.ylabel('yhat')
     plt.clf()
+
+    test_score = r2_score(y_data, yhat)
+    spearman = spearmanr(y_data, yhat)
+    pearson = pearsonr(y_data, yhat)
 
     slope, intercept, r_value, p_value, std_err = stats.linregress(y_data, yhat)
     performance = {
@@ -76,6 +84,9 @@ def evaluate_forest(model, model_name, x_data, y_data, covariates):
         'p_value': p_value,
         'std_err': std_err,
         'r_squared': r_value ** 2,
+        'rf_r_squared': test_score,
+        'spearman': spearman,
+        'pearson': pearson,
     }
 
     importances = model.feature_importances_
@@ -147,9 +158,11 @@ def build_forest(data_file, covariates, responses):
 
     train_x, test_x, train_y, test_y = train_test_split(dataset[covariates], dataset[responses],
                                                         train_size=0.7)
+    print "Training dataset size is %s" % len(train_x)
 
     for response in responses:
-        trained_model = RandomForestRegressor(n_estimators=10, n_jobs=-1)
+        print "Fitting Random Forest model for %s" % response
+        trained_model = RandomForestRegressor(n_estimators=10, n_jobs=-1, oob_score=True)
         trained_model.fit(train_x, train_y[response])
 
         pickle_file(trained_model, 'output/%s/models/%s' % (args.analysis_id, response))
@@ -158,7 +171,12 @@ def build_forest(data_file, covariates, responses):
         model_results.append(
             evaluate_forest(trained_model, response, test_x, test_y[response], covariates)
         )
-        print "Training dataset size is %s" % len(train_x)
+
+        print "Fitting Linear Model for %s" % response
+        lm = linear_model.LinearRegression()
+        model = lm.fit(train_x, train_y[response])
+        print model
+        print model.predict(test_x)
 
     save_dict_to_csv(model_results, 'output/%s/model_results.csv' % args.analysis_id)
 

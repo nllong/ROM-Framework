@@ -36,15 +36,6 @@ class Analyses:
         for idx, analysis in enumerate(self.file):
             if analysis['id'] == id:
                 self.set_i = idx
-                self.load_models()
-
-                print "The responses are:"
-                for index, rs in enumerate(self.response_names):
-                    print "  %s: %s" % (index, rs)
-
-                print "The covariates are:"
-                for index, cv in enumerate(self.covariate_names):
-                    print "  %s: %s" % (index, cv)
 
                 return True
 
@@ -54,7 +45,6 @@ class Analyses:
         """
         Load in the metamodels/roms
         """
-        print self.file[self.set_i]
         print "Starting to load models, there are a total of %s models" % len(
             self.file[self.set_i]['responses'])
 
@@ -65,6 +55,13 @@ class Analyses:
                 "output/%s/models/%s.pkl" % (self.file[self.set_i]['id'], response['name']))
 
         print "Finished loading models"
+        print "The responses are:"
+        for index, rs in enumerate(self.response_names):
+            print "  %s: %s" % (index, rs)
+
+        print "The covariates are:"
+        for index, cv in enumerate(self.covariate_names):
+            print "  %s: %s" % (index, cv)
 
     def yhat(self, response_name, data):
         """
