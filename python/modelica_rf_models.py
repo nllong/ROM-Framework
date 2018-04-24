@@ -1,7 +1,7 @@
 # Make sure that the python path is set, such as by running
 # export PYTHONPATH=`pwd`
 
-from ets_model import ETSModel
+from python.lib.ets_model import ETSModel
 import os
 
 # def run_model(model, season, month, hour, day_of_week, t_outdoor, rh, inlet_temp):
