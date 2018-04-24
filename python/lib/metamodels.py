@@ -4,11 +4,9 @@ import os
 from ets_model import ETSModel
 
 
-class Analyses:
+class Metamodels:
     """
     Parse the file that defines the ROMs that have been created.
-
-    TODO: Rename this to ROMs or metamodels or something else
     """
 
     def __init__(self, filename):
@@ -41,18 +39,22 @@ class Analyses:
 
         raise Exception("Could not load the model: %s" % id)
 
-    def load_models(self):
+    def load_models(self, models_to_load=[]):
         """
         Load in the metamodels/roms
         """
+
+        if not models_to_load:
+            models_to_load = self.response_names
+
         print "Starting to load models, there are a total of %s models" % len(
-            self.file[self.set_i]['responses'])
+            self.response_names)
 
-        for response in self.file[self.set_i]['responses']:
-            print "Loading model for response: %s" % response['name']
+        for response in models_to_load:
+            print "Loading model for response: %s" % response
 
-            self.models[response['name']] = ETSModel(
-                "output/%s/models/%s.pkl" % (self.file[self.set_i]['id'], response['name']))
+            self.models[response] = ETSModel(
+                "output/%s/models/%s.pkl" % (self.file[self.set_i]['id'], response))
 
         print "Finished loading models"
         print "The responses are:"
@@ -91,6 +93,13 @@ class Analyses:
             print missing_data_in_df
             raise Exception("Need to define %s in DataFrame for model" % missing_data_in_df)
 
+        # typecast the columns before running the analysis
+        data[self.covariate_types['float']] = data[self.covariate_types['float']].astype(float)
+        data[self.covariate_types['int']] = data[self.covariate_types['int']].astype(int)
+
+        # Order the data columns correctly -- this is a magic function.
+        data = data[self.covariate_names]
+
         return self.models[response_name].yhat(data)
 
     def model(self, response_name):
@@ -109,7 +118,32 @@ class Analyses:
         return self.file[self.set_i]
 
     @property
+    def covariate_types(self):
+        if self.set_i is None:
+            raise Exception(
+                "Attempting to access analysis without setting. Run analysis.set_analysis(<id>)"
+            )
+
+        # group the datetypes by column
+        data_types = {
+            'float': [],
+            'str': [],
+            'int': []
+        }
+        for cv in self.file[self.set_i]['covariates']:
+            data_types[cv['type']].append(cv['name'])
+
+        return data_types
+
+    @property
     def covariate_names(self):
+        """
+        Returns a list of covariates. The order in the JSON file must be the order that is
+        passed into the metamodel, otherwise the data will not make sense.
+
+        :return: list
+        """
+
         if self.set_i is None:
             raise Exception(
                 "Attempting to access analysis without setting. Run analysis.set_analysis(<id>)"
@@ -129,7 +163,7 @@ class Analyses:
 
 if __name__ == "__main__":
     # test loading the analyses JSON
-    a_file = Analyses('../analyses.json')
+    a_file = Metamodels('../metamodels.json')
 
     if not a_file.set_analysis('dne'):
         print "Analysis not found"

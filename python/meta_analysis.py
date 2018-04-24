@@ -2,9 +2,9 @@
 
 import os
 
-from lib.analyses import Analyses
+from lib.metamodels import Metamodels
 from lib.analysis_definition import AnalysisDefinition
-from lib.save_csv import save_multidimensional_csvs
+from lib.shared import save_2d_csvs
 
 # ANALYSIS_ID = "3ff422c2-ca11-44db-b955-b39a47b011e7"
 ANALYSIS_ID = "66fb9766-26e7-4bed-bdf9-0fbfbc8d6c7e"  # with mass flow
@@ -12,33 +12,30 @@ if not os.path.exists('output/%s/lookup_tables' % ANALYSIS_ID):
     os.makedirs('output/%s/lookup_tables' % ANALYSIS_ID)
 
 # Load in the models for analysis
-reduced_order_model = Analyses('./analyses.json')
+reduced_order_model = Metamodels('./metamodels.json')
 reduced_order_model.set_analysis(ANALYSIS_ID)
-# Load the exising models
 reduced_order_model.load_models()
 
-# Load in the analysis definition
-analysis = AnalysisDefinition('sweep-massflow-cooling.json', 'lib/epw/USA_CO_Golden-NREL.724666_TMY3.epw')
+## Cooling
+analysis = AnalysisDefinition('sweep-massflow-cooling.json')
+analysis.load_weather_file('lib/epw/USA_CO_Golden-NREL.724666_TMY3.epw')
 data = analysis.as_dataframe()
-# TODO: add a method to calculate all responses automatically
 data['HeatingElectricity'] = reduced_order_model.yhat('HeatingElectricity', data)
 data['CoolingElectricity'] = reduced_order_model.yhat('CoolingElectricity', data)
 data['DistrictCoolingChilledWaterEnergy'] = reduced_order_model.yhat('DistrictCoolingChilledWaterEnergy', data)
 data['DistrictHeatingHotWaterEnergy'] = reduced_order_model.yhat('DistrictHeatingHotWaterEnergy', data)
 data['ETSHeatingOutletTemperature'] = reduced_order_model.yhat('ETSHeatingOutletTemperature', data)
 data['ETSCoolingOutletTemperature'] = reduced_order_model.yhat('ETSCoolingOutletTemperature', data)
+save_2d_csvs(data, reduced_order_model, ANALYSIS_ID, 'ETSInletTemperature', 'DistrictCoolingMassFlowRate', analysis.lookup_prepend)
 
-save_multidimensional_csvs(data, reduced_order_model, analysis, ANALYSIS_ID, 'DistrictCoolingMassFlowRate')
-
-
-analysis = AnalysisDefinition('sweep-massflow-heating.json', 'lib/epw/USA_CO_Golden-NREL.724666_TMY3.epw')
+## Heating
+analysis = AnalysisDefinition('sweep-massflow-heating.json')
+analysis.load_weather_file('lib/epw/USA_CO_Golden-NREL.724666_TMY3.epw')
 data = analysis.as_dataframe()
-# TODO: add a method to calculate all responses automatically
 data['HeatingElectricity'] = reduced_order_model.yhat('HeatingElectricity', data)
 data['CoolingElectricity'] = reduced_order_model.yhat('CoolingElectricity', data)
 data['DistrictCoolingChilledWaterEnergy'] = reduced_order_model.yhat('DistrictCoolingChilledWaterEnergy', data)
 data['DistrictHeatingHotWaterEnergy'] = reduced_order_model.yhat('DistrictHeatingHotWaterEnergy', data)
 data['ETSHeatingOutletTemperature'] = reduced_order_model.yhat('ETSHeatingOutletTemperature', data)
 data['ETSCoolingOutletTemperature'] = reduced_order_model.yhat('ETSCoolingOutletTemperature', data)
-
-save_multidimensional_csvs(data, reduced_order_model, analysis, ANALYSIS_ID, 'DistrictHeatingMassFlowRate')
+save_2d_csvs(data, reduced_order_model, ANALYSIS_ID, 'ETSInletTemperature', 'DistrictHeatingMassFlowRate', analysis.lookup_prepend)

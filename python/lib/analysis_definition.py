@@ -3,6 +3,7 @@ import os
 
 import numpy as np
 import pandas as pd
+
 from epw.epw_file import EpwFile
 
 
@@ -47,53 +48,76 @@ class AnalysisDefinition:
     """
     Pass in a definition file and a weather file to generate distributions of models
     """
-    def __init__(self, definition_file, weather_file):
+
+    def __init__(self, definition_file):
         self.filename = None
-        self.weather_file = None
         self.file = None
         self.analyses = []
         self.set_i = None
         self.lookup_prepend = None
+        self.weather_data = None
 
-        self.load_files(definition_file, weather_file)
+        self.load_files(definition_file)
 
-    def load_files(self, definition_file, weather_file):
+    def load_files(self, definition_file):
         if not os.path.exists(definition_file):
             raise Exception("File does not exist: %s" % definition_file)
 
         self.filename = definition_file
-        self.weather_file = EpwFile(weather_file)
         self.file = json.load(open(self.filename))
         self.lookup_prepend = self.file['lookup_prepend']
 
         # print json.dumps(self.file, indent=2)
 
-    def load_weather_file(self):
+    def load_weather_file(self, weather_file):
         """
         Load in the weather file and convert the field names to what is expected in the
         JSON file
         :return:
         """
-        data = self.weather_file.as_dataframe()
+        if not os.path.exists(weather_file):
+            raise Exception("Weather file does not exist: %s" % weather_file)
+
+        epw_file = EpwFile(weather_file)
+        self.weather_data = epw_file.as_dataframe()
         for variable in self.file['variables']:
             if variable['data_source'] == 'epw':
-                data = data.rename(columns={ variable['data_source_field']: variable['name'] })
-
-        return data
+                # Rename the weather file fields to the ones defined in the JSON file
+                self.weather_data = self.weather_data.rename(
+                    columns={variable['data_source_field']: variable['name']}
+                )
 
     def as_dataframe(self):
         """
         Return the dataframe with all the data needed to run the analysis defined in the
-        json file
+        json file.
 
+        Note that the first field in the sweep json file must be a value or an EPW
         :return: pandas dataframe
         """
-        seed_df = self.load_weather_file()
+        # Check if there is a epw file field
+        # {dtype('int64'): Index([u'Month', u'Hour', u'DayofWeek', u'SiteOutdoorAirRelativeHumidity'],
+        #                        dtype='object'),
+        #  dtype('float64'): Index([u'SiteOutdoorAirDrybulbTemperature', u'ETSInletTemperature',
+        #                           u'DistrictHeatingMassFlowRate', u'DistrictCoolingMassFlowRate'],
+        #                          dtype='object')}
+        use_epw = False
+        for variable in self.file['variables']:
+            if variable['data_source'] == 'epw':
+                use_epw = True
+                break
+
+        seed_df = None
+        if use_epw:
+            seed_df = self.weather_data
 
         # Add in the static variables
         for variable in self.file['variables']:
             if variable['data_source'] == 'value':
-                seed_df[variable['name']] = variable['value']
+                if seed_df is None:
+                    seed_df = pd.DataFrame.from_dict({variable['name']: [variable['value']]})
+                else:
+                    seed_df[variable['name']] = variable['value']
 
         # Now add in the combinitorials
         for variable in self.file['variables']:
@@ -147,7 +171,7 @@ class AnalysisDefinition:
 
 if __name__ == "__main__":
     # test loading the analyses JSON
-    a_file = Analyses('../analyses.json')
+    a_file = Analyses('../metamodels.json')
 
     if not a_file.set_analysis('dne'):
         print "Analysis not found"

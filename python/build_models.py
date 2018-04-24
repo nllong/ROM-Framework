@@ -18,7 +18,7 @@ from sklearn.metrics import r2_score
 from scipy.stats import spearmanr, pearsonr
 
 from lib.shared import pickle_file, save_dict_to_csv, zipdir
-from lib.analyses import Analyses
+from lib.metamodels import Metamodels
 
 # path = os.path.realpath(__file__)
 # isn't the current path this anyway?
@@ -48,7 +48,7 @@ if not os.path.exists('output/%s/images' % args.analysis_id):
 if not os.path.exists('output/%s/models' % args.analysis_id):
     os.makedirs('output/%s/models' % args.analysis_id)
 
-# Read in the Analysis information from the analyses.json
+# Read in the Analysis information from the metamodels.json
 
 def evaluate_forest(model, model_name, x_data, y_data, covariates):
     """
@@ -104,7 +104,7 @@ def evaluate_forest(model, model_name, x_data, y_data, covariates):
     return performance
 
 
-def build_forest(data_file, covariates, responses):
+def build_forest(data_file, covariates, data_types, responses):
     model_results = []
 
     # data_file_to_csv()
@@ -117,6 +117,10 @@ def build_forest(data_file, covariates, responses):
         'DistrictHeatingInletTemperature': 'ETSHeatingOutletTemperature',
         'DistrictCoolingInletTemperature': 'ETSCoolingOutletTemperature',
     })
+
+    # type cast the columns - this is probably not needed.
+    dataset[data_types['float']] = dataset[data_types['float']].astype(float)
+    dataset[data_types['int']] = dataset[data_types['int']].astype(int)
 
     # We are now regressing on the entire dataset and not limiting based on the heating / cooling
     # mode.
@@ -162,9 +166,10 @@ def build_forest(data_file, covariates, responses):
 
     for response in responses:
         print "Fitting Random Forest model for %s" % response
-        trained_model = RandomForestRegressor(n_estimators=10, n_jobs=-1, oob_score=True)
+        trained_model = RandomForestRegressor(n_estimators=10, n_jobs=-1)
         trained_model.fit(train_x, train_y[response])
-
+        # print the data types of the training set
+        print train_x.columns.to_series().groupby(train_x.dtypes).groups
         pickle_file(trained_model, 'output/%s/models/%s' % (args.analysis_id, response))
 
         # Evaluate the forest when building them
@@ -186,11 +191,12 @@ def build_forest(data_file, covariates, responses):
     zipf.close()
 
 
-print("Loading analyses.json")
-analysis_file = Analyses('./analyses.json')
+print("Loading metamodels.json")
+analysis_file = Metamodels('./metamodels.json')
 if analysis_file.set_analysis(args.analysis_id):
     build_forest(
         'output/%s/simulation_results.csv' % args.analysis_id,
         analysis_file.covariate_names,
+        analysis_file.covariate_types,
         analysis_file.response_names
     )

@@ -7,32 +7,38 @@
       {
         "name": "Month",
         "display_name": "Month",
-        "units": ""
+        "units": "",
+        "type": "int"
       },
       {
         "name": "Hour",
         "display_name": "Month",
-        "units": ""
+        "units": "",
+        "type": "int"
       },
       {
         "name": "DayofWeek",
         "display_name": "Month",
-        "units": ""
+        "units": "",
+        "type": "int"
       },
       {
         "name": "SiteOutdoorAirDrybulbTemperature",
         "display_name": "Dry Bulb Temperature",
-        "units": "C"
+        "units": "C",
+        "type": "float"
       },
       {
         "name": "SiteOutdoorAirRelativeHumidity",
         "display_name": "Relative Humidity",
-        "units": "%"
+        "units": "%",
+        "type": "float"
       },
       {
         "name": "ETSInletTemperature",
         "display_name": "Ambient Loop Inlet Temperature",
-        "units": "C"
+        "units": "C",
+        "type": "float"
       }
     ],
     "responses": [
@@ -77,42 +83,50 @@
       {
         "name": "Month",
         "display_name": "Month",
-        "units": ""
+        "units": "",
+        "type": "int"
       },
       {
         "name": "Hour",
         "display_name": "Month",
-        "units": ""
+        "units": "",
+        "type": "int"
       },
       {
         "name": "DayofWeek",
         "display_name": "Month",
-        "units": ""
+        "units": "",
+        "type": "int"
       },
       {
         "name": "SiteOutdoorAirDrybulbTemperature",
         "display_name": "Dry Bulb Temperature",
-        "units": "C"
+        "units": "C",
+        "type": "float"
       },
       {
         "name": "SiteOutdoorAirRelativeHumidity",
         "display_name": "Relative Humidity",
-        "units": "%"
+        "units": "%",
+        "type": "float"
       },
       {
         "name": "ETSInletTemperature",
         "display_name": "Ambient Loop Inlet Temperature",
-        "units": "C"
+        "units": "C",
+        "type": "float"
       },
       {
         "name": "DistrictHeatingMassFlowRate",
         "display_name": "District Heating Mass Flow Rate",
-        "units": "kg/s"
+        "units": "kg/s",
+        "type": "float"
       },
       {
         "name": "DistrictCoolingMassFlowRate",
         "display_name": "District Cooling Mass Flow Rate",
-        "units": "kg/s"
+        "units": "kg/s",
+        "type": "float"
       }
     ],
     "responses": [
