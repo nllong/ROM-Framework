@@ -198,5 +198,5 @@ if analysis_file.set_analysis(args.analysis_id):
         'output/%s/simulation_results.csv' % args.analysis_id,
         analysis_file.covariate_names,
         analysis_file.covariate_types,
-        analysis_file.response_names
+        analysis_file.available_response_names
     )

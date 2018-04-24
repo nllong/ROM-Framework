@@ -3,10 +3,13 @@ import csv
 import gzip
 import os
 
+import matplotlib.pyplot as plt
 import pandas as pd
+import seaborn as sns
 
 
-def save_2d_csvs(data, rom, analysis_id, first_dimension, second_dimension, prepend_file_id):
+def save_2d_csvs(data, rom, analysis_id, first_dimension, second_dimension, prepend_file_id,
+                 save_figure=False):
     """
     The rows are the datetimes as defined in the data (dataframe)
 
@@ -18,11 +21,12 @@ def save_2d_csvs(data, rom, analysis_id, first_dimension, second_dimension, prep
     :param prepend_file_id: str, special variable to prepend to the file name
     :return: None
     """
-    for index, rs in enumerate(rom.response_names):
+    for rs in rom.loaded_models:
         print "Creating CSV for %s" % rs
 
+        # TODO: look into using DataFrame.pivot() to transform data
         for unique_value in data[second_dimension].unique():
-            file_name = 'output/%s/lookup_tables/%s_%s_mass_flow_%s.csv' % (
+            file_name = 'output/%s/lookup_tables/%s_%s_mass_flow_%.2f.csv' % (
             analysis_id, prepend_file_id, rs, unique_value)
             lookup_df = data[data[second_dimension] == unique_value]
 
@@ -33,6 +37,26 @@ def save_2d_csvs(data, rom, analysis_id, first_dimension, second_dimension, prep
                 save_df[unique_value_2] = new_df[rs].values
 
             save_df.to_csv(file_name, index=False)
+
+            # Create heat maps
+            if save_figure:
+                figure_filename = 'output/%s/images/heatmap_%s_%s_mass_flow_%.2f.png' % (
+                    analysis_id, prepend_file_id, rs, unique_value)
+
+                # this is a bit cheezy right now, load in the file and process again
+                df_heatmap = pd.read_csv(file_name, header=0)
+                # Remove the datetime column before converting the column headers to rounded floats
+                df_heatmap = df_heatmap.drop(columns=['datetime'])
+                df_heatmap.rename(columns=lambda x: round(float(x), 1), inplace=True)
+
+                plt.figure()
+                f, ax = plt.subplots(figsize=(5, 12))
+                sns.heatmap(df_heatmap)
+                ax.set_title('%s - Mass Flow %s kg/s' % (rs, unique_value))
+                ax.set_xlabel('ETS Inlet Temperature')
+                ax.set_ylabel('Hour of Year')
+                plt.savefig(figure_filename)
+                plt.close('all')
 
 
 def pickle_file(obj, filename, gzipfile=False):

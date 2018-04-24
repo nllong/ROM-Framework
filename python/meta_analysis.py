@@ -26,7 +26,7 @@ data['DistrictCoolingChilledWaterEnergy'] = reduced_order_model.yhat('DistrictCo
 data['DistrictHeatingHotWaterEnergy'] = reduced_order_model.yhat('DistrictHeatingHotWaterEnergy', data)
 data['ETSHeatingOutletTemperature'] = reduced_order_model.yhat('ETSHeatingOutletTemperature', data)
 data['ETSCoolingOutletTemperature'] = reduced_order_model.yhat('ETSCoolingOutletTemperature', data)
-save_2d_csvs(data, reduced_order_model, ANALYSIS_ID, 'ETSInletTemperature', 'DistrictCoolingMassFlowRate', analysis.lookup_prepend)
+save_2d_csvs(data, reduced_order_model, ANALYSIS_ID, 'ETSInletTemperature', 'DistrictCoolingMassFlowRate', analysis.lookup_prepend, True)
 
 ## Heating
 analysis = AnalysisDefinition('sweep-massflow-heating.json')
@@ -38,4 +38,4 @@ data['DistrictCoolingChilledWaterEnergy'] = reduced_order_model.yhat('DistrictCo
 data['DistrictHeatingHotWaterEnergy'] = reduced_order_model.yhat('DistrictHeatingHotWaterEnergy', data)
 data['ETSHeatingOutletTemperature'] = reduced_order_model.yhat('ETSHeatingOutletTemperature', data)
 data['ETSCoolingOutletTemperature'] = reduced_order_model.yhat('ETSCoolingOutletTemperature', data)
-save_2d_csvs(data, reduced_order_model, ANALYSIS_ID, 'ETSInletTemperature', 'DistrictHeatingMassFlowRate', analysis.lookup_prepend)
+save_2d_csvs(data, reduced_order_model, ANALYSIS_ID, 'ETSInletTemperature', 'DistrictHeatingMassFlowRate', analysis.lookup_prepend, True)

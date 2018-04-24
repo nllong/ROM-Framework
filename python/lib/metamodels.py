@@ -43,12 +43,10 @@ class Metamodels:
         """
         Load in the metamodels/roms
         """
-
         if not models_to_load:
-            models_to_load = self.response_names
+            models_to_load = self.available_response_names
 
-        print "Starting to load models, there are a total of %s models" % len(
-            self.response_names)
+        print "Loading models %s" % models_to_load
 
         for response in models_to_load:
             print "Loading model for response: %s" % response
@@ -58,7 +56,7 @@ class Metamodels:
 
         print "Finished loading models"
         print "The responses are:"
-        for index, rs in enumerate(self.response_names):
+        for index, rs in enumerate(self.available_response_names):
             print "  %s: %s" % (index, rs)
 
         print "The covariates are:"
@@ -73,7 +71,7 @@ class Metamodels:
         :param data: pandas DataFrame
         :return:
         """
-        if response_name not in self.response_names:
+        if response_name not in self.available_response_names:
             raise Exception("Model does not have the response '%s'" % response_name)
 
         # verify that the covariates are defined in the dataframe, if not, then remove them before
@@ -103,10 +101,14 @@ class Metamodels:
         return self.models[response_name].yhat(data)
 
     def model(self, response_name):
-        if response_name not in self.response_names:
+        if response_name not in self.available_response_names:
             raise Exception("Model does not have the response '%s'" % response_name)
 
         return self.models[response_name].model
+
+    @property
+    def loaded_models(self):
+        return self.models.keys()
 
     @property
     def analysis(self):
@@ -152,7 +154,7 @@ class Metamodels:
         return [cv['name'] for cv in self.file[self.set_i]['covariates']]
 
     @property
-    def response_names(self):
+    def available_response_names(self):
         if self.set_i is None:
             raise Exception(
                 "Attempting to access analysis without setting. Run analysis.set_analysis(<id>)"
@@ -172,4 +174,4 @@ if __name__ == "__main__":
         print "Found Analysis"
         print a_file.analysis['covariates']
         print a_file.covariate_names
-        print a_file.response_names
+        print a_file.available_response_names

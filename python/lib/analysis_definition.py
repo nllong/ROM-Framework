@@ -180,4 +180,4 @@ if __name__ == "__main__":
         print "Found Analysis"
         print a_file.analysis['covariates']
         print a_file.covariate_names
-        print a_file.response_names
+        print a_file.available_response_names
