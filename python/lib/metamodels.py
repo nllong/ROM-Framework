@@ -16,6 +16,16 @@ class Metamodels:
         self.load_file(filename)
         self.models = {}
 
+        # set some directories
+        # self.base_dir = 'output/%s/%s' % (self.file[self.set_i]['id'], self.model_type)
+        # self.images_dir = '%s/images' % self.base_dir
+        # self.models_dir = '%s/models' % self.base_dir
+        #
+        # create directory if not exist for each of the above
+        # for dir in ['base_dir', 'images_dir', 'models_dir']:
+        #     if not os.path.exists(getattr(self, dir)):
+        #         os.makedirs(getattr(self, dir))
+
     def load_file(self, filename):
         if not os.path.exists(filename):
             raise Exception("File does not exist: %s" % filename)

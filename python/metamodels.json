@@ -1,8 +1,11 @@
 [
   {
     "id": "3ff422c2-ca11-44db-b955-b39a47b011e7",
-    "description": "100 Simulations, varying inlet tempatures",
     "building_type": "Small Office",
+    "name": "smoff_large",
+    "display_name": "Small Office Large Sample",
+    "description": "100 Simulations, varying inlet tempatures",
+    "model_type": "RandomForest",
     "covariates": [
       {
         "name": "Month",
@@ -77,8 +80,11 @@
   },
   {
     "id": "66fb9766-26e7-4bed-bdf9-0fbfbc8d6c7e",
-    "description": "10 Simulations, varying inlet temperature and delta-T",
     "building_type": "Small Office",
+    "name": "smoff_vary_temp",
+    "display_name": "Small Office Varying Inlet Temp",
+    "description": "10 Simulations, varying inlet temperature and delta-T",
+    "model_type": "RandomForest",
     "covariates": [
       {
         "name": "Month",
