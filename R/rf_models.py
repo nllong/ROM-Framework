@@ -7,13 +7,7 @@
 import rpy2.robjects as robjects
 from rpy2.robjects.packages import importr
 
-
-def is_int(value):
-    try:
-        int(value)
-    except ValueError:
-        return False
-    return True
+from ..python.lib.shared import is_int
 
 
 class ETSModel:

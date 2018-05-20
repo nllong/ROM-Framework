@@ -1,5 +1,4 @@
 {
-  "lookup_prepend": "heating",
   "variables": [
     {
       "name": "Month",

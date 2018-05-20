@@ -7,7 +7,8 @@ import os
 
 from lib.metamodels import Metamodels
 
-from python.lib.roms.linear_model import LinearModel
+from lib.generators.linear_model import LinearModel
+from lib.generators.random_forest import RandomForest
 
 # path = os.path.realpath(__file__)
 # isn't the current path this anyway?
@@ -29,24 +30,18 @@ parser.add_argument("-a", "--analysis_id", default="3ff422c2-ca11-44db-b955-b39a
 args = parser.parse_args()
 print("Passed build_models.py args: %s" % args)
 
-# Setup directories
-if not os.path.exists('output/%s/images' % args.analysis_id):
-    os.makedirs('output/%s/images' % args.analysis_id)
-
-if not os.path.exists('output/%s/models' % args.analysis_id):
-    os.makedirs('output/%s/models' % args.analysis_id)
-
 print("Loading metamodels.json")
 analysis_file = Metamodels('./metamodels.json')
 if analysis_file.set_analysis(args.analysis_id):
     # Set the random seed so that the test libraries are the same across the models
-    # model = RandomForest(args.analysis_id, 79)
-    # model.build(
-    #     'output/%s/simulation_results.csv' % args.analysis_id,
-    #     analysis_file.covariate_names,
-    #     analysis_file.covariate_types,
-    #     analysis_file.available_response_names
-    # )
+
+    model = RandomForest(args.analysis_id, 79)
+    model.build(
+        'output/%s/simulation_results.csv' % args.analysis_id,
+        analysis_file.covariate_names,
+        analysis_file.covariate_types,
+        analysis_file.available_response_names
+    )
 
     model = LinearModel(args.analysis_id, 79)
     model.build(

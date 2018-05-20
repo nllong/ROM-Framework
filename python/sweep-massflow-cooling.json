@@ -1,5 +1,4 @@
 {
-  "lookup_prepend": "cooling",
   "variables": [
     {
       "name": "Month",
