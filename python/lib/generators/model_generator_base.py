@@ -25,3 +25,4 @@ class ModelGeneratorBase(object):
         for dir in ['base_dir', 'images_dir', 'models_dir']:
             if not os.path.exists(getattr(self, dir)):
                 os.makedirs(getattr(self, dir))
+bu

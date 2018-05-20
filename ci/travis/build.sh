@@ -4,7 +4,7 @@ BUILD_SCOPE=$1
 
 if [ "${BUILD_SCOPE}" == "all" ]; then
     echo "Post Processing Results"
-#    cd results && bundle exec ruby post_process.rb --post-process && cd ..
+    cd results && bundle exec ruby post_process.rb --post-process && cd ..
 
     echo "Building Regression Models"
 
