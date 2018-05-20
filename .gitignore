@@ -10,6 +10,6 @@ R/.RData
 R/.Rhistory
 results/Gemfile.lock
 python/output/*/simulation_results.csv
-python/output/*/models
+python/output/**/models
 results/**/data_point.zip
 .ipynb_checkpoints

@@ -1,5 +1,4 @@
 {
-  "lookup_prepend": "test",
   "variables": [
     {
       "name": "Month",

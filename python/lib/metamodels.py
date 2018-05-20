@@ -1,10 +1,51 @@
+import gc
 import json
 import os
 
-from ets_model import ETSModel
+import matplotlib.pyplot as plt
+import pandas as pd
+import seaborn as sns
+
+from shared import unpickle_file
 
 
-class Metamodels:
+class ETSModel:
+    def __init__(self, model_file):
+        """
+        Load the model from a pandas pickled dataframe
+
+        :param path_to_models: String, String path to where the pickled models exist
+        :param model: String or Int, Name of the resulting ensemble model to return
+        :param season: String or Int, Season to analyze
+
+        """
+        # TODO: Check if the file exists
+        self.model_file = model_file
+        if os.path.isfile(model_file):
+            gc.disable()
+            self.model = unpickle_file(model_file)
+            gc.enable()
+        else:
+            raise Exception("File not found, unable to load: %s" % model_file)
+
+    def yhat(self, data):
+        """
+        Pass in the data as an array of array. The format is dependent on the model, but it must be an
+        array of values to predict.
+
+        e.g. [[month, hour, dayofweek, t_outdoor, rh, inlet_temp]]
+
+        :param data: array of data to estimate
+        :return:
+        """
+        predictions = self.model.predict(data)
+        return predictions
+
+    def __str__(self):
+        return self.model_file
+
+
+class Metamodels(object):
     """
     Parse the file that defines the ROMs that have been created.
     """
@@ -15,16 +56,6 @@ class Metamodels:
         self.set_i = None
         self.load_file(filename)
         self.models = {}
-
-        # set some directories
-        # self.base_dir = 'output/%s/%s' % (self.file[self.set_i]['id'], self.model_type)
-        # self.images_dir = '%s/images' % self.base_dir
-        # self.models_dir = '%s/models' % self.base_dir
-        #
-        # create directory if not exist for each of the above
-        # for dir in ['base_dir', 'images_dir', 'models_dir']:
-        #     if not os.path.exists(getattr(self, dir)):
-        #         os.makedirs(getattr(self, dir))
 
     def load_file(self, filename):
         if not os.path.exists(filename):
@@ -51,7 +82,7 @@ class Metamodels:
 
     def load_models(self, models_to_load=[]):
         """
-        Load in the metamodels/roms
+        Load in the metamodels/generators
         """
         if not models_to_load:
             models_to_load = self.available_response_names
@@ -62,7 +93,11 @@ class Metamodels:
             print "Loading model for response: %s" % response
 
             self.models[response] = ETSModel(
-                "output/%s/models/%s.pkl" % (self.file[self.set_i]['id'], response))
+                "output/%s/%s/models/%s.pkl" % (
+                    self.file[self.set_i]['id'],
+                    self.file[self.set_i]['model_type'],
+                    response)
+            )
 
         print "Finished loading models"
         print "The responses are:"
@@ -109,6 +144,77 @@ class Metamodels:
         data = data[self.covariate_names]
 
         return self.models[response_name].yhat(data)
+
+    def save_2d_csvs(self, data, first_dimension, second_dimension, second_dimension_short_name,
+                     file_prepend, save_figure=False):
+        """
+        Generate 2D CSVs based on the model loaded and the two dimensions.
+
+        The rows are the datetimes as defined in the data (dataframe)
+
+        :param data: pandas dataframe
+        :param first_dimension: str, the column heading variable
+        :param second_dimension: str, the values that will be reported in the table
+        :param second_dimension_short_name: str, short display name for second variable (for filename)
+        :param prepend_file_id: str, special variable to prepend to the file name
+        :return: None
+        """
+
+        # create the lookup table directory - probably want to make this a base class for all
+        # python scripts that use the filestructure to store the data
+        lookup_table_dir = 'output/%s/%s/lookup_tables/' % (
+            self.file[self.set_i]['id'],
+            self.file[self.set_i]['model_type']
+        )
+        if not os.path.exists(lookup_table_dir):
+            os.makedirs(lookup_table_dir)
+
+        for response in self.loaded_models:
+            print "Creating CSV for %s" % response
+
+            # TODO: look into using DataFrame.pivot() to transform data
+            for unique_value in data[second_dimension].unique():
+                file_name = '%s/%s_%s_%s_%.2f.csv' % (
+                    lookup_table_dir,
+                    file_prepend,
+                    response,
+                    second_dimension_short_name,
+                    unique_value)
+                lookup_df = data[data[second_dimension] == unique_value]
+
+                # Save the data times in a new dataframe (will be in order)
+                save_df = pd.DataFrame.from_dict({'datetime': lookup_df['datetime'].unique()})
+                for unique_value_2 in data[first_dimension].unique():
+                    new_df = lookup_df[lookup_df[first_dimension] == unique_value_2]
+                    save_df[unique_value_2] = new_df[response].values
+
+                save_df.to_csv(file_name, index=False)
+
+                # Create heat maps
+                if save_figure:
+                    figure_filename = 'output/%s/%s/images/%s_%s_%s_%.2f.png' % (
+                        self.file[self.set_i]['id'],
+                        self.file[self.set_i]['model_type'],
+                        file_prepend,
+                        response,
+                        second_dimension_short_name,
+                        unique_value)
+
+                    # this is a bit cheezy right now, load in the file and process again
+                    df_heatmap = pd.read_csv(file_name, header=0)
+
+                    # Remove the datetime column before converting the column headers to rounded floats
+                    df_heatmap = df_heatmap.drop(columns=['datetime'])
+                    df_heatmap.rename(columns=lambda x: round(float(x), 1), inplace=True)
+
+                    plt.figure()
+                    f, ax = plt.subplots(figsize=(5, 12))
+                    sns.heatmap(df_heatmap)
+                    ax.set_title('%s - Mass Flow %s kg/s' % (response, unique_value))
+                    ax.set_xlabel('ETS Inlet Temperature')
+                    ax.set_ylabel('Hour of Year')
+                    plt.savefig(figure_filename)
+                    plt.close('all')
 
     def model(self, response_name):
         if response_name not in self.available_response_names:

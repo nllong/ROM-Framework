@@ -7,8 +7,6 @@ from lib.metamodels import Metamodels
 
 # ANALYSIS_ID = "3ff422c2-ca11-44db-b955-b39a47b011e7"
 ANALYSIS_ID = "66fb9766-26e7-4bed-bdf9-0fbfbc8d6c7e"  # with mass flow
-if not os.path.exists('output/%s/lookup_tables' % ANALYSIS_ID):
-    os.makedirs('output/%s/lookup_tables' % ANALYSIS_ID)
 
 # Load in the models for analysis
 reduced_order_model = Metamodels('./metamodels.json')

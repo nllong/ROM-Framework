@@ -54,7 +54,6 @@ class AnalysisDefinition:
         self.file = None
         self.analyses = []
         self.set_i = None
-        self.lookup_prepend = None
         self.weather_data = None
 
         self.load_files(definition_file)
@@ -65,7 +64,6 @@ class AnalysisDefinition:
 
         self.filename = definition_file
         self.file = json.load(open(self.filename))
-        self.lookup_prepend = self.file['lookup_prepend']
 
         # print json.dumps(self.file, indent=2)
 
