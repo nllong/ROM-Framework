@@ -72,9 +72,13 @@ class LinearModel(ModelGeneratorBase):
     def build(self, data_file, covariates, data_types, responses):
         # data_file_to_csv()
         dataset = pd.read_csv(data_file)
-        # this column is a redundant column
-        dataset = dataset.drop('DistrictCoolingOutletTemperature', 1)
+
+        print list(dataset.columns.values)
+        # redundant columns
+        if 'DistrictCoolingOutletTemperature' in list(dataset.columns.values):
+            dataset = dataset.drop('DistrictCoolingOutletTemperature', 1)
         # update some of the column names so they make sense to this model
+
         dataset = dataset.rename(columns={
             'DistrictHeatingOutletTemperature': 'ETSInletTemperature',
             'DistrictHeatingInletTemperature': 'ETSHeatingOutletTemperature',

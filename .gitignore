@@ -4,6 +4,7 @@
 .Rhistory
 *.pyc
 *.pkl
+.python-version
 python/.python-version
 R/.Rproj.user
 R/.RData
