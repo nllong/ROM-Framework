@@ -2,7 +2,7 @@
   {
     "id": "3ff422c2-ca11-44db-b955-b39a47b011e7",
     "building_type": "Small Office",
-    "name": "smoff_large",
+    "name": "smoff_constant_delta_t",
     "display_name": "Small Office Large Sample",
     "description": "100 Simulations, varying inlet tempatures",
     "model_type": "RandomForest",

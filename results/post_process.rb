@@ -9,7 +9,7 @@ options = {
 }
 
 parser = OptionParser.new do|opts|
-  opts.banner = "Usage: years.rb [options]"
+  opts.banner = "Usage: post_process.rb [options]"
   opts.on('-s', '--server host', 'Server Host URL') do |server|
     options[:server] = server
   end
@@ -39,7 +39,7 @@ if options[:download] && !options[:analysis_id]
 end
 
 def post_process_analysis_id(analysis_id)
-  save_dir = "../python/output/#{analysis_id}/"
+  save_dir = analysis_id
   FileUtils.mkdir_p save_dir
   # Go through the directories and update the reports to add in the last column of data.
   File.open("#{save_dir}/simulation_results.csv", 'w') do |new_file|

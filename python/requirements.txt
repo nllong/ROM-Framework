@@ -4,5 +4,6 @@ scipy==1.0.0
 matplotlib==2.1.1
 jupyter==1.0.0
 # pysqlite==2.8.3
-awscli
-seaborn
+awscli==1.14.63
+seaborn==0.8.1
+nose==1.3.7

@@ -3,12 +3,10 @@
 # Author: Nicholas Long (nicholas.l.long@colorado.edu)
 
 import argparse
-import os
-
-from lib.metamodels import Metamodels
 
 from lib.generators.linear_model import LinearModel
 from lib.generators.random_forest import RandomForest
+from lib.metamodels import Metamodels
 
 # path = os.path.realpath(__file__)
 # isn't the current path this anyway?
@@ -25,35 +23,34 @@ from lib.generators.random_forest import RandomForest
 # Number of Samples: 10
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-a", "--analysis_id", default="3ff422c2-ca11-44db-b955-b39a47b011e7",
-                    help="ID of the Analysis Models")
+parser.add_argument("-a", "--analysis_moniker", help="ID or Name of the Analysis Model")
 args = parser.parse_args()
+
+if not args.analysis_moniker:
+    print "Must pass in an Analysis ID or an Analysis name"
+    exit(1)
+
 print("Passed build_models.py args: %s" % args)
 
 print("Loading metamodels.json")
 analysis_file = Metamodels('./metamodels.json')
-if analysis_file.set_analysis(args.analysis_id):
-    # Set the random seed so that the test libraries are the same across the models
 
-    model = RandomForest(args.analysis_id, 79)
+if analysis_file.set_analysis(args.analysis_moniker):
+    # Set the random seed so that the ls
+    # test libraries are the same across the models
+
+    model = RandomForest(analysis_file.analysis_name, 79)
     model.build(
-        'output/%s/simulation_results.csv' % args.analysis_id,
+        '../results/%s/simulation_results.csv' % analysis_file.analysis_id,
         analysis_file.covariate_names,
         analysis_file.covariate_types,
         analysis_file.available_response_names
     )
 
-    model = LinearModel(args.analysis_id, 79)
+    model = LinearModel(analysis_file.analysis_name, 79)
     model.build(
-        'output/%s/simulation_results.csv' % args.analysis_id,
+        '../results/%s/simulation_results.csv' % analysis_file.analysis_id,
         analysis_file.covariate_names,
         analysis_file.covariate_types,
         analysis_file.available_response_names
     )
-
-    # build_lm(
-    #     'output/%s/simulation_results.csv' % args.analysis_id,
-    #     analysis_file.covariate_names,
-    #     analysis_file.covariate_types,
-    #     analysis_file.available_response_names
-    # )

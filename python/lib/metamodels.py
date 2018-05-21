@@ -64,21 +64,39 @@ class Metamodels(object):
         self.filename = filename
         self.file = json.load(open(self.filename))
 
-    def set_analysis(self, id):
+    def set_analysis(self, moniker):
         """
-        # TODO: need to pass in which models should be loaded, if any. Perhaps, make an explicit
-        # call to load the models
+        Set the index of the analysis based on the ID or the name of the analysis.
 
-        :param id: str, Analysis ID
+        :param moniker: str, Analysis ID or Name
         :return: boolean
         """
         for idx, analysis in enumerate(self.file):
-            if analysis['id'] == id:
+            if analysis['id'] == moniker or analysis['name'] == moniker:
                 self.set_i = idx
 
                 return True
 
         raise Exception("Could not load the model: %s" % id)
+
+    @property
+    def analysis_id(self):
+        """
+        Return the analysis ID from the metamodels.json file that was passed in. This should only
+        be used to get the data out of the downloaded results from OpenStudio Server.
+
+        :return: str, ID
+        """
+        return self.file[self.set_i]['id']
+
+    @property
+    def analysis_name(self):
+        """
+        Return the analysis name from the metamodels.json file that was passed in
+
+        :return: str, name
+        """
+        return self.file[self.set_i]['name']
 
     def load_models(self, models_to_load=[]):
         """
@@ -94,7 +112,7 @@ class Metamodels(object):
 
             self.models[response] = ETSModel(
                 "output/%s/%s/models/%s.pkl" % (
-                    self.file[self.set_i]['id'],
+                    self.analysis_name,
                     self.file[self.set_i]['model_type'],
                     response)
             )
@@ -163,7 +181,7 @@ class Metamodels(object):
         # create the lookup table directory - probably want to make this a base class for all
         # python scripts that use the filestructure to store the data
         lookup_table_dir = 'output/%s/%s/lookup_tables/' % (
-            self.file[self.set_i]['id'],
+            self.analysis_name,
             self.file[self.set_i]['model_type']
         )
         if not os.path.exists(lookup_table_dir):
@@ -193,7 +211,7 @@ class Metamodels(object):
                 # Create heat maps
                 if save_figure:
                     figure_filename = 'output/%s/%s/images/%s_%s_%s_%.2f.png' % (
-                        self.file[self.set_i]['id'],
+                        self.analysis_name,
                         self.file[self.set_i]['model_type'],
                         file_prepend,
                         response,

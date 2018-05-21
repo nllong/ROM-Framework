@@ -6,11 +6,12 @@ from lib.metamodels import Metamodels
 from lib.analysis_definition import AnalysisDefinition
 
 # ANALYSIS_ID = "3ff422c2-ca11-44db-b955-b39a47b011e7"
-ANALYSIS_ID = "66fb9766-26e7-4bed-bdf9-0fbfbc8d6c7e"  # with mass flow
+# ANALYSIS_ID = "66fb9766-26e7-4bed-bdf9-0fbfbc8d6c7e"  # with mass flow
+ANALYSIS_NAME = "smoff_vary_temp"  # with mass flow
 
 # Load in the models for analysis
 reduced_order_model = Metamodels('./metamodels.json')
-reduced_order_model.set_analysis(ANALYSIS_ID)
+reduced_order_model.set_analysis(ANALYSIS_NAME)
 reduced_order_model.load_models()
 
 ## Cooling
