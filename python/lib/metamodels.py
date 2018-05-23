@@ -163,6 +163,20 @@ class Metamodels(object):
 
         return self.models[response_name].yhat(data)
 
+    def save_csv(self, data, csv_name):
+        lookup_table_dir = 'output/%s/%s/lookup_tables/' % (
+            self.analysis_name,
+            self.file[self.set_i]['model_type']
+        )
+        if not os.path.exists(lookup_table_dir):
+            os.makedirs(lookup_table_dir)
+
+        file_name = '%s/%s.csv' % (
+            lookup_table_dir,
+            csv_name)
+
+        data.to_csv(file_name, index=False)
+
     def save_2d_csvs(self, data, first_dimension, second_dimension, second_dimension_short_name,
                      file_prepend, save_figure=False):
         """

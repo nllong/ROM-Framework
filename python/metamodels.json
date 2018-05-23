@@ -169,6 +169,228 @@
       }
     ],
     "number_of_samples_to_generate_model": 10
+  },
+  {
+    "id": "66fb9766-26e7-4bed-bdf9-0fbfbc8d6c7e",
+    "building_type": "Small Office",
+    "name": "smoff_vary_temp",
+    "display_name": "Small Office Varying Inlet Temp",
+    "description": "10 Simulations, varying inlet temperature and delta-T",
+    "model_type": "RandomForest",
+    "covariates": [
+      {
+        "name": "Month",
+        "display_name": "Month",
+        "units": "",
+        "type": "int"
+      },
+      {
+        "name": "Hour",
+        "display_name": "Month",
+        "units": "",
+        "type": "int"
+      },
+      {
+        "name": "DayofWeek",
+        "display_name": "Month",
+        "units": "",
+        "type": "int"
+      },
+      {
+        "name": "SiteOutdoorAirDrybulbTemperature",
+        "display_name": "Dry Bulb Temperature",
+        "units": "C",
+        "type": "float"
+      },
+      {
+        "name": "SiteOutdoorAirRelativeHumidity",
+        "display_name": "Relative Humidity",
+        "units": "%",
+        "type": "float"
+      },
+      {
+        "name": "ETSInletTemperature",
+        "display_name": "Ambient Loop Inlet Temperature",
+        "units": "C",
+        "type": "float"
+      },
+      {
+        "name": "DistrictHeatingMassFlowRate",
+        "display_name": "District Heating Mass Flow Rate",
+        "units": "kg/s",
+        "type": "float"
+      },
+      {
+        "name": "DistrictCoolingMassFlowRate",
+        "display_name": "District Cooling Mass Flow Rate",
+        "units": "kg/s",
+        "type": "float"
+      }
+    ],
+    "responses": [
+      {
+        "name": "HeatingElectricity",
+        "display_name": "Heating Electric Energy",
+        "units": "J",
+        "filename": "HeatingElectricity.pkl"
+      },
+      {
+        "name": "CoolingElectricity",
+        "display_name": "Cooling Electric Energy",
+        "units": "J"
+      },
+      {
+        "name": "DistrictCoolingChilledWaterEnergy",
+        "display_name": "Ambient Loop Cooling Energy",
+        "units": "J"
+      },
+      {
+        "name": "DistrictHeatingHotWaterEnergy",
+        "display_name": "Ambient Loop Heating Energy",
+        "units": "J"
+      },
+      {
+        "name": "ETSHeatingOutletTemperature",
+        "display_name": "Building Heating Outlet Temperature",
+        "units": "C"
+      },
+      {
+        "name": "ETSCoolingOutletTemperature",
+        "display_name": "Building Cooling Outlet Temperature",
+        "units": "C"
+      }
+    ],
+    "number_of_samples_to_generate_model": 10
+  },
+  {
+    "id": "5a934967-9799-42ed-bb85-fda1693d2943",
+    "building_type": "Small Office",
+    "name": "smoff_no_ets",
+    "display_name": "Small Office No ETS",
+    "description": "50 Simulations, no ets, LPD, EPD.",
+    "model_type": "RandomForest",
+    "covariates": [
+      {
+        "name": "Month",
+        "display_name": "Month",
+        "units": "",
+        "type": "int"
+      },
+      {
+        "name": "Hour",
+        "display_name": "Month",
+        "units": "",
+        "type": "int"
+      },
+      {
+        "name": "DayofWeek",
+        "display_name": "Month",
+        "units": "",
+        "type": "int"
+      },
+      {
+        "name": "SiteOutdoorAirDrybulbTemperature",
+        "display_name": "Dry Bulb Temperature",
+        "units": "C",
+        "type": "float"
+      },
+      {
+        "name": "SiteOutdoorAirRelativeHumidity",
+        "display_name": "Relative Humidity",
+        "units": "%",
+        "type": "float"
+      },
+      {
+        "name": "lpd_average",
+        "display_name": "LPD Average",
+        "units": "W/m2",
+        "type": "float"
+      },
+      {
+        "name": "epd_average",
+        "display_name": "EPD Average",
+        "units": "W/m2",
+        "type": "float"
+      }
+    ],
+    "responses": [
+      {
+        "name": "HeatingElectricity",
+        "display_name": "Heating Electric Energy",
+        "units": "J"
+      },
+      {
+        "name": "CoolingElectricity",
+        "display_name": "Cooling Electric Energy",
+        "units": "J"
+      }
+    ],
+    "number_of_samples_to_generate_model": 50
+  },
+  {
+    "id": "5a934967-9799-42ed-bb85-fda1693d2943",
+    "building_type": "Retail",
+    "name": "retail_no_ets",
+    "display_name": "Retail No ETS",
+    "description": "50 Simulations, no ets, LPD, EPD.",
+    "model_type": "RandomForest",
+    "covariates": [
+      {
+        "name": "Month",
+        "display_name": "Month",
+        "units": "",
+        "type": "int"
+      },
+      {
+        "name": "Hour",
+        "display_name": "Month",
+        "units": "",
+        "type": "int"
+      },
+      {
+        "name": "DayofWeek",
+        "display_name": "Month",
+        "units": "",
+        "type": "int"
+      },
+      {
+        "name": "SiteOutdoorAirDrybulbTemperature",
+        "display_name": "Dry Bulb Temperature",
+        "units": "C",
+        "type": "float"
+      },
+      {
+        "name": "SiteOutdoorAirRelativeHumidity",
+        "display_name": "Relative Humidity",
+        "units": "%",
+        "type": "float"
+      },
+      {
+        "name": "lpd_average",
+        "display_name": "LPD Average",
+        "units": "W/m2",
+        "type": "float"
+      },
+      {
+        "name": "epd_average",
+        "display_name": "EPD Average",
+        "units": "W/m2",
+        "type": "float"
+      }
+    ],
+    "responses": [
+      {
+        "name": "HeatingElectricity",
+        "display_name": "Heating Electric Energy",
+        "units": "J"
+      },
+      {
+        "name": "CoolingElectricity",
+        "display_name": "Cooling Electric Energy",
+        "units": "J"
+      }
+    ],
+    "number_of_samples_to_generate_model": 50
   }
 ]
 

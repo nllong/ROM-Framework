@@ -3,6 +3,7 @@ import zipfile
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from lib.shared import pickle_file, save_dict_to_csv, zipdir
 from pandas.plotting import lag_plot
 from scipy import stats
 from scipy.stats import spearmanr, pearsonr
@@ -11,7 +12,6 @@ from sklearn.metrics import r2_score
 from sklearn.model_selection import train_test_split
 
 from model_generator_base import ModelGeneratorBase
-from lib.shared import pickle_file, save_dict_to_csv, zipdir
 
 
 class RandomForest(ModelGeneratorBase):
@@ -90,43 +90,27 @@ class RandomForest(ModelGeneratorBase):
         dataset[data_types['float']] = dataset[data_types['float']].astype(float)
         dataset[data_types['int']] = dataset[data_types['int']].astype(int)
 
-        # We are now regressing on the entire dataset and not limiting based on the heating / cooling
-        # mode.
-
-        # only keep data where there is massflow rates
-        # heating_dataset = dataset[
-        #     (dataset.DistrictCoolingMassFlowRate == 0) & (dataset.DistrictHeatingMassFlowRate > 0)
-        # ]
-        # dataset = heating_dataset
-        # dataset = dataset[
-        #     (dataset.DistrictHeatingMassFlowRate != 0) | (dataset.DistrictCoolingMassFlowRate != 0)
-        # ]
-
         # Analyze the dataset
         # get the first UUID in the dataset
+
         simulation_id = dataset['_id'][0]
         single_simulation = dataset[dataset._id == simulation_id]
-        plt.figure()
-        lag_plot(single_simulation['ETSInletTemperature'])
-        plt.savefig('%s/ETSInletTemperature_lag.png' % self.images_dir)
-        plt.clf()
 
-        plt.figure()
-        lag_plot(single_simulation['DistrictHeatingMassFlowRate'])
-        plt.savefig('%s/DistrictHeatingMassFlowRate_lag.png' % self.images_dir)
-        plt.clf()
+        for var in ['ETSInletTemperature', 'DistrictHeatingMassFlowRate']:
+            # lag variables
+            if var in list(single_simulation.columns.values):
+                plt.figure()
+                lag_plot(single_simulation[var])
+                plt.savefig('%s/%s_lag.png' % (self.images_dir, var))
+                plt.clf()
 
-        series = dataset[['DistrictHeatingMassFlowRate']]
-        plt.figure()
-        series[series.DistrictHeatingMassFlowRate > 0].plot.box()
-        plt.savefig('%s/HeatingMassFlowBoxPlots.png' % self.images_dir)
-        plt.clf()
-
-        series = dataset[['DistrictCoolingMassFlowRate']]
-        plt.figure()
-        series[series.DistrictCoolingMassFlowRate > 0].plot.box()
-        plt.savefig('%s/CoolingMassFlowBoxPlots.png' % self.images_dir)
-        plt.clf()
+        for var in ['DistrictHeatingMassFlowRate', 'DistrictCoolingMassFlowRate']:
+            if var in list(single_simulation.columns.values):
+                series = dataset[['var']]
+                plt.figure()
+                series[series.DistrictHeatingMassFlowRate > 0].plot.box()
+                plt.savefig('%s/%sPlots.png' % (self.images_dir, var))
+                plt.clf()
 
         train_x, test_x, train_y, test_y = train_test_split(
             dataset[covariates],
