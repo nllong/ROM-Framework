@@ -104,13 +104,13 @@ class RandomForest(ModelGeneratorBase):
                 plt.savefig('%s/%s_lag.png' % (self.images_dir, var))
                 plt.clf()
 
-        for var in ['DistrictHeatingMassFlowRate', 'DistrictCoolingMassFlowRate']:
-            if var in list(single_simulation.columns.values):
-                series = dataset[['var']]
-                plt.figure()
-                series[series.DistrictHeatingMassFlowRate > 0].plot.box()
-                plt.savefig('%s/%sPlots.png' % (self.images_dir, var))
-                plt.clf()
+        # for var in ['DistrictHeatingMassFlowRate', 'DistrictCoolingMassFlowRate']:
+        #     if var in list(single_simulation.columns.values):
+                # series = dataset[[var]]
+                # plt.figure()
+                # series[series.DistrictHeatingMassFlowRate > 0].plot.box()
+                # plt.savefig('%s/%sPlots.png' % (self.images_dir, var))
+                # plt.clf()
 
         train_x, test_x, train_y, test_y = train_test_split(
             dataset[covariates],

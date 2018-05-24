@@ -79,9 +79,9 @@
     "number_of_samples_to_generate_model": 100
   },
   {
-    "id": "66fb9766-26e7-4bed-bdf9-0fbfbc8d6c7e",
+    "id": "66fb9766-26e7-4bed-bdf9-0fbfbc8d6c7e_WITHMASSFLOW",
     "building_type": "Small Office",
-    "name": "smoff_vary_temp",
+    "name": "smoff_vary_temp_with_massflow",
     "display_name": "Small Office Varying Inlet Temp",
     "description": "10 Simulations, varying inlet temperature and delta-T",
     "model_type": "RandomForest",
@@ -212,18 +212,6 @@
         "name": "ETSInletTemperature",
         "display_name": "Ambient Loop Inlet Temperature",
         "units": "C",
-        "type": "float"
-      },
-      {
-        "name": "DistrictHeatingMassFlowRate",
-        "display_name": "District Heating Mass Flow Rate",
-        "units": "kg/s",
-        "type": "float"
-      },
-      {
-        "name": "DistrictCoolingMassFlowRate",
-        "display_name": "District Cooling Mass Flow Rate",
-        "units": "kg/s",
         "type": "float"
       }
     ],

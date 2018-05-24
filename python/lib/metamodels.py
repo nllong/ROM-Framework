@@ -177,10 +177,77 @@ class Metamodels(object):
 
         data.to_csv(file_name, index=False)
 
-    def save_2d_csvs(self, data, first_dimension, second_dimension, second_dimension_short_name,
+
+    def save_2d_csvs(self, data, first_dimension, file_prepend, save_figure=False):
+        """
+        Generate 2D (time, first) CSVs based on the model loaded and the two dimensions.
+
+        The rows are the datetimes as defined in the data (dataframe)
+
+        :param data: pandas dataframe
+        :param first_dimension: str, the column heading variable
+        :param prepend_file_id: str, special variable to prepend to the file name
+        :return: None
+        """
+
+        # create the lookup table directory - probably want to make this a base class for all
+        # python scripts that use the filestructure to store the data
+        lookup_table_dir = 'output/%s/%s/lookup_tables/' % (
+            self.analysis_name,
+            self.file[self.set_i]['model_type']
+        )
+        if not os.path.exists(lookup_table_dir):
+            os.makedirs(lookup_table_dir)
+
+        for response in self.loaded_models:
+            print "Creating CSV for %s" % response
+
+            # TODO: look into using DataFrame.pivot() to transform data
+            file_name = '%s/%s_%s.csv' % (
+                lookup_table_dir,
+                file_prepend,
+                response
+            )
+
+            # Save the data times in a new dataframe (will be in order)
+            save_df = pd.DataFrame.from_dict({'datetime': data['datetime'].unique()})
+            for unique_value in data[first_dimension].unique():
+                print unique_value
+                new_df = data[data[first_dimension] == unique_value]
+                save_df[unique_value] = new_df[response].values
+
+            save_df.to_csv(file_name, index=False)
+
+            # Create heat maps
+            # if save_figure:
+            #     figure_filename = 'output/%s/%s/images/%s_%s.png' % (
+            #         self.analysis_name,
+            #         self.file[self.set_i]['model_type'],
+            #         file_prepend,
+            #         response,
+            #     )
+            #
+            #     # this is a bit cheezy right now, load in the file and process again
+            #     df_heatmap = pd.read_csv(file_name, header=0)
+            #
+            #     # Remove the datetime column before converting the column headers to rounded floats
+            #     df_heatmap = df_heatmap.drop(columns=['datetime'])
+            #     df_heatmap.rename(columns=lambda x: round(float(x), 1), inplace=True)
+            #
+            #     plt.figure()
+            #     f, ax = plt.subplots(figsize=(5, 12))
+            #     sns.heatmap(df_heatmap)
+            #     ax.set_title('%s - Mass Flow %s kg/s' % (response, unique_value))
+            #     ax.set_xlabel('ETS Inlet Temperature')
+            #     ax.set_ylabel('Hour of Year')
+            #     plt.savefig(figure_filename)
+            #     plt.close('all')
+
+    def save_3d_csvs(self, data, first_dimension, second_dimension, second_dimension_short_name,
                      file_prepend, save_figure=False):
         """
-        Generate 2D CSVs based on the model loaded and the two dimensions.
+        Generate 3D (time, first, second) CSVs based on the model loaded and the two dimensions.
+        The second dimension becomes individual files.
 
         The rows are the datetimes as defined in the data (dataframe)
 
@@ -188,7 +255,7 @@ class Metamodels(object):
         :param first_dimension: str, the column heading variable
         :param second_dimension: str, the values that will be reported in the table
         :param second_dimension_short_name: str, short display name for second variable (for filename)
-        :param prepend_file_id: str, special variable to prepend to the file name
+        :param file_prepend: str, special variable to prepend to the file name
         :return: None
         """
 
