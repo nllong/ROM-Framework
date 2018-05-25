@@ -33,6 +33,16 @@
         "maximum": 22,
         "number_of_samples": 10
       }
+    },
+    {
+      "name": "lpd_average",
+      "data_source": "value",
+      "value": 9.4
+    },
+    {
+      "name": "epd_average",
+      "data_source": "value",
+      "value": 6.6
     }
   ]
 }

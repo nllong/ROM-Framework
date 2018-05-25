@@ -115,7 +115,6 @@ if options[:download]
 
     if api.get_analysis_status(options[:analysis_id], 'batch_run') == 'completed'
       results = api.get_analysis_results(options[:analysis_id])
-
       results[:data].each do |dp|
         dir = "#{base_dir}/#{dp[:_id]}"
         puts "Saving results for simulation into directory: #{dir}"

@@ -33,7 +33,7 @@
     {
       "name": "epd_average",
       "data_source": "value",
-      "value": 12
+      "value": 6.6
     }
   ]
 }

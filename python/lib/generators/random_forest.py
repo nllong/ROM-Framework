@@ -10,9 +10,8 @@ from scipy.stats import spearmanr, pearsonr
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import r2_score
 from sklearn.model_selection import train_test_split
-
+import seaborn as sns
 from model_generator_base import ModelGeneratorBase
-
 
 class RandomForest(ModelGeneratorBase):
     def __init__(self, analysis_id, random_seed=None):
@@ -31,13 +30,7 @@ class RandomForest(ModelGeneratorBase):
         """
         yhat = model.predict(x_data)
 
-        plt.scatter(y_data, yhat)
-        plt.subplots_adjust(left=0.125)
-        plt.savefig('%s/%s.png' % (self.images_dir, model_name))
-        plt.xlabel('y')
-        plt.ylabel('yhat')
-        plt.clf()
-
+        # perform stats on all the data
         test_score = r2_score(y_data, yhat)
         spearman = spearmanr(y_data, yhat)
         pearson = pearsonr(y_data, yhat)
@@ -56,6 +49,13 @@ class RandomForest(ModelGeneratorBase):
             'pearson': pearson,
         }
 
+        self.yy_plots(y_data, yhat, model_name)
+
+        # sns.boxplot(x=y_data, y=yhat)
+        # plt.savefig('%s/%s_boxplot.png' % (self.images_dir, model_name))
+        # plt.clf()
+
+        # Plot of the importances
         importances = model.feature_importances_
         indices = np.argsort(importances)
         covariates_array = np.asarray(covariates)
@@ -75,7 +75,7 @@ class RandomForest(ModelGeneratorBase):
         dataset = pd.read_csv(data_file)
         # this column is a redundant column
 
-        print list(dataset.columns.values)
+        # print list(dataset.columns.values)
         if 'DistrictCoolingOutletTemperature' in list(dataset.columns.values):
             dataset = dataset.drop('DistrictCoolingOutletTemperature', 1)
 
@@ -133,12 +133,6 @@ class RandomForest(ModelGeneratorBase):
             self.model_results.append(
                 self.evaluate(trained_model, response, test_x, test_y[response], covariates)
             )
-
-            # print "Fitting Linear Model for %s" % response
-            # lm = linear_model.LinearRegression()
-            # model = lm.fit(train_x, train_y[response])
-            # print model
-            # print model.predict(test_x)
 
         save_dict_to_csv(self.model_results, '%s/model_results.csv' % self.base_dir)
 

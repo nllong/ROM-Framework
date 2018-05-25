@@ -29,13 +29,6 @@ class LinearModel(ModelGeneratorBase):
         """
         yhat = model.predict(x_data)
 
-        plt.scatter(y_data, yhat)
-        plt.subplots_adjust(left=0.125)
-        plt.savefig('%s/%s.png' % (self.images_dir, model_name))
-        plt.xlabel('y')
-        plt.ylabel('yhat')
-        plt.clf()
-
         test_score = r2_score(y_data, yhat)
         spearman = spearmanr(y_data, yhat)
         pearson = pearsonr(y_data, yhat)
@@ -54,17 +47,7 @@ class LinearModel(ModelGeneratorBase):
             'pearson': pearson,
         }
 
-        # importances = model.feature_importances_
-        #         # indices = np.argsort(importances)
-        #         # covariates_array = np.asarray(covariates)
-        #         #
-        #         # plt.title('Feature Importances')
-        #         # plt.barh(range(len(indices)), importances[indices], color='b', align='center')
-        #         # plt.yticks(range(len(indices)), covariates_array[indices])
-        #         # plt.xlabel('Relative Importance')
-        #         # plt.subplots_adjust(left=0.5)
-        #         # plt.savefig('%s/%s_importance.png' % (self.images_dir, model_name))
-        #         # plt.clf()
+        self.yy_plots(y_data, yhat, model_name)
 
         return performance
 

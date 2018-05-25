@@ -171,11 +171,11 @@
     "number_of_samples_to_generate_model": 10
   },
   {
-    "results_directory": "smoff_vary_temp",
+    "results_directory": "smoff_parametric_sweep",
     "building_type": "Small Office",
-    "name": "smoff_vary_temp",
+    "name": "smoff_parametric_sweep",
     "display_name": "Small Office Varying Inlet Temp",
-    "description": "10 Simulations, varying inlet temperature and delta-T",
+    "description": "150 Simulations, varying inlet temperature and delta-T",
     "model_type": "RandomForest",
     "covariates": [
       {
@@ -213,6 +213,18 @@
         "display_name": "Ambient Loop Inlet Temperature",
         "units": "C",
         "type": "float"
+      },
+      {
+        "name": "lpd_average",
+        "display_name": "LPD Average",
+        "units": "W/m2",
+        "type": "float"
+      },
+      {
+        "name": "epd_average",
+        "display_name": "EPD Average",
+        "units": "W/m2",
+        "type": "float"
       }
     ],
     "responses": [
@@ -248,7 +260,7 @@
         "units": "C"
       }
     ],
-    "number_of_samples_to_generate_model": 10
+    "number_of_samples_to_generate_model": 150
   },
   {
     "results_directory": "smoff_no_ets",
@@ -368,8 +380,9 @@
     ],
     "responses": [
       {
-        "name": "HeatingElectricity",
-        "display_name": "Heating Electric Energy",
+        "name": "HeatingTotal",
+        "display_name": "Heating Total Energy",
+        "description": "This is the heating gas and electricity (Gas in case of Retail)",
         "units": "J"
       },
       {

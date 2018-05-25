@@ -212,7 +212,6 @@ class Metamodels(object):
             # Save the data times in a new dataframe (will be in order)
             save_df = pd.DataFrame.from_dict({'datetime': data['datetime'].unique()})
             for unique_value in data[first_dimension].unique():
-                print unique_value
                 new_df = data[data[first_dimension] == unique_value]
                 save_df[unique_value] = new_df[response].values
 
