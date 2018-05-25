@@ -1,6 +1,6 @@
 [
   {
-    "id": "3ff422c2-ca11-44db-b955-b39a47b011e7",
+    "results_directory": "smoff_constant_delta_t",
     "building_type": "Small Office",
     "name": "smoff_constant_delta_t",
     "display_name": "Small Office Large Sample",
@@ -79,7 +79,7 @@
     "number_of_samples_to_generate_model": 100
   },
   {
-    "id": "66fb9766-26e7-4bed-bdf9-0fbfbc8d6c7e_WITHMASSFLOW",
+    "results_directory": "smoff_vary_temp",
     "building_type": "Small Office",
     "name": "smoff_vary_temp_with_massflow",
     "display_name": "Small Office Varying Inlet Temp",
@@ -171,7 +171,7 @@
     "number_of_samples_to_generate_model": 10
   },
   {
-    "id": "66fb9766-26e7-4bed-bdf9-0fbfbc8d6c7e",
+    "results_directory": "smoff_vary_temp",
     "building_type": "Small Office",
     "name": "smoff_vary_temp",
     "display_name": "Small Office Varying Inlet Temp",
@@ -251,7 +251,7 @@
     "number_of_samples_to_generate_model": 10
   },
   {
-    "id": "5a934967-9799-42ed-bb85-fda1693d2943",
+    "results_directory": "smoff_no_ets",
     "building_type": "Small Office",
     "name": "smoff_no_ets",
     "display_name": "Small Office No ETS",
@@ -316,7 +316,7 @@
     "number_of_samples_to_generate_model": 50
   },
   {
-    "id": "5a934967-9799-42ed-bb85-fda1693d2943",
+    "results_directory": "retail_no_ets",
     "building_type": "Retail",
     "name": "retail_no_ets",
     "display_name": "Retail No ETS",

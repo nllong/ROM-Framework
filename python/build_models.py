@@ -23,7 +23,7 @@ from lib.metamodels import Metamodels
 # Number of Samples: 10
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-a", "--analysis_moniker", help="ID or Name of the Analysis Model")
+parser.add_argument("-a", "--analysis_moniker", help="Name of the Analysis Model")
 args = parser.parse_args()
 
 if not args.analysis_moniker:
@@ -41,7 +41,7 @@ if analysis_file.set_analysis(args.analysis_moniker):
 
     model = RandomForest(analysis_file.analysis_name, 79)
     model.build(
-        '../results/%s/simulation_results.csv' % analysis_file.analysis_id,
+        '../results/%s/simulation_results.csv' % analysis_file.results_directory,
         analysis_file.covariate_names,
         analysis_file.covariate_types,
         analysis_file.available_response_names
@@ -49,7 +49,7 @@ if analysis_file.set_analysis(args.analysis_moniker):
 
     model = LinearModel(analysis_file.analysis_name, 79)
     model.build(
-        '../results/%s/simulation_results.csv' % analysis_file.analysis_id,
+        '../results/%s/simulation_results.csv' % analysis_file.results_directory,
         analysis_file.covariate_names,
         analysis_file.covariate_types,
         analysis_file.available_response_names

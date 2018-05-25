@@ -72,7 +72,7 @@ class Metamodels(object):
         :return: boolean
         """
         for idx, analysis in enumerate(self.file):
-            if analysis['id'] == moniker or analysis['name'] == moniker:
+            if analysis['name'] == moniker:
                 self.set_i = idx
 
                 return True
@@ -80,14 +80,14 @@ class Metamodels(object):
         raise Exception("Could not load the model: %s" % id)
 
     @property
-    def analysis_id(self):
+    def results_directory(self):
         """
         Return the analysis ID from the metamodels.json file that was passed in. This should only
         be used to get the data out of the downloaded results from OpenStudio Server.
 
         :return: str, ID
         """
-        return self.file[self.set_i]['id']
+        return self.file[self.set_i]['results_directory']
 
     @property
     def analysis_name(self):

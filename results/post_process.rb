@@ -5,7 +5,8 @@ options = {
     server: 'http://localhost:3000',
     download: false,
     post_process: false,
-    analysis_id: nil
+    analysis_id: nil,
+    rename_to: nil
 }
 
 parser = OptionParser.new do |opts|
@@ -14,8 +15,12 @@ parser = OptionParser.new do |opts|
     options[:server] = server
   end
 
-  opts.on('-a', '--analysis id', 'Analysis ID to Download or Post Process') do |id|
+  opts.on('-a', '--analysis id', 'Analysis ID to Download or Dir Name to Post Process') do |id|
     options[:analysis_id] = id
+  end
+
+  opts.on('-r', '--rename-to name', 'Rename download directory to <name> (no spaces)') do |rename_to|
+    options[:rename_to] = rename_to
   end
 
   opts.on('--download', 'Download Data') do
@@ -98,7 +103,13 @@ if options[:download]
   if api.alive?
     project_id = api.get_project_ids.last # This should be the last analysis that was run
 
-    Dir.mkdir options[:analysis_id] unless Dir.exist? options[:analysis_id]
+    base_dir = options[:rename_to].nil? ? options[:analysis_id] : options[:rename_to]
+    puts base_dir
+    if Dir.exist? base_dir
+        raise "Directory exists, remove first or change/add rename_to"
+    else
+        Dir.mkdir base_dir
+    end
 
     puts "Downloading results for analysis id: #{options[:analysis_id]}"
 
@@ -106,9 +117,8 @@ if options[:download]
       results = api.get_analysis_results(options[:analysis_id])
 
       results[:data].each do |dp|
-        dir = "#{options[:analysis_id]}/#{dp[:_id]}"
+        dir = "#{base_dir}/#{dp[:_id]}"
         puts "Saving results for simulation into directory: #{dir}"
-
         Dir.mkdir dir unless Dir.exist? dir
 
         # save off the JSON snippet into the new directory
@@ -121,8 +131,6 @@ if options[:download]
         # save off the timeseries into the new directory
         api.download_datapoint_report(dp[:_id], 'ambient_loop_reports_report_timeseries.csv', dir)
         api.download_datapoint(dp[:_id], dir)
-
-
       end
     else
       puts "Simulations are still running. Try again later"
