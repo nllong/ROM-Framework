@@ -12,7 +12,7 @@ ANALYSIS_ID = "66fb9766-26e7-4bed-bdf9-0fbfbc8d6c7e"  # with mass flow
 reduced_order_model = Metamodels('./metamodels.json')
 reduced_order_model.set_analysis(ANALYSIS_ID)
 # Load the exising models
-reduced_order_model.load_models(['ETSHeatingOutletTemperature'])
+reduced_order_model.load_models('RandomForest', models_to_load=['ETSHeatingOutletTemperature'])
 
 # Load in the analysis definition
 analysis = AnalysisDefinition('sweep-temp-test.json')

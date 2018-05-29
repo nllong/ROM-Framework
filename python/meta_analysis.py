@@ -56,7 +56,7 @@ ANALYSIS_NAME = "smoff_no_ets"
 analysis = AnalysisDefinition('sweep-smoff-loadonly.json')
 reduced_order_model = Metamodels('./metamodels.json')
 reduced_order_model.set_analysis(ANALYSIS_NAME)
-reduced_order_model.load_models()
+reduced_order_model.load_models('RandomForest')
 
 analysis.load_weather_file('lib/epw/USA_CO_Golden-NREL.724666_TMY3.epw')
 data = analysis.as_dataframe()

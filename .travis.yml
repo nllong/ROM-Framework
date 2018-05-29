@@ -20,7 +20,7 @@ before_script:
   - sleep 3 # give xvfb some time to start
 script:
   - ./ci/travis/build.sh all
-  - cd python && python meta_analysis.py && cd ..
+#  - cd python && python meta_analysis.py && cd ..
 #  - cd python && python smoffice_cli.py -a 3ff422c2-ca11-44db-b955-b39a47b011e7 && cd ..
 #  - cd python && python smoffice_cli.py -a 66fb9766-26e7-4bed-bdf9-0fbfbc8d6c7e --mass-flow-heating 4 && cd ..
 after_success:

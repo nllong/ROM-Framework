@@ -1,10 +1,16 @@
 import gc
 import json
 import os
+from collections import OrderedDict
+from math import sqrt
 
+import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+from lib.shared import save_dict_to_csv
+from pandas.plotting import lag_plot
+from sklearn.metrics import mean_squared_error
 
 from shared import unpickle_file
 
@@ -56,6 +62,7 @@ class Metamodels(object):
         self.set_i = None
         self.load_file(filename)
         self.models = {}
+        self.rom_type = None
 
     def load_file(self, filename):
         if not os.path.exists(filename):
@@ -98,23 +105,21 @@ class Metamodels(object):
         """
         return self.file[self.set_i]['name']
 
-    def load_models(self, models_to_load=[]):
+    def load_models(self, model_type, models_to_load=[]):
         """
         Load in the metamodels/generators
         """
         if not models_to_load:
             models_to_load = self.available_response_names
 
+        self.rom_type = model_type
         print "Loading models %s" % models_to_load
 
         for response in models_to_load:
             print "Loading model for response: %s" % response
 
             self.models[response] = ETSModel(
-                "output/%s/%s/models/%s.pkl" % (
-                    self.analysis_name,
-                    self.file[self.set_i]['model_type'],
-                    response)
+                "output/%s/%s/models/%s.pkl" % (self.analysis_name, self.rom_type, response)
             )
 
         print "Finished loading models"
@@ -144,7 +149,7 @@ class Metamodels(object):
         missing_data_in_df = list(set(self.covariate_names) - set(data.columns.values))
 
         if len(extra_columns_in_df) > 0:
-            print "The following columns are not needed in DataFrame"
+            # print "The following columns are not needed in DataFrame"
             print extra_columns_in_df
             print "Removing unneeded column before evaluation"
             data = data.drop(columns=extra_columns_in_df)
@@ -166,7 +171,7 @@ class Metamodels(object):
     def save_csv(self, data, csv_name):
         lookup_table_dir = 'output/%s/%s/lookup_tables/' % (
             self.analysis_name,
-            self.file[self.set_i]['model_type']
+            self.rom_type
         )
         if not os.path.exists(lookup_table_dir):
             os.makedirs(lookup_table_dir)
@@ -176,7 +181,6 @@ class Metamodels(object):
             csv_name)
 
         data.to_csv(file_name, index=False)
-
 
     def save_2d_csvs(self, data, first_dimension, file_prepend, save_figure=False):
         """
@@ -194,7 +198,7 @@ class Metamodels(object):
         # python scripts that use the filestructure to store the data
         lookup_table_dir = 'output/%s/%s/lookup_tables/' % (
             self.analysis_name,
-            self.file[self.set_i]['model_type']
+            self.rom_type
         )
         if not os.path.exists(lookup_table_dir):
             os.makedirs(lookup_table_dir)
@@ -221,7 +225,7 @@ class Metamodels(object):
             # if save_figure:
             #     figure_filename = 'output/%s/%s/images/%s_%s.png' % (
             #         self.analysis_name,
-            #         self.file[self.set_i]['model_type'],
+            #         self.rom_type,
             #         file_prepend,
             #         response,
             #     )
@@ -262,7 +266,7 @@ class Metamodels(object):
         # python scripts that use the filestructure to store the data
         lookup_table_dir = 'output/%s/%s/lookup_tables/' % (
             self.analysis_name,
-            self.file[self.set_i]['model_type']
+            self.rom_type
         )
         if not os.path.exists(lookup_table_dir):
             os.makedirs(lookup_table_dir)
@@ -292,7 +296,7 @@ class Metamodels(object):
                 if save_figure:
                     figure_filename = 'output/%s/%s/images/%s_%s_%s_%.2f.png' % (
                         self.analysis_name,
-                        self.file[self.set_i]['model_type'],
+                        self.rom_type,
                         file_prepend,
                         response,
                         second_dimension_short_name,
@@ -319,6 +323,110 @@ class Metamodels(object):
             raise Exception("Model does not have the response '%s'" % response_name)
 
         return self.models[response_name].model
+
+    def validate_dataframe(self, df, image_save_dir):
+        """
+        Take the dataframe and perform various validations and create plots
+
+        :param df:
+        :return:
+        """
+        sns.set(color_codes=True)
+        plt.rcParams['figure.figsize'] = [15, 10]
+        sns.set(style="darkgrid")
+
+        def date_formatter(x, pos):
+            return pd.to_datetime(x)
+
+        # Run the ROM for each of the response variables
+        for response in self.available_response_names:
+            df["Modeled %s" % response] = self.yhat(response, df)
+
+        # create some plots, save them off
+        for response in self.available_response_names:
+            lmplot = sns.lmplot(
+                x=response,
+                y="Modeled %s" % response,
+                data=df,
+                ci=None,
+                palette="muted",
+                size=8,
+                scatter_kws={"s": 50, "alpha": 1}
+            )
+            fig = lmplot.fig
+            plt.title("Y-Y Plot for %s" % response)
+            fig.savefig('%s/validation_%s.png' % (image_save_dir, response))
+            fig.tight_layout()
+            fig.clf()
+            plt.clf()
+
+        # create a subselection of the data, and run some other plots
+        sub_data = {
+            'Swing': df[df["DateTime"].between("2009-03-01 01:00", "2009-03-10 00:00")],
+            'Summer': df[df["DateTime"].between("2009-07-01 01:00", "2009-07-10 00:00")],
+            'Winter': df[df["DateTime"].between("2009-01-15 01:00", "2009-01-25 00:00")],
+        }
+
+        for season, season_df in sub_data.items():
+            for response in self.available_response_names:
+                selected_columns = ['DateTime', response, "Modeled %s" % response]
+                melted_df = pd.melt(season_df[selected_columns],
+                                    id_vars='DateTime',
+                                    var_name='Variable',
+                                    value_name='Value')
+                melted_df['Dummy'] = 0
+
+                fig, ax = plt.subplots()
+
+                newplt = sns.tsplot(melted_df,
+                                    time='DateTime',
+                                    unit='Dummy',
+                                    condition='Variable',
+                                    value='Value',
+                                    ax=ax)
+                newplt.set_title("%s: RF vs EnergyPlus %s" % (season, response))
+                ax.xaxis.set_major_formatter(mpl.ticker.FuncFormatter(date_formatter))
+
+                # put the labels at 45deg since they tend to be too long
+                fig.autofmt_xdate()
+                fig.savefig(
+                    '%s/validation_timeseries_%s_%s.png' % (image_save_dir, season, response)
+                )
+                fig.clf()
+
+        for response in self.available_response_names:
+            plt.figure()
+            lag_plot(df[response])
+            plt.savefig('%s/%s_lag.png' % (image_save_dir, response))
+            plt.title("Lag Plot for %s" % response)
+            plt.clf()
+
+        # calculate the RMSE and CVRSME
+        errors = []
+        for response in self.available_response_names:
+            sum_of_error = (df[response] - df["Modeled %s" % response]).sum()
+            sum_square_error = (
+                    (df[response] - df["Modeled %s" % response]) ** 2
+            ).sum()
+            nmbe = 100 * (sum_of_error / ((len(df) - 1) * df[response].mean()))
+            cvrmse = 100 * (sqrt(sum_square_error) / (
+                    sqrt(len(df) - 1) * df[response].mean())
+                            )
+            rmse = sqrt(mean_squared_error(df[response], df["Modeled %s" % response]))
+
+            errors.append(
+                OrderedDict(
+                    [
+                        ('response', response),
+                        ('rmse', rmse),
+                        ('nmbe', nmbe),
+                        ('cvrmse', cvrmse),
+                    ]
+                )
+            )
+
+        # save data to image dir, because that is the only directory that I know of right now
+        save_dict_to_csv(errors, "%s/statistics.csv" % image_save_dir)
 
     @property
     def loaded_models(self):

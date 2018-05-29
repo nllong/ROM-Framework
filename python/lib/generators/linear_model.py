@@ -1,13 +1,12 @@
 import zipfile
 
-import matplotlib.pyplot as plt
 import pandas as pd
 from lib.shared import pickle_file, save_dict_to_csv, zipdir
 from scipy import stats
+from collections import OrderedDict
 from scipy.stats import spearmanr, pearsonr
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import r2_score
-from sklearn.model_selection import train_test_split
 
 from model_generator_base import ModelGeneratorBase
 
@@ -34,29 +33,29 @@ class LinearModel(ModelGeneratorBase):
         pearson = pearsonr(y_data, yhat)
 
         slope, intercept, r_value, p_value, std_err = stats.linregress(y_data, yhat)
-        performance = {
-            'name': model_name,
-            'slope': slope,
-            'intercept': intercept,
-            'r_value': r_value,
-            'p_value': p_value,
-            'std_err': std_err,
-            'r_squared': r_value ** 2,
-            'rf_r_squared': test_score,
-            'spearman': spearman,
-            'pearson': pearson,
-        }
+        performance = OrderedDict([
+            ('name', model_name),
+            ('slope', slope),
+            ('intercept', intercept),
+            ('r_value', r_value),
+            ('p_value', p_value),
+            ('std_err', std_err),
+            ('r_squared', r_value ** 2),
+            ('rf_r_squared', test_score),
+            ('spearman', spearman[0]),
+            ('pearson', pearson[0]),
+        ])
 
         self.yy_plots(y_data, yhat, model_name)
 
         return performance
 
     def build(self, data_file, covariates, data_types, responses):
+        self.responses = responses
         # data_file_to_csv()
         dataset = pd.read_csv(data_file)
 
         # print list(dataset.columns.values)
-        # redundant columns
         if 'DistrictCoolingOutletTemperature' in list(dataset.columns.values):
             dataset = dataset.drop('DistrictCoolingOutletTemperature', 1)
         # update some of the column names so they make sense to this model
@@ -71,17 +70,15 @@ class LinearModel(ModelGeneratorBase):
         dataset[data_types['float']] = dataset[data_types['float']].astype(float)
         dataset[data_types['int']] = dataset[data_types['int']].astype(int)
 
-        train_x, test_x, train_y, test_y = train_test_split(
-            dataset[covariates],
-            dataset[responses],
-            train_size=0.7,
-            test_size=0.3,
-            random_state=self.random_seed
+        # TODO: remove hard coded simulation ID for validate_xy
+        train_x, test_x, train_y, test_y, validate_xy = self.train_test_validate_split(
+            dataset,
+            covariates,
+            responses,
+            '112175a4-5b90-4ebb-a7c2-72123f87a6eb',
         )
-        print "Training dataset size is %s" % len(train_x)
 
-        for response in responses:
-            # Evaluate the forest when building them
+        for response in self.responses:
             print "Fitting Linear Model for %s" % response
             trained_model = LinearRegression()
             trained_model.fit(train_x, train_y[response])
@@ -91,9 +88,13 @@ class LinearModel(ModelGeneratorBase):
                 self.evaluate(trained_model, response, test_x, test_y[response], covariates)
             )
 
-        save_dict_to_csv(self.model_results, '%s/model_results.csv' % self.base_dir)
+        if self.model_results:
+            save_dict_to_csv(self.model_results, '%s/model_results.csv' % self.base_dir)
 
         # zip up the models
         zipf = zipfile.ZipFile('%s/models.zip' % self.models_dir, 'w', zipfile.ZIP_DEFLATED)
         zipdir(self.models_dir, zipf, '.pkl')
         zipf.close()
+
+        # save the validate dataframe to be used later to validate the accuracy of the models
+        self.save_dataframe(validate_xy, "%s/lm_validation.pkl" % self.validation_dir)

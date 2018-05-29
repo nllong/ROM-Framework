@@ -33,24 +33,37 @@ if not args.analysis_moniker:
 print("Passed build_models.py args: %s" % args)
 
 print("Loading metamodels.json")
-analysis_file = Metamodels('./metamodels.json')
+metamodel = Metamodels('./metamodels.json')
 
-if analysis_file.set_analysis(args.analysis_moniker):
+if metamodel.set_analysis(args.analysis_moniker):
     # Set the random seed so that the ls
     # test libraries are the same across the models
 
-    model = RandomForest(analysis_file.analysis_name, 79)
+    model = RandomForest(metamodel.analysis_name, 79)
     model.build(
-        '../results/%s/simulation_results.csv' % analysis_file.results_directory,
-        analysis_file.covariate_names,
-        analysis_file.covariate_types,
-        analysis_file.available_response_names
+        '../results/%s/simulation_results.csv' % metamodel.results_directory,
+        metamodel.covariate_names,
+        metamodel.covariate_types,
+        metamodel.available_response_names
     )
 
-    model = LinearModel(analysis_file.analysis_name, 79)
+    # load the model into the Metamodel class. Seems like we can simplify this to have the two
+    # classes rely on each other.
+    metamodel.load_models('RandomForest')
+    single_df = model.read_dataframe("%s/%s" % (model.validation_dir, 'rf_validation.pkl'))
+    metamodel.validate_dataframe(single_df, model.images_dir)
+
+
+    ### Linear Models
+    model = LinearModel(metamodel.analysis_name, 79)
     model.build(
-        '../results/%s/simulation_results.csv' % analysis_file.results_directory,
-        analysis_file.covariate_names,
-        analysis_file.covariate_types,
-        analysis_file.available_response_names
+        '../results/%s/simulation_results.csv' % metamodel.results_directory,
+        metamodel.covariate_names,
+        metamodel.covariate_types,
+        metamodel.available_response_names
     )
+
+    metamodel.load_models('LinearModel')
+    single_df = model.read_dataframe("%s/%s" % (model.validation_dir, 'lm_validation.pkl'))
+    metamodel.validate_dataframe(single_df, model.images_dir)
+

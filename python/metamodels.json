@@ -5,7 +5,6 @@
     "name": "smoff_constant_delta_t",
     "display_name": "Small Office Large Sample",
     "description": "100 Simulations, varying inlet tempatures",
-    "model_type": "RandomForest",
     "covariates": [
       {
         "name": "Month",
@@ -84,7 +83,6 @@
     "name": "smoff_vary_temp_with_massflow",
     "display_name": "Small Office Varying Inlet Temp",
     "description": "10 Simulations, varying inlet temperature and delta-T",
-    "model_type": "RandomForest",
     "covariates": [
       {
         "name": "Month",
@@ -176,7 +174,6 @@
     "name": "smoff_parametric_sweep",
     "display_name": "Small Office Varying Inlet Temp",
     "description": "150 Simulations, varying inlet temperature and delta-T",
-    "model_type": "RandomForest",
     "covariates": [
       {
         "name": "Month",
@@ -268,7 +265,6 @@
     "name": "smoff_no_ets",
     "display_name": "Small Office No ETS",
     "description": "50 Simulations, no ets, LPD, EPD.",
-    "model_type": "RandomForest",
     "covariates": [
       {
         "name": "Month",
@@ -333,7 +329,6 @@
     "name": "retail_no_ets",
     "display_name": "Retail No ETS",
     "description": "50 Simulations, no ets, LPD, EPD.",
-    "model_type": "RandomForest",
     "covariates": [
       {
         "name": "Month",
@@ -392,6 +387,82 @@
       }
     ],
     "number_of_samples_to_generate_model": 50
+  },
+  {
+    "results_directory": "smoff_test",
+    "building_type": "Small Office Test",
+    "name": "smoff_test",
+    "display_name": "Small Office Test Dataset",
+    "description": "6 Simulations",
+    "covariates": [
+      {
+        "name": "Month",
+        "display_name": "Month",
+        "units": "",
+        "type": "int"
+      },
+      {
+        "name": "Hour",
+        "display_name": "Month",
+        "units": "",
+        "type": "int"
+      },
+      {
+        "name": "DayofWeek",
+        "display_name": "Month",
+        "units": "",
+        "type": "int"
+      },
+      {
+        "name": "SiteOutdoorAirDrybulbTemperature",
+        "display_name": "Dry Bulb Temperature",
+        "units": "C",
+        "type": "float"
+      },
+      {
+        "name": "SiteOutdoorAirRelativeHumidity",
+        "display_name": "Relative Humidity",
+        "units": "%",
+        "type": "float"
+      },
+      {
+        "name": "ETSInletTemperature",
+        "display_name": "Ambient Loop Inlet Temperature",
+        "units": "C",
+        "type": "float"
+      },
+      {
+        "name": "lpd_average",
+        "display_name": "LPD Average",
+        "units": "W/m2",
+        "type": "float"
+      },
+      {
+        "name": "epd_average",
+        "display_name": "EPD Average",
+        "units": "W/m2",
+        "type": "float"
+      }
+    ],
+    "responses": [
+      {
+        "name": "HeatingElectricity",
+        "display_name": "Heating Electric Energy",
+        "units": "J",
+        "filename": "HeatingElectricity.pkl"
+      },
+      {
+        "name": "DistrictHeatingHotWaterEnergy",
+        "display_name": "Ambient Loop Heating Energy",
+        "units": "J"
+      },
+      {
+        "name": "ETSHeatingOutletTemperature",
+        "display_name": "Building Heating Outlet Temperature",
+        "units": "C"
+      }
+    ],
+    "number_of_samples_to_generate_model": 150
   }
 ]
 
