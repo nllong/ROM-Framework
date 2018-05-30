@@ -7,6 +7,8 @@ import argparse
 from lib.generators.linear_model import LinearModel
 from lib.generators.random_forest import RandomForest
 from lib.metamodels import Metamodels
+import pandas as pd
+from lib.validation import validate_dataframe
 
 # path = os.path.realpath(__file__)
 # isn't the current path this anyway?
@@ -36,9 +38,9 @@ print("Loading metamodels.json")
 metamodel = Metamodels('./metamodels.json')
 
 if metamodel.set_analysis(args.analysis_moniker):
-    # Set the random seed so that the ls
-    # test libraries are the same across the models
+    # Set the random seed so that the test libraries are the same across the models
 
+    ### BUILD MODELS
     model = RandomForest(metamodel.analysis_name, 79)
     model.build(
         '../results/%s/simulation_results.csv' % metamodel.results_directory,
@@ -47,14 +49,6 @@ if metamodel.set_analysis(args.analysis_moniker):
         metamodel.available_response_names
     )
 
-    # load the model into the Metamodel class. Seems like we can simplify this to have the two
-    # classes rely on each other.
-    metamodel.load_models('RandomForest')
-    single_df = model.read_dataframe("%s/%s" % (model.validation_dir, 'rf_validation.pkl'))
-    metamodel.validate_dataframe(single_df, model.images_dir)
-
-
-    ### Linear Models
     model = LinearModel(metamodel.analysis_name, 79)
     model.build(
         '../results/%s/simulation_results.csv' % metamodel.results_directory,
@@ -63,7 +57,20 @@ if metamodel.set_analysis(args.analysis_moniker):
         metamodel.available_response_names
     )
 
-    metamodel.load_models('LinearModel')
-    single_df = model.read_dataframe("%s/%s" % (model.validation_dir, 'lm_validation.pkl'))
-    metamodel.validate_dataframe(single_df, model.images_dir)
+    ### VALIDATE MODELS
+    # load the model into the Metamodel class. Seems like we can simplify this to have the two
+    # classes rely on each other.
+    validation_dir = "output/%s/ValidationData" % args.analysis_moniker
+    metadata = {}
+    single_df = pd.read_pickle("%s/%s" % (validation_dir, 'rf_validation.pkl'))
 
+    for model_type in [('RandomForest', 'RF'), ('LinearModel', 'LM')]:
+        metadata[model_type[0]] = {'responses': [], 'moniker': model_type[1]}
+        metamodel.load_models(model_type[0])
+
+        # Run the ROM for each of the response variables
+        for response in metamodel.available_response_names:
+            metadata[model_type[0]]['responses'].append(response)
+            single_df["Modeled %s %s" % (model_type[1], response)] = metamodel.yhat(response, single_df)
+
+    validate_dataframe(single_df, metadata, validation_dir)

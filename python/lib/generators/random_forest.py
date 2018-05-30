@@ -9,7 +9,7 @@ from scipy import stats
 from scipy.stats import spearmanr, pearsonr
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import r2_score
-
+from math import ceil
 from model_generator_base import ModelGeneratorBase
 
 
@@ -86,6 +86,29 @@ class RandomForest(ModelGeneratorBase):
         # type cast the columns - this is probably not needed.
         dataset[data_types['float']] = dataset[data_types['float']].astype(float)
         dataset[data_types['int']] = dataset[data_types['int']].astype(int)
+
+        param_grid = {
+            'max_depth': [None, 5, 50, 500],
+            'max_features': [ceil(len(covariates)/4), ceil(len(covariates)/3), ceil(len(covariates)/2)],
+            'min_samples_leaf': [1, 5, 10],
+            'min_samples_split': [2, 20, 200],
+            'n_estimators': [25, 50, 100, 150, 200]
+        }
+
+        # Perform randomized search of parameters
+        # http://scikit-learn.org/stable/auto_examples/model_selection/plot_randomized_search.html
+        # https://towardsdatascience.com/hyperparameter-tuning-the-random-forest-in-python-using-scikit-learn-28d2aa77dd74
+        # param_dist = {"max_depth": [3, None],
+        #               "max_features": sp_randint(1, 11),
+        #               "min_samples_split": sp_randint(2, 11),
+        #               "min_samples_leaf": sp_randint(1, 11),
+        #               "bootstrap": [True, False],
+        #               "criterion": ["gini", "entropy"]}
+        #
+        # # run randomized search
+        # n_iter_search = 20
+        # random_search = RandomizedSearchCV(clf, param_distributions=param_grid,
+        #                                    n_iter=n_iter_search)
 
         # TODO: remove hard coded simulation ID for validate_xy
         train_x, test_x, train_y, test_y, validate_xy = self.train_test_validate_split(
