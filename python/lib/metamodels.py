@@ -324,8 +324,6 @@ class Metamodels(object):
 
         return self.models[response_name].model
 
-
-
     @property
     def loaded_models(self):
         return self.models.keys()

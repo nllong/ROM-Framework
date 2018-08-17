@@ -78,7 +78,7 @@ def validate_dataframe(df, metadata, image_save_dir):
                 data=df,
                 ci=None,
                 palette="muted",
-                size=8,
+                height=8,
                 scatter_kws={"s": 50, "alpha": 1}
             )
             fig = lmplot.fig
@@ -99,7 +99,7 @@ def validate_dataframe(df, metadata, image_save_dir):
             sum_of_error = (df[response] - df[modeled_name]).sum()
             sum_square_error = ((df[response] - df[modeled_name]) ** 2).sum()
             nmbe = 100 * (sum_of_error / ((len(df) - 1) * df[response].mean()))
-            cvrmse = 100 * (sqrt(sum_square_error) / (sqrt(len(df) - 1) * df[response].mean()))
+            cvrmse = (100 / df[response].mean()) * (sqrt(sum_square_error / (len(df) - 1)))
             rmse = sqrt(mean_squared_error(df[response], df[modeled_name]))
 
             errors.append(
@@ -124,7 +124,7 @@ def validate_dataframe(df, metadata, image_save_dir):
         data=df,
         ci=None,
         palette="muted",
-        size=8,
+        height=8,
         scatter_kws={"s": 50, "alpha": 1},
         fit_reg=False,
     )
@@ -150,7 +150,7 @@ def validate_dataframe(df, metadata, image_save_dir):
         data=melted_df,
         ci=None,
         palette="muted",
-        size=8,
+        height=8,
         scatter_kws={"s": 50, "alpha": 1},
         fit_reg=False,
     )

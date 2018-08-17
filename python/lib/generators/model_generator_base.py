@@ -13,6 +13,7 @@ class ModelGeneratorBase(object):
     """
     Base class for generating ROMs
     """
+
     def __init__(self, analysis_id, random_seed=None):
         self.analysis_id = analysis_id
         self.random_seed = random_seed if random_seed else np.random.seed(time.time())
@@ -99,7 +100,7 @@ class ModelGeneratorBase(object):
             data=data,
             ci=None,
             palette="muted",
-            size=8,
+            height=8,
             scatter_kws={"s": 50, "alpha": 1}
         )
         fig = lmplot.fig

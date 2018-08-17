@@ -89,7 +89,7 @@ class RandomForest(ModelGeneratorBase):
 
         param_grid = {
             'max_depth': [None, 5, 50, 500],
-            'max_features': [ceil(len(covariates)/4), ceil(len(covariates)/3), ceil(len(covariates)/2)],
+            'max_features': [ceil(len(covariates) / 4), ceil(len(covariates) / 3), ceil(len(covariates) / 2)],
             'min_samples_leaf': [1, 5, 10],
             'min_samples_split': [2, 20, 200],
             'n_estimators': [25, 50, 100, 150, 200]
@@ -137,7 +137,9 @@ class RandomForest(ModelGeneratorBase):
             save_dict_to_csv(self.model_results, '%s/model_results.csv' % self.base_dir)
 
         # zip up the models
-        zipf = zipfile.ZipFile('%s/models.zip' % self.models_dir, 'w', zipfile.ZIP_DEFLATED)
+        zipf = zipfile.ZipFile(
+            '%s/models.zip' % self.models_dir, 'w', zipfile.ZIP_DEFLATED, allowZip64=True
+        )
         zipdir(self.models_dir, zipf, '.pkl')
         zipf.close()
 

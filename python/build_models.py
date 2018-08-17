@@ -40,7 +40,7 @@ metamodel = Metamodels('./metamodels.json')
 if metamodel.set_analysis(args.analysis_moniker):
     # Set the random seed so that the test libraries are the same across the models
 
-    ### BUILD MODELS
+    # BUILD MODELS
     model = RandomForest(metamodel.analysis_name, 79)
     model.build(
         '../results/%s/simulation_results.csv' % metamodel.results_directory,
@@ -57,7 +57,7 @@ if metamodel.set_analysis(args.analysis_moniker):
         metamodel.available_response_names
     )
 
-    ### VALIDATE MODELS
+    # VALIDATE MODELS
     # load the model into the Metamodel class. Seems like we can simplify this to have the two
     # classes rely on each other.
     validation_dir = "output/%s/ValidationData" % args.analysis_moniker

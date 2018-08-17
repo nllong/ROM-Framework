@@ -92,7 +92,9 @@ class LinearModel(ModelGeneratorBase):
             save_dict_to_csv(self.model_results, '%s/model_results.csv' % self.base_dir)
 
         # zip up the models
-        zipf = zipfile.ZipFile('%s/models.zip' % self.models_dir, 'w', zipfile.ZIP_DEFLATED)
+        zipf = zipfile.ZipFile(
+            '%s/models.zip' % self.models_dir, 'w', zipfile.ZIP_DEFLATED, allowZip64=True
+        )
         zipdir(self.models_dir, zipf, '.pkl')
         zipf.close()
 
