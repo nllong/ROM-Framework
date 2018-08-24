@@ -70,7 +70,6 @@ class LinearModel(ModelGeneratorBase):
         dataset[data_types['float']] = dataset[data_types['float']].astype(float)
         dataset[data_types['int']] = dataset[data_types['int']].astype(int)
 
-        # TODO: remove hard coded simulation ID for validate_xy
         train_x, test_x, train_y, test_y, validate_xy = self.train_test_validate_split(
             dataset,
             covariates,

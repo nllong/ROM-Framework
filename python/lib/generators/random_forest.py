@@ -110,7 +110,6 @@ class RandomForest(ModelGeneratorBase):
         # random_search = RandomizedSearchCV(clf, param_distributions=param_grid,
         #                                    n_iter=n_iter_search)
 
-        # TODO: remove hard coded simulation ID for validate_xy
         train_x, test_x, train_y, test_y, validate_xy = self.train_test_validate_split(
             dataset,
             covariates,
