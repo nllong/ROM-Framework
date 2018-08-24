@@ -65,7 +65,7 @@ class RandomForest(ModelGeneratorBase):
 
         return performance
 
-    def build(self, data_file, covariates, data_types, responses):
+    def build(self, data_file, validation_id, covariates, data_types, responses):
         # TODO: Load some of this from SUPER
         self.responses = responses
 
@@ -115,7 +115,7 @@ class RandomForest(ModelGeneratorBase):
             dataset,
             covariates,
             responses,
-            '112175a4-5b90-4ebb-a7c2-72123f87a6eb',
+            validation_id,
         )
 
         for response in self.responses:

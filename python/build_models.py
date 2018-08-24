@@ -44,6 +44,7 @@ if metamodel.set_analysis(args.analysis_moniker):
     model = RandomForest(metamodel.analysis_name, 79)
     model.build(
         '../results/%s/simulation_results.csv' % metamodel.results_directory,
+        metamodel.validation_id,
         metamodel.covariate_names,
         metamodel.covariate_types,
         metamodel.available_response_names
@@ -52,6 +53,7 @@ if metamodel.set_analysis(args.analysis_moniker):
     model = LinearModel(metamodel.analysis_name, 79)
     model.build(
         '../results/%s/simulation_results.csv' % metamodel.results_directory,
+        metamodel.validation_id,
         metamodel.covariate_names,
         metamodel.covariate_types,
         metamodel.available_response_names
@@ -62,6 +64,7 @@ if metamodel.set_analysis(args.analysis_moniker):
     # classes rely on each other.
     validation_dir = "output/%s/ValidationData" % args.analysis_moniker
     metadata = {}
+    # loading the rf or lm data results in the same results since the data are from the same model
     single_df = pd.read_pickle("%s/%s" % (validation_dir, 'rf_validation.pkl'))
 
     for model_type in [('RandomForest', 'RF'), ('LinearModel', 'LM')]:

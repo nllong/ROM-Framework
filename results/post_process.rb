@@ -1,5 +1,6 @@
 require 'openstudio-analysis'
 require 'optparse'
+require 'date'
 
 options = {
     server: 'http://localhost:3000',
@@ -59,7 +60,7 @@ def post_process_analysis_id(analysis_id)
       if File.exist? json_file
         json = JSON.parse(File.read(json_file))
         json.keys.each do |key|
-          next if ['name', 'status', 'data_point_uuid', 'run_start_time', 'run_end_time', 'status_message', 'internal_loads_multiplier.epd_multiplier', 'internal_loads_multiplier.lpd_multiplier'].include? key
+          next if ['name', 'status', 'data_point_uuid', 'status_message', 'internal_loads_multiplier.epd_multiplier', 'internal_loads_multiplier.lpd_multiplier'].include? key
           new_header << key
           new_data << json[key]
         end
@@ -95,6 +96,59 @@ def post_process_analysis_id(analysis_id)
       end
     end
   end
+
+  # generate summary statistics on the simulations
+  File.open("#{save_dir}/summary.csv", 'w') do |out_file|
+    Dir["#{analysis_id}/*/*.osw"].each.with_index do |file, file_index|
+      headers = ["index", "uuid", "total_runtime", "energyplus_runtime", "total_measure_runtime", "other_runtime", "number_of_measures"]
+      dir = File.dirname(file)
+      json = JSON.parse(File.read(file))
+
+      # The first file sets the length of the measures!
+      if file_index.zero?
+        json['steps'].each do |h|
+          headers << "#{h['name']}_runtime"
+        end
+      end
+
+      new_data = []
+      new_data << file_index
+      new_data << json['osd_id']
+      start_time = DateTime.parse(json['started_at'])
+      completed_at = DateTime.parse(json['completed_at'])
+      total_time = completed_at.to_time - start_time.to_time
+      new_data << total_time
+
+      # read in the results.json
+      json_file = "#{dir}/results.json"
+      energyplus_runtime = 9999
+      if File.exist? json_file
+        results_json = JSON.parse(File.read(json_file))
+        energyplus_runtime = results_json['ambient_loop_reports']['energyplus_runtime']
+        new_data << energyplus_runtime
+      else
+        new_data << 'unknown ep runtime'
+      end
+
+      total_measure_time = 0
+      measure_run_times = []
+      json['steps'].each do |h|
+        start_time = DateTime.parse(h['result']['started_at'])
+        completed_at = DateTime.parse(h['result']['completed_at'])
+        delta_time = completed_at.to_time - start_time.to_time
+        total_measure_time += delta_time
+        measure_run_times << delta_time
+      end
+      new_data << total_measure_time
+      new_data << total_time - energyplus_runtime - total_measure_time
+      new_data << json['steps'].size
+      new_data += measure_run_times
+
+      out_file << "#{headers.join(',')}\n" if file_index.zero?
+      out_file << "#{new_data.join(',')}\n"
+    end
+  end
+
 end
 
 
@@ -127,8 +181,9 @@ if options[:download]
         results = api.get_datapoint(dp[:_id])
         File.open("#{dir}/results.json", 'w') {|f| f << JSON.pretty_generate(results[:data_point][:results])}
 
-        # save off the timeseries into the new directory
+        # save off some of the results: timeseries, datapoint json, and out.osw
         api.download_datapoint_report(dp[:_id], 'ambient_loop_reports_report_timeseries.csv', dir)
+        api.download_datapoint_report(dp[:_id], 'out.osw', dir)
         api.download_datapoint(dp[:_id], dir)
       end
     else

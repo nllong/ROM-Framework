@@ -7,6 +7,7 @@ import pandas as pd
 import seaborn as sns
 from scipy.stats import pearsonr
 from sklearn.model_selection import train_test_split
+import shutil
 
 
 class ModelGeneratorBase(object):
@@ -24,13 +25,19 @@ class ModelGeneratorBase(object):
         self.responses = []
         self.covariates = []
 
-        print "initializing %s" % self.model_type
+        print("initializing %s" % self.model_type)
 
         # Initialize the directories where results are to be stored.
         self.base_dir = 'output/%s/%s' % (self.analysis_id, self.model_type)
         self.images_dir = '%s/images' % self.base_dir
         self.models_dir = '%s/models' % self.base_dir
         self.validation_dir = 'output/%s/ValidationData' % self.analysis_id
+
+        # Remove some directories if they exist
+        for dir in ['images_dir', 'models_dir']:
+            if os.path.exists(getattr(self, dir)):
+                # print("removing the directory %s" % dir)
+                shutil.rmtree(getattr(self, dir))
 
         # create directory if not exist for each of the above
         for dir in ['base_dir', 'images_dir', 'models_dir', 'validation_dir']:
@@ -51,12 +58,15 @@ class ModelGeneratorBase(object):
         """
         print "Initial dataset size is %s" % len(dataset)
         validate_xy = pd.DataFrame()
-        if id_and_value:
+        if id_and_value and id_and_value in dataset['_id'].unique():
             validate_xy = dataset[dataset['_id'] == id_and_value]
+
             # Covert the validation dataset datetime to actual datetime objects
             validate_xy['DateTime'] = pd.to_datetime(dataset['DateTime'])
 
             dataset = dataset[dataset['_id'] != id_and_value]
+        else:
+            raise Exception("Validation id does not exist in dataframe. ID was %s" % id_and_value)
 
         train_x, test_x, train_y, test_y = train_test_split(
             dataset[covariates],

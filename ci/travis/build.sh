@@ -9,16 +9,16 @@ if [ "${BUILD_SCOPE}" == "all" ]; then
     echo "Building Regression Models"
 
     # Uncomment the below to build all the models
-    analyses=(results/*/)
-    for dir in "${analyses[@]}"
-    do
-        analysis_id=$(basename ${dir})
-        echo "Calling build_models.py from build.sh for ${analysis_id}"
-
-        cd python && python build_models.py -a ${analysis_id} && cd ..
-    done
+#    analyses=(results/*/)
+#    for dir in "${analyses[@]}"
+#    do
+#        analysis_id=$(basename ${dir})
+#        echo "Calling build_models.py from build.sh for ${analysis_id}"
+#
+#        cd python && python build_models.py -a ${analysis_id} && cd ..
+#    done
 
     # One off builds using ID number - small office with delta T, 10 samples
-#    cd python && python build_models.py -a 66fb9766-26e7-4bed-bdf9-0fbfbc8d6c7e && cd ..
+    cd python && python build_models.py -a smoff_test && cd ..
 
 fi

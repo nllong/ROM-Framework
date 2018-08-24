@@ -1,174 +1,5 @@
 [
   {
-    "results_directory": "smoff_constant_delta_t",
-    "building_type": "Small Office",
-    "name": "smoff_constant_delta_t",
-    "display_name": "Small Office Large Sample",
-    "description": "100 Simulations, varying inlet tempatures",
-    "covariates": [
-      {
-        "name": "Month",
-        "display_name": "Month",
-        "units": "",
-        "type": "int"
-      },
-      {
-        "name": "Hour",
-        "display_name": "Month",
-        "units": "",
-        "type": "int"
-      },
-      {
-        "name": "DayofWeek",
-        "display_name": "Month",
-        "units": "",
-        "type": "int"
-      },
-      {
-        "name": "SiteOutdoorAirDrybulbTemperature",
-        "display_name": "Dry Bulb Temperature",
-        "units": "C",
-        "type": "float"
-      },
-      {
-        "name": "SiteOutdoorAirRelativeHumidity",
-        "display_name": "Relative Humidity",
-        "units": "%",
-        "type": "float"
-      },
-      {
-        "name": "ETSInletTemperature",
-        "display_name": "Ambient Loop Inlet Temperature",
-        "units": "C",
-        "type": "float"
-      }
-    ],
-    "responses": [
-      {
-        "name": "HeatingElectricity",
-        "display_name": "Heating Electric Energy",
-        "units": "J"
-      },
-      {
-        "name": "CoolingElectricity",
-        "display_name": "Cooling Electric Energy",
-        "units": "J"
-      },
-      {
-        "name": "DistrictCoolingChilledWaterEnergy",
-        "display_name": "Ambient Loop Cooling Energy",
-        "units": "J"
-      },
-      {
-        "name": "DistrictHeatingHotWaterEnergy",
-        "display_name": "Ambient Loop Heating Energy",
-        "units": "J"
-      },
-      {
-        "name": "ETSHeatingOutletTemperature",
-        "display_name": "Building Heating Outlet Temperature",
-        "units": "C"
-      },
-      {
-        "name": "ETSCoolingOutletTemperature",
-        "display_name": "Building Cooling Outlet Temperature",
-        "units": "C"
-      }
-    ],
-    "number_of_samples_to_generate_model": 100
-  },
-  {
-    "results_directory": "smoff_vary_temp",
-    "building_type": "Small Office",
-    "name": "smoff_vary_temp_with_massflow",
-    "display_name": "Small Office Varying Inlet Temp",
-    "description": "10 Simulations, varying inlet temperature and delta-T",
-    "covariates": [
-      {
-        "name": "Month",
-        "display_name": "Month",
-        "units": "",
-        "type": "int"
-      },
-      {
-        "name": "Hour",
-        "display_name": "Month",
-        "units": "",
-        "type": "int"
-      },
-      {
-        "name": "DayofWeek",
-        "display_name": "Month",
-        "units": "",
-        "type": "int"
-      },
-      {
-        "name": "SiteOutdoorAirDrybulbTemperature",
-        "display_name": "Dry Bulb Temperature",
-        "units": "C",
-        "type": "float"
-      },
-      {
-        "name": "SiteOutdoorAirRelativeHumidity",
-        "display_name": "Relative Humidity",
-        "units": "%",
-        "type": "float"
-      },
-      {
-        "name": "ETSInletTemperature",
-        "display_name": "Ambient Loop Inlet Temperature",
-        "units": "C",
-        "type": "float"
-      },
-      {
-        "name": "DistrictHeatingMassFlowRate",
-        "display_name": "District Heating Mass Flow Rate",
-        "units": "kg/s",
-        "type": "float"
-      },
-      {
-        "name": "DistrictCoolingMassFlowRate",
-        "display_name": "District Cooling Mass Flow Rate",
-        "units": "kg/s",
-        "type": "float"
-      }
-    ],
-    "responses": [
-      {
-        "name": "HeatingElectricity",
-        "display_name": "Heating Electric Energy",
-        "units": "J",
-        "filename": "HeatingElectricity.pkl"
-      },
-      {
-        "name": "CoolingElectricity",
-        "display_name": "Cooling Electric Energy",
-        "units": "J"
-      },
-      {
-        "name": "DistrictCoolingChilledWaterEnergy",
-        "display_name": "Ambient Loop Cooling Energy",
-        "units": "J"
-      },
-      {
-        "name": "DistrictHeatingHotWaterEnergy",
-        "display_name": "Ambient Loop Heating Energy",
-        "units": "J"
-      },
-      {
-        "name": "ETSHeatingOutletTemperature",
-        "display_name": "Building Heating Outlet Temperature",
-        "units": "C"
-      },
-      {
-        "name": "ETSCoolingOutletTemperature",
-        "display_name": "Building Cooling Outlet Temperature",
-        "units": "C"
-      }
-    ],
-    "number_of_samples_to_generate_model": 10
-  },
-  {
     "results_directory": "smoff_parametric_sweep",
     "building_type": "Small Office",
     "name": "smoff_parametric_sweep",
@@ -256,144 +87,15 @@
         "display_name": "Building Cooling Outlet Temperature",
         "units": "C"
       }
-    ],
-    "number_of_samples_to_generate_model": 150
-  },
-  {
-    "results_directory": "smoff_no_ets",
-    "building_type": "Small Office",
-    "name": "smoff_no_ets",
-    "display_name": "Small Office No ETS",
-    "description": "50 Simulations, no ets, LPD, EPD.",
-    "covariates": [
-      {
-        "name": "Month",
-        "display_name": "Month",
-        "units": "",
-        "type": "int"
-      },
-      {
-        "name": "Hour",
-        "display_name": "Month",
-        "units": "",
-        "type": "int"
-      },
-      {
-        "name": "DayofWeek",
-        "display_name": "Month",
-        "units": "",
-        "type": "int"
-      },
-      {
-        "name": "SiteOutdoorAirDrybulbTemperature",
-        "display_name": "Dry Bulb Temperature",
-        "units": "C",
-        "type": "float"
-      },
-      {
-        "name": "SiteOutdoorAirRelativeHumidity",
-        "display_name": "Relative Humidity",
-        "units": "%",
-        "type": "float"
-      },
-      {
-        "name": "lpd_average",
-        "display_name": "LPD Average",
-        "units": "W/m2",
-        "type": "float"
-      },
-      {
-        "name": "epd_average",
-        "display_name": "EPD Average",
-        "units": "W/m2",
-        "type": "float"
-      }
-    ],
-    "responses": [
-      {
-        "name": "HeatingElectricity",
-        "display_name": "Heating Electric Energy",
-        "units": "J"
-      },
-      {
-        "name": "CoolingElectricity",
-        "display_name": "Cooling Electric Energy",
-        "units": "J"
-      }
-    ],
-    "number_of_samples_to_generate_model": 50
-  },
-  {
-    "results_directory": "retail_no_ets",
-    "building_type": "Retail",
-    "name": "retail_no_ets",
-    "display_name": "Retail No ETS",
-    "description": "50 Simulations, no ets, LPD, EPD.",
-    "covariates": [
-      {
-        "name": "Month",
-        "display_name": "Month",
-        "units": "",
-        "type": "int"
-      },
-      {
-        "name": "Hour",
-        "display_name": "Month",
-        "units": "",
-        "type": "int"
-      },
-      {
-        "name": "DayofWeek",
-        "display_name": "Month",
-        "units": "",
-        "type": "int"
-      },
-      {
-        "name": "SiteOutdoorAirDrybulbTemperature",
-        "display_name": "Dry Bulb Temperature",
-        "units": "C",
-        "type": "float"
-      },
-      {
-        "name": "SiteOutdoorAirRelativeHumidity",
-        "display_name": "Relative Humidity",
-        "units": "%",
-        "type": "float"
-      },
-      {
-        "name": "lpd_average",
-        "display_name": "LPD Average",
-        "units": "W/m2",
-        "type": "float"
-      },
-      {
-        "name": "epd_average",
-        "display_name": "EPD Average",
-        "units": "W/m2",
-        "type": "float"
-      }
-    ],
-    "responses": [
-      {
-        "name": "HeatingTotal",
-        "display_name": "Heating Total Energy",
-        "description": "This is the heating gas and electricity (Gas in case of Retail)",
-        "units": "J"
-      },
-      {
-        "name": "CoolingElectricity",
-        "display_name": "Cooling Electric Energy",
-        "units": "J"
-      }
-    ],
-    "number_of_samples_to_generate_model": 50
+    ]
   },
   {
     "results_directory": "smoff_test",
     "building_type": "Small Office Test",
     "name": "smoff_test",
     "display_name": "Small Office Test Dataset",
-    "description": "6 Simulations",
+    "description": "8 Simulations",
+    "validation_datapoint_id": "9f1e2940-c9f9-48e0-bf33-fee869fe0b3a",
     "covariates": [
       {
         "name": "Month",
@@ -436,12 +138,6 @@
         "display_name": "LPD Average",
         "units": "W/m2",
         "type": "float"
-      },
-      {
-        "name": "epd_average",
-        "display_name": "EPD Average",
-        "units": "W/m2",
-        "type": "float"
       }
     ],
     "responses": [
@@ -461,8 +157,7 @@
         "display_name": "Building Heating Outlet Temperature",
         "units": "C"
       }
-    ],
-    "number_of_samples_to_generate_model": 150
+    ]
   }
 ]
 

@@ -105,6 +105,15 @@ class Metamodels(object):
         """
         return self.file[self.set_i]['name']
 
+    @property
+    def validation_id(self):
+        """
+        Return the validation id
+
+        :return: str, name
+        """
+        return self.file[self.set_i]['validation_datapoint_id']
+
     def load_models(self, model_type, models_to_load=[]):
         """
         Load in the metamodels/generators
