@@ -84,7 +84,7 @@ class Metamodels(object):
 
                 return True
 
-        raise Exception("Could not load the model: %s" % id)
+        raise Exception("Could not load the model: %s" % moniker)
 
     @property
     def results_directory(self):
@@ -137,7 +137,7 @@ class Metamodels(object):
         """
         return self.file[self.set_i]['validation_datapoint_id']
 
-    def load_models(self, model_type, models_to_load=[]):
+    def load_models(self, model_type, models_to_load=[], downsample=None):
         """
         Load in the metamodels/generators
         """
@@ -150,9 +150,13 @@ class Metamodels(object):
         for response in models_to_load:
             print "Loading model for response: %s" % response
 
-            self.models[response] = ETSModel(
-                "output/%s/%s/models/%s.pkl" % (self.analysis_name, self.rom_type, response)
-            )
+            if downsample:
+                path = "output/%s_%s/%s/models/%s.pkl" % (
+                    self.analysis_name, downsample, self.rom_type, response)
+            else:
+                path = "output/%s/%s/models/%s.pkl" % (self.analysis_name, self.rom_type, response)
+
+            self.models[response] = ETSModel(path)
 
         print "Finished loading models"
         print "The responses are:"
