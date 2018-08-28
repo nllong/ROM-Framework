@@ -1,3 +1,4 @@
+import time
 import zipfile
 from collections import OrderedDict
 
@@ -9,46 +10,39 @@ from scipy import stats
 from scipy.stats import spearmanr, pearsonr
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import r2_score
-from math import ceil
+from sklearn.model_selection import GridSearchCV
+
 from model_generator_base import ModelGeneratorBase
 
 
 class RandomForest(ModelGeneratorBase):
-    def __init__(self, analysis_id, random_seed=None):
-        super(RandomForest, self).__init__(analysis_id, random_seed)
+    def __init__(self, analysis_id, random_seed=None, **kwargs):
+        super(RandomForest, self).__init__(analysis_id, random_seed, **kwargs)
 
-    def evaluate(self, model, model_name, x_data, y_data, covariates):
+    def evaluate(self, model, model_name, model_type, x_data, y_data, covariates, downsample, build_time, cv_time):
         """
         Evaluate the performance of the forest based on known x_data and y_data.
 
         :param model:
         :param model_name:
+        :param model_type:
         :param x_data:
         :param y_data:
-        :param covariates: list, names of the covariates in the dataframes
+        :param covariates:
+        :param downsample:
+        :param build_time:
+        :param cv_time:
         :return:
         """
         yhat = model.predict(x_data)
 
         # perform stats on all the data
         test_score = r2_score(y_data, yhat)
+        errors = abs(yhat - y_data)
         spearman = spearmanr(y_data, yhat)
         pearson = pearsonr(y_data, yhat)
 
         slope, intercept, r_value, p_value, std_err = stats.linregress(y_data, yhat)
-
-        performance = OrderedDict([
-            ('name', model_name),
-            ('slope', slope),
-            ('intercept', intercept),
-            ('r_value', r_value),
-            ('p_value', p_value),
-            ('std_err', std_err),
-            ('r_squared', r_value ** 2),
-            ('rf_r_squared', test_score),
-            ('spearman', spearman[0]),
-            ('pearson', pearson[0]),
-        ])
 
         self.yy_plots(y_data, yhat, model_name)
 
@@ -63,72 +57,139 @@ class RandomForest(ModelGeneratorBase):
         fig.savefig('%s/%s_importance.png' % (self.images_dir, model_name))
         fig.clf()
 
-        return performance
+        return OrderedDict([
+            ('name', model_name),
+            ('model_type', model_type),
+            ('downsample', downsample),
+            ('slope', slope),
+            ('intercept', intercept),
+            ('mae', np.mean(errors)),
+            ('r_value', r_value),
+            ('p_value', p_value),
+            ('std_err', std_err),
+            ('r_squared', r_value ** 2),
+            ('rf_r_squared', test_score),
+            ('spearman', spearman[0]),
+            ('pearson', pearson[0]),
+            ('n_estimators', model.n_estimators),
+            ('max_depth', model.max_depth),
+            ('max_features', model.max_features),
+            ('min_samples_leaf', model.min_samples_leaf),
+            ('min_samples_split', model.min_samples_leaf),
+            ('time_to_build', build_time),
+            ('time_to_cv', cv_time),
+        ])
 
-    def build(self, data_file, validation_id, covariates, data_types, responses):
-        # TODO: Load some of this from SUPER
-        self.responses = responses
+    def save_cv_results(self, cv_results, response, downsample, filename):
+        """
+        Save the cv_results to a CSV file
+        :param cv_results:
+        :param filename:
+        :return:
+        """
+        # {
+        #     'param_kernel': masked_array(data=['poly', 'poly', 'rbf', 'rbf'],
+        #                                  mask=[False False False False]...)
+        #     'param_gamma': masked_array(data=[-- -- 0.1 0.2],
+        #                                 mask=[True  True False False]...),
+        #     'param_degree': masked_array(data=[2.0 3.0 - - --],
+        #                                  mask=[False False  True  True]...),
+        #     'split0_test_score': [0.8, 0.7, 0.8, 0.9],
+        #     'split1_test_score': [0.82, 0.5, 0.7, 0.78],
+        #     'mean_test_score': [0.81, 0.60, 0.75, 0.82],
+        #     'std_test_score': [0.02, 0.01, 0.03, 0.03],
+        #     'rank_test_score': [2, 4, 3, 1],
+        #     'split0_train_score': [0.8, 0.9, 0.7],
+        #     'split1_train_score': [0.82, 0.5, 0.7],
+        #     'mean_train_score': [0.81, 0.7, 0.7],
+        #     'std_train_score': [0.03, 0.03, 0.04],
+        #     'mean_fit_time': [0.73, 0.63, 0.43, 0.49],
+        #     'std_fit_time': [0.01, 0.02, 0.01, 0.01],
+        #     'mean_score_time': [0.007, 0.06, 0.04, 0.04],
+        #     'std_score_time': [0.001, 0.002, 0.003, 0.005],
+        #     'params': [{'kernel': 'poly', 'degree': 2}, ...],
+        # }
 
-        # data_file_to_csv()
-        dataset = pd.read_csv(data_file)
+        data = {}
+        data['downsample'] = []
+        for params in cv_results['params']:
+            for param, value in params.items():
+                if not data.get(param, None):
+                    data[param] = []
+                data[param].append(value)
+                data['downsample'] = downsample
+                data['response'] = response
+        data['mean_train_score'] = cv_results['mean_train_score']
+        data['mean_test_score'] = cv_results['mean_test_score']
+        data['mean_fit_time'] = cv_results['mean_fit_time']
+        data['mean_score_time'] = cv_results['mean_score_time']
+        data['rank_test_score'] = cv_results['rank_test_score']
 
-        # print list(dataset.columns.values)
-        if 'DistrictCoolingOutletTemperature' in list(dataset.columns.values):
-            dataset = dataset.drop('DistrictCoolingOutletTemperature', 1)
-        # update some of the column names so they make sense to this model
+        df = pd.DataFrame.from_dict(data)
+        df.to_csv(filename)
 
-        dataset = dataset.rename(columns={
-            'DistrictHeatingOutletTemperature': 'ETSInletTemperature',
-            'DistrictHeatingInletTemperature': 'ETSHeatingOutletTemperature',
-            'DistrictCoolingInletTemperature': 'ETSCoolingOutletTemperature',
-        })
+    def build(self, data_file, validation_id, covariates, data_types, responses, **kwargs):
+        super(RandomForest, self).build(data_file, validation_id, covariates, data_types, responses, **kwargs)
 
-        # type cast the columns - this is probably not needed.
-        dataset[data_types['float']] = dataset[data_types['float']].astype(float)
-        dataset[data_types['int']] = dataset[data_types['int']].astype(int)
+        analysis_options = kwargs.get('algorithm_options', {})
+        param_grid = analysis_options.get('param_grid', None)
 
-        param_grid = {
-            'max_depth': [None, 5, 50, 500],
-            'max_features': [ceil(len(covariates) / 4), ceil(len(covariates) / 3), ceil(len(covariates) / 2)],
-            'min_samples_leaf': [1, 5, 10],
-            'min_samples_split': [2, 20, 200],
-            'n_estimators': [25, 50, 100, 150, 200]
-        }
+        total_candidates = 1
+        for param, options in param_grid.items():
+            total_candidates = len(options) * total_candidates
 
-        # Perform randomized search of parameters
-        # http://scikit-learn.org/stable/auto_examples/model_selection/plot_randomized_search.html
-        # https://towardsdatascience.com/hyperparameter-tuning-the-random-forest-in-python-using-scikit-learn-28d2aa77dd74
-        # param_dist = {"max_depth": [3, None],
-        #               "max_features": sp_randint(1, 11),
-        #               "min_samples_split": sp_randint(2, 11),
-        #               "min_samples_leaf": sp_randint(1, 11),
-        #               "bootstrap": [True, False],
-        #               "criterion": ["gini", "entropy"]}
-        #
-        # # run randomized search
-        # n_iter_search = 20
-        # random_search = RandomizedSearchCV(clf, param_distributions=param_grid,
-        #                                    n_iter=n_iter_search)
+        print("CV will result in %s candidates" % total_candidates)
 
         train_x, test_x, train_y, test_y, validate_xy = self.train_test_validate_split(
-            dataset,
+            self.dataset,
             covariates,
             responses,
             validation_id,
+            downsample=self.downsample
         )
+
+        # save the validate dataframe to be used later to validate the accuracy of the models
+        self.save_dataframe(validate_xy, "%s/rf_validation.pkl" % self.validation_dir)
 
         for response in self.responses:
             print "Fitting Random Forest model for %s" % response
-            trained_model = RandomForestRegressor(n_estimators=40, n_jobs=-1)
-            trained_model.fit(train_x, train_y[response])
+            rf = RandomForestRegressor()
+
+            start = time.time()
+            base_rf = rf.fit(train_x, train_y[response])
+            build_time = time.time() - start
+
+            grid_search = GridSearchCV(estimator=rf, param_grid=param_grid, cv=3, n_jobs=-1,
+                                       verbose=2)
+
+            start = time.time()
+            grid_search.fit(train_x, train_y[response])
+            cv_time = time.time() - start
+
+            best_rf = grid_search.best_estimator_
+
             # print the data types of the training set
             # print train_x.columns.to_series().groupby(train_x.dtypes).groups
-            pickle_file(trained_model, '%s/%s' % (self.models_dir, response))
+            pickle_file(best_rf, '%s/%s' % (self.models_dir, response))
+
+            # save the cv results
+            self.save_cv_results(
+                grid_search.cv_results_, response, self.downsample,
+                '%s/cv_results_%s.csv' % (self.base_dir, response)
+            )
 
             # Evaluate the forest when building them
             self.model_results.append(
                 self.evaluate(
-                    trained_model, response, test_x, test_y[response], covariates
+                    base_rf, response, 'base', test_x, test_y[response], covariates,
+                    self.downsample, build_time, cv_time
+                )
+            )
+
+            self.model_results.append(
+                self.evaluate(
+                    best_rf, response, 'best',  test_x, test_y[response], covariates,
+                    self.downsample, build_time, cv_time
                 )
             )
 
@@ -142,5 +203,6 @@ class RandomForest(ModelGeneratorBase):
         zipdir(self.models_dir, zipf, '.pkl')
         zipf.close()
 
-        # save the validate dataframe to be used later to validate the accuracy of the models
-        self.save_dataframe(validate_xy, "%s/rf_validation.pkl" % self.validation_dir)
+        # save the data that was used in the models for future processing and analysis
+        self.dataset.to_csv('%s/data.csv' % self.data_dir)
+

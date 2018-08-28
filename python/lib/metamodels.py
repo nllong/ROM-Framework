@@ -106,6 +106,29 @@ class Metamodels(object):
         return self.file[self.set_i]['name']
 
     @property
+    def downsamples(self):
+        """
+        Return the downsamples list
+
+        :return: list, downsamples
+        """
+        return self.file[self.set_i].get('downsamples', None)
+
+    @property
+    def algorithm_options(self):
+        """
+        Return the algorithm options from the JSON data
+
+        :return: dict, algorithm options
+        """
+        options = self.file[self.set_i].get('algorithm_options', None)
+        for k, v in options.items():
+            if '_comments' in v.keys():
+                del v['_comments']
+
+        return options
+
+    @property
     def validation_id(self):
         """
         Return the validation id

@@ -42,21 +42,31 @@ if metamodel.set_analysis(args.analysis_moniker):
                     algorithm_options=metamodel.algorithm_options
                 )
 
-    # # VALIDATE MODELS
-    # # load the model into the Metamodel class. Seems like we can simplify this to have the two
-    # # classes rely on each other.
-    # validation_dir = "output/%s/ValidationData" % args.analysis_moniker
-    # metadata = {}
-    # # loading the rf or lm data results in the same results since the data are from the same model
-    # single_df = pd.read_pickle("%s/%s" % (validation_dir, 'rf_validation.pkl'))
-    #
-    # for model_type in [('RandomForest', 'RF'), ('LinearModel', 'LM')]:
-    #     metadata[model_type[0]] = {'responses': [], 'moniker': model_type[1]}
-    #     metamodel.load_models(model_type[0])
-    #
-    #     # Run the ROM for each of the response variables
-    #     for response in metamodel.available_response_names:
-    #         metadata[model_type[0]]['responses'].append(response)
-    #         single_df["Modeled %s %s" % (model_type[1], response)] = metamodel.yhat(response, single_df)
-    #
-    # validate_dataframe(single_df, metadata, validation_dir)
+if metamodel.set_analysis(args.analysis_moniker):
+    for downsample in metamodel.downsamples:
+        validation_dir = "output/%s_%s/ValidationData" % (args.analysis_moniker, downsample)
+        output_dir = "%s/images" % base_dir
+
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
+        # for model_name in available_models.choices:
+        #     if args.model_type == 'All' or args.model_type == model_name:
+
+        # VALIDATE MODELS
+        # load the model into the Metamodel class. Seems like we can simplify this to have the two
+        # classes rely on each other.
+        metadata = {}
+        # loading the rf or lm data results in the same results since the data are from the same model
+        single_df = pd.read_pickle("%s/%s" % (validation_dir, 'rf_validation.pkl'))
+
+        for model_type in [('RandomForest', 'RF'), ('LinearModel', 'LM')]:
+            metadata[model_type[0]] = {'responses': [], 'moniker': model_type[1]}
+            metamodel.load_models(model_type[0])
+
+            # Run the ROM for each of the response variables
+            for response in metamodel.available_response_names:
+                metadata[model_type[0]]['responses'].append(response)
+                single_df["Modeled %s %s" % (model_type[1], response)] = metamodel.yhat(response, single_df)
+
+        validate_dataframe(single_df, metadata, validation_dir)
