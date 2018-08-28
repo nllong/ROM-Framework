@@ -1,7 +1,9 @@
 import zipfile
+import time
 from collections import OrderedDict
 
 import pandas as pd
+import numpy as np
 from lib.shared import pickle_file, save_dict_to_csv, zipdir
 from scipy import stats
 from scipy.stats import spearmanr, pearsonr
@@ -52,11 +54,6 @@ class LinearModel(ModelGeneratorBase):
             ('rf_r_squared', test_score),
             ('spearman', spearman[0]),
             ('pearson', pearson[0]),
-            ('n_estimators', model.n_estimators),
-            ('max_depth', model.max_depth),
-            ('max_features', model.max_features),
-            ('min_samples_leaf', model.min_samples_leaf),
-            ('min_samples_split', model.min_samples_leaf),
             ('time_to_build', build_time),
         ])
 
@@ -89,8 +86,7 @@ class LinearModel(ModelGeneratorBase):
             pickle_file(trained_model, '%s/%s' % (self.models_dir, response))
 
             self.model_results.append(
-                self.evaluate(trained_model, response, test_x, test_y[response], self.downsample,
-                              build_time)
+                self.evaluate(trained_model, response, 'best', test_x, test_y[response], self.downsample, build_time)
             )
 
         if self.model_results:
