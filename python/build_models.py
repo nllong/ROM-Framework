@@ -27,9 +27,9 @@ print("Loading metamodels.json")
 metamodel = Metamodels('./metamodels.json')
 
 if metamodel.set_analysis(args.analysis_moniker):
-    for downsample in metamodel.downsamples:
-        for model_name in available_models.choices:
-            if args.model_type == 'All' or args.model_type == model_name:
+    for model_name in available_models.choices:
+        if args.model_type == 'All' or args.model_type == model_name:
+            for downsample in metamodel.downsamples:
                 klass = globals()[model_name]
                 # Set the random seed so that the test libraries are the same across the models
                 model = klass(metamodel.analysis_name, 79, downsample=downsample)
@@ -39,24 +39,22 @@ if metamodel.set_analysis(args.analysis_moniker):
                     metamodel.covariate_names,
                     metamodel.covariate_types,
                     metamodel.available_response_names,
-                    algorithm_options=metamodel.algorithm_options
+                    algorithm_options=metamodel.algorithm_options,
+                    skip_cv=False
                 )
 
-    # # VALIDATE MODELS
-    # # load the model into the Metamodel class. Seems like we can simplify this to have the two
-    # # classes rely on each other.
-    # validation_dir = "output/%s/ValidationData" % args.analysis_moniker
-    # metadata = {}
-    # # loading the rf or lm data results in the same results since the data are from the same model
-    # single_df = pd.read_pickle("%s/%s" % (validation_dir, 'rf_validation.pkl'))
-    #
-    # for model_type in [('RandomForest', 'RF'), ('LinearModel', 'LM')]:
-    #     metadata[model_type[0]] = {'responses': [], 'moniker': model_type[1]}
-    #     metamodel.load_models(model_type[0])
-    #
-    #     # Run the ROM for each of the response variables
-    #     for response in metamodel.available_response_names:
-    #         metadata[model_type[0]]['responses'].append(response)
-    #         single_df["Modeled %s %s" % (model_type[1], response)] = metamodel.yhat(response, single_df)
-    #
-    # validate_dataframe(single_df, metadata, validation_dir)
+            # Full sample but no cross validation
+            klass = globals()[model_name]
+            # Set the random seed so that the test libraries are the same across the models
+            model = klass(metamodel.analysis_name, 79, downsample=None)
+            model.build(
+                '../results/%s/simulation_results.csv' % metamodel.results_directory,
+                metamodel.validation_id,
+                metamodel.covariate_names,
+                metamodel.covariate_types,
+                metamodel.available_response_names,
+                algorithm_options=metamodel.algorithm_options,
+                skip_cv=True
+            )
+
+

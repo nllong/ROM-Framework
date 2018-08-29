@@ -39,6 +39,7 @@ if metamodel.set_analysis(args.analysis_moniker):
         # VALIDATE MODELS - load the model into the Metamodel class. Seems like we can simplify
         # this to have the two classes rely on each other.
         metadata = {}
+
         # loading the rf or lm data results in the same results since the data are from the same model
         single_df = pd.read_pickle("%s/%s" % (validation_dir, 'rf_validation.pkl'))
 

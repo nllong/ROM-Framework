@@ -82,33 +82,35 @@ class RandomForest(ModelGeneratorBase):
 
     def save_cv_results(self, cv_results, response, downsample, filename):
         """
-        Save the cv_results to a CSV file
+        Save the cv_results to a CSV file. Data in the cv_results file looks like the following.
+
+        {
+            'param_kernel': masked_array(data=['poly', 'poly', 'rbf', 'rbf'],
+                                         mask=[False False False False]...)
+            'param_gamma': masked_array(data=[-- -- 0.1 0.2],
+                                        mask=[True  True False False]...),
+            'param_degree': masked_array(data=[2.0 3.0 - - --],
+                                         mask=[False False  True  True]...),
+            'split0_test_score': [0.8, 0.7, 0.8, 0.9],
+            'split1_test_score': [0.82, 0.5, 0.7, 0.78],
+            'mean_test_score': [0.81, 0.60, 0.75, 0.82],
+            'std_test_score': [0.02, 0.01, 0.03, 0.03],
+            'rank_test_score': [2, 4, 3, 1],
+            'split0_train_score': [0.8, 0.9, 0.7],
+            'split1_train_score': [0.82, 0.5, 0.7],
+            'mean_train_score': [0.81, 0.7, 0.7],
+            'std_train_score': [0.03, 0.03, 0.04],
+            'mean_fit_time': [0.73, 0.63, 0.43, 0.49],
+            'std_fit_time': [0.01, 0.02, 0.01, 0.01],
+            'mean_score_time': [0.007, 0.06, 0.04, 0.04],
+            'std_score_time': [0.001, 0.002, 0.003, 0.005],
+            'params': [{'kernel': 'poly', 'degree': 2}, ...],
+        }
+
         :param cv_results:
         :param filename:
         :return:
         """
-        # {
-        #     'param_kernel': masked_array(data=['poly', 'poly', 'rbf', 'rbf'],
-        #                                  mask=[False False False False]...)
-        #     'param_gamma': masked_array(data=[-- -- 0.1 0.2],
-        #                                 mask=[True  True False False]...),
-        #     'param_degree': masked_array(data=[2.0 3.0 - - --],
-        #                                  mask=[False False  True  True]...),
-        #     'split0_test_score': [0.8, 0.7, 0.8, 0.9],
-        #     'split1_test_score': [0.82, 0.5, 0.7, 0.78],
-        #     'mean_test_score': [0.81, 0.60, 0.75, 0.82],
-        #     'std_test_score': [0.02, 0.01, 0.03, 0.03],
-        #     'rank_test_score': [2, 4, 3, 1],
-        #     'split0_train_score': [0.8, 0.9, 0.7],
-        #     'split1_train_score': [0.82, 0.5, 0.7],
-        #     'mean_train_score': [0.81, 0.7, 0.7],
-        #     'std_train_score': [0.03, 0.03, 0.04],
-        #     'mean_fit_time': [0.73, 0.63, 0.43, 0.49],
-        #     'std_fit_time': [0.01, 0.02, 0.01, 0.01],
-        #     'mean_score_time': [0.007, 0.06, 0.04, 0.04],
-        #     'std_score_time': [0.001, 0.002, 0.003, 0.005],
-        #     'params': [{'kernel': 'poly', 'degree': 2}, ...],
-        # }
 
         data = {}
         data['downsample'] = []
@@ -132,13 +134,7 @@ class RandomForest(ModelGeneratorBase):
         super(RandomForest, self).build(data_file, validation_id, covariates, data_types, responses, **kwargs)
 
         analysis_options = kwargs.get('algorithm_options', {})
-        param_grid = analysis_options.get('param_grid', None)
 
-        total_candidates = 1
-        for param, options in param_grid.items():
-            total_candidates = len(options) * total_candidates
-
-        print("CV will result in %s candidates" % total_candidates)
 
         train_x, test_x, train_y, test_y, validate_xy = self.train_test_validate_split(
             self.dataset,
@@ -152,46 +148,63 @@ class RandomForest(ModelGeneratorBase):
         self.save_dataframe(validate_xy, "%s/rf_validation.pkl" % self.validation_dir)
 
         for response in self.responses:
-            print "Fitting Random Forest model for %s" % response
-            rf = RandomForestRegressor()
+            print "Fitting random forest model for %s" % response
 
+
+            base_fit_params = analysis_options.get('base_fit_params', {})
+
+            print("Setting the base fit parameters to %s" % base_fit_params)
             start = time.time()
+            rf = RandomForestRegressor(**base_fit_params)
             base_rf = rf.fit(train_x, train_y[response])
             build_time = time.time() - start
-
-            grid_search = GridSearchCV(estimator=rf, param_grid=param_grid, cv=3, n_jobs=-1,
-                                       verbose=2)
-
-            start = time.time()
-            grid_search.fit(train_x, train_y[response])
-            cv_time = time.time() - start
-
-            best_rf = grid_search.best_estimator_
-
-            # print the data types of the training set
-            # print train_x.columns.to_series().groupby(train_x.dtypes).groups
-            pickle_file(best_rf, '%s/%s' % (self.models_dir, response))
-
-            # save the cv results
-            self.save_cv_results(
-                grid_search.cv_results_, response, self.downsample,
-                '%s/cv_results_%s.csv' % (self.base_dir, response)
-            )
 
             # Evaluate the forest when building them
             self.model_results.append(
                 self.evaluate(
                     base_rf, response, 'base', test_x, test_y[response], covariates,
-                    self.downsample, build_time, cv_time
+                    self.downsample, build_time, 0
                 )
             )
 
-            self.model_results.append(
-                self.evaluate(
-                    best_rf, response, 'best',  test_x, test_y[response], covariates,
-                    self.downsample, build_time, cv_time
+            if not kwargs.get('skip_cv', False):
+                rf = RandomForestRegressor()
+
+                kfold = 3
+                print('Perfoming CV with k-fold equal to %s' % kfold)
+                # grab the param grid from what was specified in the metamodels.json file
+                param_grid = analysis_options.get('param_grid', None)
+                total_candidates = 1
+                for param, options in param_grid.items():
+                    total_candidates = len(options) * total_candidates
+
+                print('CV will result in %s candidates' % total_candidates)
+
+                grid_search = GridSearchCV(estimator=rf, param_grid=param_grid, cv=kfold,
+                                           n_jobs=-1, verbose=2)
+
+                start = time.time()
+                grid_search.fit(train_x, train_y[response])
+                cv_time = time.time() - start
+
+                best_rf = grid_search.best_estimator_
+
+                pickle_file(best_rf, '%s/%s' % (self.models_dir, response))
+
+                # save the cv results
+                self.save_cv_results(
+                    grid_search.cv_results_, response, self.downsample,
+                    '%s/cv_results_%s.csv' % (self.base_dir, response)
                 )
-            )
+
+                self.model_results.append(
+                    self.evaluate(
+                        best_rf, response, 'best', test_x, test_y[response], covariates,
+                        self.downsample, build_time, cv_time
+                    )
+                )
+            else:
+                pickle_file(base_rf, '%s/%s' % (self.models_dir, response))
 
         if self.model_results:
             save_dict_to_csv(self.model_results, '%s/model_results.csv' % self.base_dir)
