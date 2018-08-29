@@ -150,11 +150,8 @@ class RandomForest(ModelGeneratorBase):
         for response in self.responses:
             print "Fitting random forest model for %s" % response
 
-
-            base_fit_params = analysis_options.get('base_fit_params', {})
-
-            print("Setting the base fit parameters to %s" % base_fit_params)
             start = time.time()
+            base_fit_params = analysis_options.get('base_fit_params', {})
             rf = RandomForestRegressor(**base_fit_params)
             base_rf = rf.fit(train_x, train_y[response])
             build_time = time.time() - start

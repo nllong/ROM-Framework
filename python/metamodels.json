@@ -6,7 +6,7 @@
     "display_name": "Small Office Varying Inlet Temp",
     "description": "150 Simulations, varying inlet temperature and delta-T",
     "validation_datapoint_id": "21e6f96e-387b-4d99-89d5-9aeb89d1fc08",
-    "downsamples": [0.1, 0.15],
+    "downsamples": [0.05, 0.15, 0.25],
     "algorithm_options": {
       "param_grid": {
          "_comments": "max_depth - default is None, max_features - default is p/3, min_samples_leaf - default is 1, min_samples_split - default is 2, n_estimators - default is 10",
@@ -63,20 +63,13 @@
         "display_name": "LPD Average",
         "units": "W/m2",
         "type": "float"
-      },
-      {
-        "name": "epd_average",
-        "display_name": "EPD Average",
-        "units": "W/m2",
-        "type": "float"
       }
     ],
     "responses": [
       {
         "name": "HeatingElectricity",
         "display_name": "Heating Electric Energy",
-        "units": "J",
-        "filename": "HeatingElectricity.pkl"
+        "units": "J"
       },
       {
         "name": "CoolingElectricity",
@@ -175,8 +168,7 @@
       {
         "name": "HeatingElectricity",
         "display_name": "Heating Electric Energy",
-        "units": "J",
-        "filename": "HeatingElectricity.pkl"
+        "units": "J"
       },
       {
         "name": "DistrictHeatingHotWaterEnergy",
