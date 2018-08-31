@@ -154,8 +154,8 @@ class ModelGeneratorBase(object):
         :param model_name:
         :return:
         """
+        # This need to be updated with the creating a figure with a size
         sns.set(color_codes=True)
-        plt.rcParams['figure.figsize'] = [15, 10]
         sns.set(style="darkgrid")
 
         # find the items that are zero / zero across y and yhat and remove to look at
@@ -167,6 +167,8 @@ class ModelGeneratorBase(object):
 
         # convert data to dataframe
         data = pd.DataFrame.from_dict({'Y': y_data, 'Yhat': yhat})
+
+        fig = plt.figure(figsize=(6, 6), dpi=100)
         sns.regplot(
             x='Y',
             y='Yhat',
@@ -177,6 +179,7 @@ class ModelGeneratorBase(object):
         # plt.title("Training Set: Y-Y Plot for %s" % model_name)
         plt.tight_layout()
         plt.savefig('%s/fig_yy_%s.png' % (self.images_dir, model_name))
+        fig.clf()
         plt.clf()
 
         # Hex plots for YY data

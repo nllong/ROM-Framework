@@ -30,7 +30,6 @@ metamodel = Metamodels('./metamodels.json')
 if metamodel.set_analysis(args.analysis_moniker):
     for downsample in metamodel.downsamples:
         validation_dir = "output/%s_%s/ValidationData" % (args.analysis_moniker, downsample)
-        print validation_dir
         output_dir = "%s/images" % validation_dir
 
         if not os.path.exists(output_dir):
