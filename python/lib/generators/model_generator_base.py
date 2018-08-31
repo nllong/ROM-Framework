@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import statsmodels.api as sm
 from sklearn.model_selection import train_test_split
 
 
@@ -47,7 +48,8 @@ class ModelGeneratorBase(object):
         self.images_dir = '%s/images' % self.base_dir
         self.models_dir = '%s/models' % self.base_dir
         if self.downsample:
-            self.validation_dir = 'output/%s_%s/ValidationData' % (self.analysis_id, self.downsample)
+            self.validation_dir = 'output/%s_%s/ValidationData' % (
+                self.analysis_id, self.downsample)
         else:
             self.validation_dir = 'output/%s/ValidationData' % self.analysis_id
         self.data_dir = '%s/data' % self.base_dir
@@ -165,18 +167,46 @@ class ModelGeneratorBase(object):
 
         # convert data to dataframe
         data = pd.DataFrame.from_dict({'Y': y_data, 'Yhat': yhat})
-        lmplot = sns.lmplot(
+        sns.regplot(
             x='Y',
             y='Yhat',
             data=data,
             ci=None,
-            palette="muted",
-            height=8,
             scatter_kws={"s": 50, "alpha": 1}
         )
-        fig = lmplot.fig
-        plt.title("Training Set: Y-Y Plot for %s" % (model_name))
-        fig.tight_layout()
-        fig.savefig('%s/test_%s.png' % (self.images_dir, model_name))
+        # plt.title("Training Set: Y-Y Plot for %s" % model_name)
+        plt.tight_layout()
+        plt.savefig('%s/fig_yy_%s.png' % (self.images_dir, model_name))
+        plt.clf()
+
+        # Hex plots for YY data
+        sns.set(style="ticks")
+        newplt = sns.jointplot(
+            data['Y'], data['Yhat'], kind="hex"
+        )
+        # plt.subplots_adjust(top=0.9)
+        # newplt.fig.suptitle("Training Set: Y-Y Plot for %s" % model_name)
+        # plt.title("Training Set: Y-Y Plot for %s" % model_name)
+        newplt.savefig('%s/fig_yy_hexplot_%s.png' % (self.images_dir, model_name))
+        plt.clf()
+
+    def anova_plots(self, y_data, yhat, model_name):
+        residuals = y_data - yhat
+        # figsize = width, height
+        fig = plt.figure(figsize=(8, 4), dpi=100)
+
+        ax1 = fig.add_subplot(1, 2, 1)
+        ax1.plot(yhat, residuals, 'o')
+        plt.axhline(y=0, color='grey', linestyle='dashed')
+        ax1.set_xlabel('Fitted values')
+        ax1.set_ylabel('Residuals')
+        ax1.set_title('Residuals vs Fitted')
+
+        ax2 = fig.add_subplot(1, 2, 2)
+        sm.qqplot(residuals, line='s', ax=ax2)
+        ax2.set_title('Normal Q-Q')
+
+        plt.tight_layout()
+        fig.savefig('%s/fig_anova_%s.png' % (self.images_dir, model_name))
         fig.clf()
         plt.clf()

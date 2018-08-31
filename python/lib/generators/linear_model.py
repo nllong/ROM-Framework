@@ -1,8 +1,7 @@
-import zipfile
 import time
+import zipfile
 from collections import OrderedDict
 
-import pandas as pd
 import numpy as np
 from lib.shared import pickle_file, save_dict_to_csv, zipdir
 from scipy import stats
@@ -39,6 +38,7 @@ class LinearModel(ModelGeneratorBase):
         slope, intercept, r_value, p_value, std_err = stats.linregress(y_data, yhat)
 
         self.yy_plots(y_data, yhat, model_name)
+        self.anova_plots(y_data, yhat, model_name)
 
         return OrderedDict([
             ('name', model_name),
@@ -55,12 +55,15 @@ class LinearModel(ModelGeneratorBase):
             ('spearman', spearman[0]),
             ('pearson', pearson[0]),
             ('time_to_build', build_time),
+            ('time_to_cv', 0),
         ])
 
     def build(self, data_file, validation_id, covariates, data_types, responses, **kwargs):
-        super(LinearModel, self).build(data_file, validation_id, covariates, data_types, responses, **kwargs)
+        super(LinearModel, self).build(
+            data_file, validation_id, covariates, data_types, responses, **kwargs
+        )
 
-        analysis_options = kwargs.get('algorithm_options', {})
+        # analysis_options = kwargs.get('algorithm_options', {})
 
         train_x, test_x, train_y, test_y, validate_xy = self.train_test_validate_split(
             self.dataset,
@@ -73,7 +76,6 @@ class LinearModel(ModelGeneratorBase):
         # save the validate dataframe to be used later to validate the accuracy of the models
         self.save_dataframe(validate_xy, "%s/lm_validation.pkl" % self.validation_dir)
 
-
         for response in self.responses:
             print "Fitting Linear Model for %s" % response
             trained_model = LinearRegression()
@@ -82,11 +84,13 @@ class LinearModel(ModelGeneratorBase):
             trained_model.fit(train_x, train_y[response])
             build_time = time.time() - start
 
-
             pickle_file(trained_model, '%s/%s' % (self.models_dir, response))
 
             self.model_results.append(
-                self.evaluate(trained_model, response, 'best', test_x, test_y[response], self.downsample, build_time)
+                self.evaluate(
+                    trained_model, response, 'best', test_x, test_y[response], self.downsample,
+                    build_time
+                )
             )
 
         if self.model_results:
@@ -99,7 +103,5 @@ class LinearModel(ModelGeneratorBase):
         zipdir(self.models_dir, zipf, '.pkl')
         zipf.close()
 
-
         # save the data that was used in the models for future processing and analysis
         self.dataset.to_csv('%s/data.csv' % self.data_dir)
-

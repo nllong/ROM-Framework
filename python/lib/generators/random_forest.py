@@ -2,6 +2,7 @@ import time
 import zipfile
 from collections import OrderedDict
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -19,7 +20,8 @@ class RandomForest(ModelGeneratorBase):
     def __init__(self, analysis_id, random_seed=None, **kwargs):
         super(RandomForest, self).__init__(analysis_id, random_seed, **kwargs)
 
-    def evaluate(self, model, model_name, model_type, x_data, y_data, covariates, downsample, build_time, cv_time):
+    def evaluate(self, model, model_name, model_type, x_data, y_data, covariates, downsample,
+                 build_time, cv_time):
         """
         Evaluate the performance of the forest based on known x_data and y_data.
 
@@ -48,14 +50,21 @@ class RandomForest(ModelGeneratorBase):
 
         importance_data = pd.Series(model.feature_importances_, index=np.asarray(covariates))
         importance_data = importance_data.nlargest(20)
+
+        fig = plt.figure(figsize=(8, 3), dpi=100)
+        # defaults to the ax in the figure.
         ax = sns.barplot(x=list(importance_data), y=list(importance_data.index.values),
-                         color="salmon", ci=None)
-        ax.set(xlabel='Relative Importance', ylabel='')
-        ax.set_title("Importance of %s" % model_name)
-        fig = ax.get_figure()
-        fig.tight_layout()  # nice magic function!
-        fig.savefig('%s/%s_importance.png' % (self.images_dir, model_name))
+                         color="grey", ci=None)
+        # ax.set(xlabel='Relative Importance', ylabel='')
+        ax.set_xlabel('Relative Importance')
+        plt.tight_layout()
+        fig.savefig('%s/fig_importance_%s.png' % (self.images_dir, model_name))
         fig.clf()
+        plt.clf()
+
+        maxd = model.max_depth
+        if not maxd:
+            maxd = 0
 
         return OrderedDict([
             ('name', model_name),
@@ -72,7 +81,7 @@ class RandomForest(ModelGeneratorBase):
             ('spearman', spearman[0]),
             ('pearson', pearson[0]),
             ('n_estimators', model.n_estimators),
-            ('max_depth', model.max_depth),
+            ('max_depth', maxd),
             ('max_features', model.max_features),
             ('min_samples_leaf', model.min_samples_leaf),
             ('min_samples_split', model.min_samples_leaf),
@@ -131,10 +140,10 @@ class RandomForest(ModelGeneratorBase):
         df.to_csv(filename)
 
     def build(self, data_file, validation_id, covariates, data_types, responses, **kwargs):
-        super(RandomForest, self).build(data_file, validation_id, covariates, data_types, responses, **kwargs)
+        super(RandomForest, self).build(data_file, validation_id, covariates, data_types, responses,
+                                        **kwargs)
 
         analysis_options = kwargs.get('algorithm_options', {})
-
 
         train_x, test_x, train_y, test_y, validate_xy = self.train_test_validate_split(
             self.dataset,
@@ -215,4 +224,3 @@ class RandomForest(ModelGeneratorBase):
 
         # save the data that was used in the models for future processing and analysis
         self.dataset.to_csv('%s/data.csv' % self.data_dir)
-

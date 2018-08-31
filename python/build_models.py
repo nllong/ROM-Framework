@@ -13,7 +13,9 @@ from lib.validation import validate_dataframe
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-a", "--analysis_moniker", help="Name of the Analysis Model")
-available_models = parser.add_argument("-m", "--model_type", choices=['All', 'LinearModel', 'RandomForest'], default='All', help="Type of model to build")
+available_models = parser.add_argument(
+    "-m", "--model_type", choices=['All', 'LinearModel', 'RandomForest'],
+    default='All', help="Type of model to build")
 del available_models.choices[0]
 args = parser.parse_args()
 

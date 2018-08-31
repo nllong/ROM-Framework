@@ -109,11 +109,11 @@
     "algorithm_options": {
       "param_grid": {
          "_comments": "max_depth - default is None, max_features - default is p/3, min_samples_leaf - default is 1, min_samples_split - default is 2, n_estimators - default is 10",
-         "max_depth": [null, 5, 10],
-         "max_features": [0.33, 0.66, 1],
-         "min_samples_leaf": [1, 5, 10],
-         "min_samples_split": [2, 5, 10],
-         "n_estimators": [10, 100, 200]
+         "max_depth": [null, 10],
+         "max_features": [0.33, 0.66],
+         "min_samples_leaf": [1, 10],
+         "min_samples_split": [2, 10],
+         "n_estimators": [10, 25]
       },
       "base_fit_params": {
         "max_depth": null,
