@@ -31,20 +31,6 @@ metamodel = Metamodels('./metamodels.json')
 if metamodel.set_analysis(args.analysis_moniker):
     for model_name in available_models.choices:
         if args.model_type == 'All' or args.model_type == model_name:
-            for downsample in metamodel.downsamples:
-                klass = globals()[model_name]
-                # Set the random seed so that the test libraries are the same across the models
-                model = klass(metamodel.analysis_name, 79, downsample=downsample)
-                model.build(
-                    '../results/%s/simulation_results.csv' % metamodel.results_directory,
-                    metamodel.validation_id,
-                    metamodel.covariate_names,
-                    metamodel.covariate_types,
-                    metamodel.available_response_names,
-                    algorithm_options=metamodel.algorithm_options,
-                    skip_cv=False
-                )
-
             # Full sample but no cross validation
             klass = globals()[model_name]
             # Set the random seed so that the test libraries are the same across the models
@@ -59,4 +45,16 @@ if metamodel.set_analysis(args.analysis_moniker):
                 skip_cv=True
             )
 
-
+            for downsample in metamodel.downsamples:
+                klass = globals()[model_name]
+                # Set the random seed so that the test libraries are the same across the models
+                model = klass(metamodel.analysis_name, 79, downsample=downsample)
+                model.build(
+                    '../results/%s/simulation_results.csv' % metamodel.results_directory,
+                    metamodel.validation_id,
+                    metamodel.covariate_names,
+                    metamodel.covariate_types,
+                    metamodel.available_response_names,
+                    algorithm_options=metamodel.algorithm_options,
+                    skip_cv=False
+                )
