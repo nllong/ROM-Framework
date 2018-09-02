@@ -2,13 +2,17 @@ import fnmatch
 import os
 import shutil
 import time
+from collections import OrderedDict
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
 import statsmodels.api as sm
+from scipy import stats
+from scipy.stats import spearmanr, pearsonr
 from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import RobustScaler
 
 
 class ModelGeneratorBase(object):
@@ -78,6 +82,45 @@ class ModelGeneratorBase(object):
     def read_dataframe(self, path):
         return pd.read_pickle(path)
 
+    def evaluate(self, model, model_name, model_type, x_data, y_data, downsample,
+                 build_time, cv_time, covariates=None):
+        """
+        Generic base function to evaluate the performance of the models.
+
+        :param model:
+        :param model_name:
+        :param model_type:
+        :param x_data:
+        :param y_data:
+        :param downsample:
+        :param build_time:
+        :return: Ordered dict
+        """
+        yhat = model.predict(x_data)
+
+        errors = abs(yhat - y_data)
+        spearman = spearmanr(y_data, yhat)
+        pearson = pearsonr(y_data, yhat)
+
+        slope, intercept, r_value, _p_value, _std_err = stats.linregress(y_data, yhat)
+
+        self.yy_plots(y_data, yhat, model_name)
+
+        return yhat, OrderedDict([
+            ('name', model_name),
+            ('model_type', model_type),
+            ('downsample', downsample),
+            ('slope', slope),
+            ('intercept', intercept),
+            ('mae', np.mean(errors)),
+            ('r_value', r_value),
+            ('r_squared', r_value ** 2),
+            ('spearman', spearman[0]),
+            ('pearson', pearson[0]),
+            ('time_to_build', build_time),
+            ('time_to_cv', 0),
+        ])
+
     def build(self, data_file, validation_id, covariates, data_types, responses, **kwargs):
         self.responses = responses
         self.dataset = pd.read_csv(data_file)
@@ -98,7 +141,7 @@ class ModelGeneratorBase(object):
         self.dataset[data_types['int']] = self.dataset[data_types['int']].astype(int)
 
     def train_test_validate_split(self, dataset, covariates, responses, id_and_value,
-                                  downsample=None):
+                                  downsample=None, scale=False):
         """
         Use the built in method to generate the train and test data. This adds an additional
         set of data for validation. This vaildation dataset is a unique ID that is pulled out
@@ -131,9 +174,17 @@ class ModelGeneratorBase(object):
             print("Downsampling dataframe by %s to %s rows" % (downsample, num_rows))
             dataset = dataset.sample(n=num_rows)
 
+        if scale:
+            scaler = RobustScaler().fit(self.dataset[covariates], dataset[responses])
+            X = scaler.transform(dataset[covariates])
+            Y = scaler.transform(dataset[responses])
+        else:
+            X = dataset[covariates]
+            Y = dataset[responses]
+
         train_x, test_x, train_y, test_y = train_test_split(
-            dataset[covariates],
-            dataset[responses],
+            X,
+            Y,
             train_size=0.7,
             test_size=0.3,
             random_state=self.random_seed
@@ -156,7 +207,6 @@ class ModelGeneratorBase(object):
         """
         # This need to be updated with the creating a figure with a size
         sns.set(color_codes=True)
-        sns.set(style="darkgrid")
 
         # find the items that are zero / zero across y and yhat and remove to look at
         # plots and other statistics
@@ -168,19 +218,20 @@ class ModelGeneratorBase(object):
         # convert data to dataframe
         data = pd.DataFrame.from_dict({'Y': y_data, 'Yhat': yhat})
 
-        fig = plt.figure(figsize=(6, 6), dpi=100)
-        sns.regplot(
-            x='Y',
-            y='Yhat',
-            data=data,
-            ci=None,
-            scatter_kws={"s": 50, "alpha": 1}
-        )
-        # plt.title("Training Set: Y-Y Plot for %s" % model_name)
-        plt.tight_layout()
-        plt.savefig('%s/fig_yy_%s.png' % (self.images_dir, model_name))
-        fig.clf()
-        plt.clf()
+        with plt.rc_context(dict(sns.axes_style("whitegrid"))):
+            fig = plt.figure(figsize=(6, 6), dpi=100)
+            sns.regplot(
+                x='Y',
+                y='Yhat',
+                data=data,
+                ci=None,
+                scatter_kws={"s": 50, "alpha": 1}
+            )
+            # plt.title("Training Set: Y-Y Plot for %s" % model_name)
+            plt.tight_layout()
+            plt.savefig('%s/fig_yy_%s.png' % (self.images_dir, model_name))
+            fig.clf()
+            plt.clf()
 
         # Hex plots for YY data
         sns.set(style="ticks")

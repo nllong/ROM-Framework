@@ -4,8 +4,8 @@
 
 import argparse
 import os
-
 import shutil
+
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
@@ -59,6 +59,16 @@ def process_cv_results(cv_result_file, response, output_dir):
         newplt.savefig('%s/fig_cv_%s_time_v_score_hex.png' % (output_dir, response))
         plt.clf()
 
+        # plot specific xy plots -- darkgrid background
+        with plt.rc_context(dict(sns.axes_style("whitegrid"))):
+            f, ax = plt.subplots(figsize=(6.5, 6.5))
+            newplt = sns.scatterplot(x=df['mean_fit_time'], y=df['mean_test_score'],
+                                     ax=ax).get_figure()
+            ax.set_xlabel('Mean Fit Time (seconds)')
+            ax.set_ylabel('Mean Test Score (fraction)')
+            newplt.savefig('%s/fig_cv_%s_time_v_score.png' % (output_dir, response))
+            plt.clf()
+
 
 def process_model_results(model_results_file, output_dir):
     if os.path.exists(model_results_file):
@@ -96,27 +106,34 @@ if metamodel.set_analysis(args.analysis_moniker):
                 shutil.rmtree(output_dir)
             os.makedirs(output_dir)
 
-            process_model_results('%s/model_results.csv' % base_dir, output_dir)
+            model_results_file = '%s/model_results.csv' % base_dir
+            process_model_results(model_results_file, output_dir)
+
+            # create a dataframe to add all the model results together
+            all_model_results = pd.read_csv(model_results_file)
 
             # There is no cross-validation in the full smapled results
 
             # Now process al the downsampled results
             for downsample in metamodel.downsamples:
-                base_dir = "output/%s_%s/%s" % (args.analysis_moniker, downsample, model_name)
-                output_dir = "%s/images/cv_results" % base_dir
+                base_dir_ds = "output/%s_%s/%s" % (args.analysis_moniker, downsample, model_name)
+                output_dir = "%s/images/cv_results" % base_dir_ds
 
                 if os.path.exists(output_dir):
                     shutil.rmtree(output_dir)
                 os.makedirs(output_dir)
 
                 # Process the model results
-                process_model_results('%s/model_results.csv' % base_dir, output_dir)
+                model_results_file = '%s/model_results.csv' % base_dir_ds
+                process_model_results(model_results_file, output_dir)
+
+                all_model_results = pd.concat([all_model_results, pd.read_csv(model_results_file)])
 
                 for response in metamodel.available_response_names:
                     # Process the CV results
-                    cv_result_file = '%s/cv_results_%s.csv' % (base_dir, response)
+                    cv_result_file = '%s/cv_results_%s.csv' % (base_dir_ds, response)
                     process_cv_results(cv_result_file, response, output_dir)
 
-
-
+            # save any combined datasets
+            all_model_results.to_csv('%s/all_model_results.csv' % base_dir, index=False)
 

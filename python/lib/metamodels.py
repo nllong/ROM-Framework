@@ -121,12 +121,24 @@ class Metamodels(object):
 
         :return: dict, algorithm options
         """
-        options = self.file[self.set_i].get('algorithm_options', None)
-        for k, v in options.items():
-            if '_comments' in v.keys():
-                del v['_comments']
+        def _remove_comments(data):
+            """
+            This method recursively goes through a dict and removes any '_comments' keys
+            :param data:
+            :return:
+            """
+            for k, v in data.items():
+                if isinstance(v, dict):
+                    data[k] = _remove_comments(v)
 
-        return options
+            if '_comments' in data.keys():
+                del data['_comments']
+
+            return data
+
+        options = self.file[self.set_i].get('algorithm_options', None)
+        # Remove all the _comments strings from the algorithm_options string
+        return _remove_comments(options)
 
     @property
     def validation_id(self):

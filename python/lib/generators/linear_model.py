@@ -1,13 +1,8 @@
 import time
 import zipfile
-from collections import OrderedDict
 
-import numpy as np
 from lib.shared import pickle_file, save_dict_to_csv, zipdir
-from scipy import stats
-from scipy.stats import spearmanr, pearsonr
 from sklearn.linear_model import LinearRegression
-from sklearn.metrics import r2_score
 
 from model_generator_base import ModelGeneratorBase
 
@@ -16,47 +11,17 @@ class LinearModel(ModelGeneratorBase):
     def __init__(self, analysis_id, random_seed=None, **kwargs):
         super(LinearModel, self).__init__(analysis_id, random_seed, **kwargs)
 
-    def evaluate(self, model, model_name, model_type, x_data, y_data, downsample, build_time):
+    def evaluate(self, model, model_name, model_type, x_data, y_data, downsample,
+                 build_time, cv_time, covariates=None):
         """
         Evaluate the performance of the forest based on known x_data and y_data.
-
-        :param model:
-        :param model_name:
-        :param x_data:
-        :param y_data:
-        :param downsample:
-        :param build_time:
-        :return:
         """
-        yhat = model.predict(x_data)
-
-        test_score = r2_score(y_data, yhat)
-        errors = abs(yhat - y_data)
-        spearman = spearmanr(y_data, yhat)
-        pearson = pearsonr(y_data, yhat)
-
-        slope, intercept, r_value, p_value, std_err = stats.linregress(y_data, yhat)
-
-        self.yy_plots(y_data, yhat, model_name)
+        yhat, performance = super(LinearModel, self).evaluate(
+            model, model_name, model_type, x_data, y_data, downsample,
+            build_time, cv_time, covariates
+        )
         self.anova_plots(y_data, yhat, model_name)
-
-        return OrderedDict([
-            ('name', model_name),
-            ('model_type', model_type),
-            ('downsample', downsample),
-            ('slope', slope),
-            ('intercept', intercept),
-            ('mae', np.mean(errors)),
-            ('r_value', r_value),
-            ('p_value', p_value),
-            ('std_err', std_err),
-            ('r_squared', r_value ** 2),
-            ('rf_r_squared', test_score),
-            ('spearman', spearman[0]),
-            ('pearson', pearson[0]),
-            ('time_to_build', build_time),
-            ('time_to_cv', 0),
-        ])
+        return performance
 
     def build(self, data_file, validation_id, covariates, data_types, responses, **kwargs):
         super(LinearModel, self).build(
@@ -89,7 +54,7 @@ class LinearModel(ModelGeneratorBase):
             self.model_results.append(
                 self.evaluate(
                     trained_model, response, 'best', test_x, test_y[response], self.downsample,
-                    build_time
+                    build_time, 0
                 )
             )
 

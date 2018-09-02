@@ -1,16 +1,12 @@
 import time
 import zipfile
-from collections import OrderedDict
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
 from lib.shared import pickle_file, save_dict_to_csv, zipdir
-from scipy import stats
-from scipy.stats import spearmanr, pearsonr
 from sklearn.ensemble import RandomForestRegressor
-from sklearn.metrics import r2_score
 from sklearn.model_selection import GridSearchCV
 
 from model_generator_base import ModelGeneratorBase
@@ -20,9 +16,10 @@ class RandomForest(ModelGeneratorBase):
     def __init__(self, analysis_id, random_seed=None, **kwargs):
         super(RandomForest, self).__init__(analysis_id, random_seed, **kwargs)
 
-    def evaluate(self, model, model_name, model_type, x_data, y_data, covariates, downsample,
-                 build_time, cv_time):
+    def evaluate(self, model, model_name, model_type, x_data, y_data, downsample,
+                 build_time, cv_time, covariates=None):
         """
+
         Evaluate the performance of the forest based on known x_data and y_data.
 
         :param model:
@@ -30,23 +27,16 @@ class RandomForest(ModelGeneratorBase):
         :param model_type:
         :param x_data:
         :param y_data:
-        :param covariates:
         :param downsample:
         :param build_time:
         :param cv_time:
+        :param covariates:
         :return:
         """
-        yhat = model.predict(x_data)
-
-        # perform stats on all the data
-        test_score = r2_score(y_data, yhat)
-        errors = abs(yhat - y_data)
-        spearman = spearmanr(y_data, yhat)
-        pearson = pearsonr(y_data, yhat)
-
-        slope, intercept, r_value, p_value, std_err = stats.linregress(y_data, yhat)
-
-        self.yy_plots(y_data, yhat, model_name)
+        _yhat, performance = super(RandomForest, self).evaluate(
+            model, model_name, model_type, x_data, y_data, downsample,
+            build_time, cv_time, covariates
+        )
 
         importance_data = pd.Series(model.feature_importances_, index=np.asarray(covariates))
         importance_data = importance_data.nlargest(20)
@@ -62,32 +52,14 @@ class RandomForest(ModelGeneratorBase):
         fig.clf()
         plt.clf()
 
-        maxd = model.max_depth
-        if not maxd:
-            maxd = 0
+        # add some more data to the model evaluation dict
+        performance['n_estimators'] = model.n_estimators
+        performance['max_depth'] = model.max_depth if not model.max_depth else 0
+        performance['max_features'] = model.max_features
+        performance['min_samples_leaf'] = model.min_samples_leaf
+        performance['min_samples_split'] = model.min_samples_leaf
 
-        return OrderedDict([
-            ('name', model_name),
-            ('model_type', model_type),
-            ('downsample', downsample),
-            ('slope', slope),
-            ('intercept', intercept),
-            ('mae', np.mean(errors)),
-            ('r_value', r_value),
-            ('p_value', p_value),
-            ('std_err', std_err),
-            ('r_squared', r_value ** 2),
-            ('rf_r_squared', test_score),
-            ('spearman', spearman[0]),
-            ('pearson', pearson[0]),
-            ('n_estimators', model.n_estimators),
-            ('max_depth', maxd),
-            ('max_features', model.max_features),
-            ('min_samples_leaf', model.min_samples_leaf),
-            ('min_samples_split', model.min_samples_leaf),
-            ('time_to_build', build_time),
-            ('time_to_cv', cv_time),
-        ])
+        return performance
 
     def save_cv_results(self, cv_results, response, downsample, filename):
         """
@@ -168,8 +140,8 @@ class RandomForest(ModelGeneratorBase):
             # Evaluate the forest when building them
             self.model_results.append(
                 self.evaluate(
-                    base_rf, response, 'base', test_x, test_y[response], covariates,
-                    self.downsample, build_time, 0
+                    base_rf, response, 'base', test_x, test_y[response],
+                    self.downsample, build_time, 0, covariates
                 )
             )
 
@@ -179,7 +151,7 @@ class RandomForest(ModelGeneratorBase):
                 kfold = 3
                 print('Perfoming CV with k-fold equal to %s' % kfold)
                 # grab the param grid from what was specified in the metamodels.json file
-                param_grid = analysis_options.get('param_grid', None)
+                param_grid = analysis_options.get('param_grid', {})
                 total_candidates = 1
                 for param, options in param_grid.items():
                     total_candidates = len(options) * total_candidates
@@ -187,13 +159,21 @@ class RandomForest(ModelGeneratorBase):
                 print('CV will result in %s candidates' % total_candidates)
 
                 grid_search = GridSearchCV(estimator=rf, param_grid=param_grid, cv=kfold,
-                                           n_jobs=-1, verbose=2)
+                                           n_jobs=-1, verbose=2, refit=True)
 
                 start = time.time()
                 grid_search.fit(train_x, train_y[response])
                 cv_time = time.time() - start
 
-                best_rf = grid_search.best_estimator_
+                # This should work, but the size of the model is really large after, so
+                # trying to recreate the best_rf to save space.
+                # best_rf = grid_search.best_estimator_
+
+                print('The best params were %s' % grid_search.best_params_)
+
+                # rebuild only the best rf, and save the results
+                rf = RandomForestRegressor(**grid_search.best_params_)
+                best_rf = rf.fit(train_x, train_y[response])
 
                 pickle_file(best_rf, '%s/%s' % (self.models_dir, response))
 
@@ -205,8 +185,8 @@ class RandomForest(ModelGeneratorBase):
 
                 self.model_results.append(
                     self.evaluate(
-                        best_rf, response, 'best', test_x, test_y[response], covariates,
-                        self.downsample, build_time, cv_time
+                        best_rf, response, 'best', test_x, test_y[response],
+                        self.downsample, build_time, cv_time, covariates
                     )
                 )
             else:

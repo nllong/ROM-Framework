@@ -20,8 +20,9 @@ if [ "${BUILD_SCOPE}" == "all" ]; then
 
     # One off builds using ID number - small office with delta T, 10 samples
     cd python
-    python build_models.py -a smoff_test
-    python evaluate_models.py -a smoff_test
-    python validate_models.py -a smoff_test
+    python build_models.py -a smoff_test -m LinearModel
+    python build_models.py -a smoff_test -m RandomForest
+    python evaluate_models.py -a smoff_test -m LinearModel
+    python validate_models.py -a smoff_test -m RandomForest
     cd ..
 fi
