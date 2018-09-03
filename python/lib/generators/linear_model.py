@@ -12,29 +12,26 @@ class LinearModel(ModelGeneratorBase):
         super(LinearModel, self).__init__(analysis_id, random_seed, **kwargs)
 
     def evaluate(self, model, model_name, model_type, x_data, y_data, downsample,
-                 build_time, cv_time, covariates=None):
+                 build_time, cv_time, covariates=None, scaler=None):
         """
         Evaluate the performance of the forest based on known x_data and y_data.
         """
         yhat, performance = super(LinearModel, self).evaluate(
             model, model_name, model_type, x_data, y_data, downsample,
-            build_time, cv_time, covariates
+            build_time, cv_time, covariates, scaler
         )
         self.anova_plots(y_data, yhat, model_name)
         return performance
 
-    def build(self, data_file, validation_id, covariates, data_types, responses, **kwargs):
-        super(LinearModel, self).build(
-            data_file, validation_id, covariates, data_types, responses, **kwargs
-        )
+    def build(self, data_file, metamodel, **kwargs):
+        super(LinearModel, self).build(data_file, metamodel, **kwargs)
 
         # analysis_options = kwargs.get('algorithm_options', {})
 
-        train_x, test_x, train_y, test_y, validate_xy = self.train_test_validate_split(
+        train_x, test_x, train_y, test_y, validate_xy, _scaler = self.train_test_validate_split(
             self.dataset,
-            covariates,
-            responses,
-            validation_id,
+            self.__class__.__name__,
+            metamodel,
             downsample=self.downsample
         )
 

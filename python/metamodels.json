@@ -6,7 +6,7 @@
     "display_name": "Small Office Varying Inlet Temp",
     "description": "150 Simulations, varying inlet temperature and delta-T",
     "validation_datapoint_id": "21e6f96e-387b-4d99-89d5-9aeb89d1fc08",
-    "downsamples": [0.05, 0.15, 0.25],
+    "downsamples": [0.05, 0.15, 0.25, 1.0],
     "algorithm_options": {
       "RandomForest": {
         "param_grid": {
@@ -22,6 +22,13 @@
           "n_estimators": 20,
           "min_samples_split": 2
         }
+      },
+      "SVR": {
+        "param_grid": {
+          "_comments": "gamma - default is 1/n_features, C - default is 1",
+          "C": [0.1, 1, 10],
+          "gamma": [0.25, 0.1, 0.01, 0.001]
+        }
       }
     },
     "covariates": [
@@ -29,19 +36,37 @@
         "name": "Month",
         "display_name": "Month",
         "units": "",
-        "type": "int"
+        "type": "int",
+        "algorithm_options": {
+          "SVR": {
+            "variable_type": "cyclical",
+            "category_count": 12
+          }
+        }
       },
       {
         "name": "Hour",
-        "display_name": "Month",
+        "display_name": "Hour",
         "units": "",
-        "type": "int"
+        "type": "int",
+        "algorithm_options": {
+          "SVR": {
+            "variable_type": "cyclical",
+            "category_count": 24
+          }
+        }
       },
       {
         "name": "DayofWeek",
-        "display_name": "Month",
+        "display_name": "Day of Week",
         "units": "",
-        "type": "int"
+        "type": "int",
+        "algorithm_options": {
+          "SVR": {
+            "variable_type": "cyclical",
+            "category_count": 7
+          }
+        }
       },
       {
         "name": "SiteOutdoorAirDrybulbTemperature",
@@ -108,7 +133,7 @@
     "display_name": "Small Office Test Dataset",
     "description": "8 Simulations",
     "validation_datapoint_id": "9f1e2940-c9f9-48e0-bf33-fee869fe0b3a",
-    "downsamples": [0.1, 0.25],
+    "downsamples": [0.1, 0.25, 1],
     "algorithm_options": {
       "RandomForest": {
         "param_grid": {
@@ -123,6 +148,13 @@
           "max_depth": null,
           "n_estimators": 20
         }
+      },
+      "SVR": {
+        "param_grid": {
+          "_comments": "gamma - default is 1/n_features, C - default is 1",
+          "C": [0.1, 1, 10],
+          "gamma": [0.25, 0.1, 0.01, 0.001]
+        }
       }
     },
     "covariates": [
@@ -130,19 +162,37 @@
         "name": "Month",
         "display_name": "Month",
         "units": "",
-        "type": "int"
+        "type": "int",
+        "algorithm_options": {
+          "SVR": {
+            "variable_type": "cyclical",
+            "category_count": 12
+          }
+        }
       },
       {
         "name": "Hour",
-        "display_name": "Month",
+        "display_name": "Hour",
         "units": "",
-        "type": "int"
+        "type": "int",
+        "algorithm_options": {
+          "SVR": {
+            "variable_type": "cyclical",
+            "category_count": 24
+          }
+        }
       },
       {
         "name": "DayofWeek",
-        "display_name": "Month",
+        "display_name": "Day of Week",
         "units": "",
-        "type": "int"
+        "type": "int",
+        "algorithm_options": {
+          "SVR": {
+            "variable_type": "cyclical",
+            "category_count": 7
+          }
+        }
       },
       {
         "name": "SiteOutdoorAirDrybulbTemperature",

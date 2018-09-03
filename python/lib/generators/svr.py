@@ -2,7 +2,8 @@ import time
 import zipfile
 
 import pandas as pd
-from lib.shared import save_dict_to_csv, zipdir
+from lib.shared import pickle_file, save_dict_to_csv, zipdir
+from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVR as SKL_SVR
 
 from model_generator_base import ModelGeneratorBase
@@ -13,13 +14,13 @@ class SVR(ModelGeneratorBase):
         super(SVR, self).__init__(analysis_id, random_seed, **kwargs)
 
     def evaluate(self, model, model_name, model_type, x_data, y_data, downsample,
-                 build_time, cv_time, covariates=None):
+                 build_time, cv_time, covariates=None, scaler=None):
         """
         Evaluate the performance of the forest based on known x_data and y_data.
         """
         yhat, performance = super(SVR, self).evaluate(
             model, model_name, model_type, x_data, y_data, downsample,
-            build_time, cv_time, covariates
+            build_time, cv_time, covariates, scaler
         )
         return performance
 
@@ -73,28 +74,18 @@ class SVR(ModelGeneratorBase):
         df = pd.DataFrame.from_dict(data)
         df.to_csv(filename)
 
-    def build(self, data_file, validation_id, covariates, data_types, responses, **kwargs):
-        super(SVR, self).build(data_file, validation_id, covariates, data_types, responses,
-                               **kwargs)
+    def build(self, data_file, metamodel, **kwargs):
+        super(SVR, self).build(data_file, metamodel, **kwargs)
 
         analysis_options = kwargs.get('algorithm_options', {})
 
-        train_x, test_x, train_y, test_y, validate_xy = self.train_test_validate_split(
+        train_x, test_x, train_y, test_y, validate_xy, scaler = self.train_test_validate_split(
             self.dataset,
-            covariates,
-            responses,
-            validation_id,
-            downsample=self.downsample, scale=True
+            self.__class__.__name__,
+            metamodel,
+            downsample=self.downsample,
+            scale=True
         )
-
-        # from sklearn.preprocessing import RobustScaler
-        #  scaler = RobustScaler()
-        #  X = scaler.fit_transfrom(X)
-
-        # from sklearn.preprocessing import MinMaxScaler
-        # scaling = MinMaxScaler(feature_range=(-1, 1)).fit(X_train)
-        # X_train = scaling.transform(X_train)
-        # X_test = scaling.transform(X_test)
 
         # save the validate dataframe to be used later to validate the accuracy of the models
         self.save_dataframe(validate_xy, "%s/rf_validation.pkl" % self.validation_dir)
@@ -105,66 +96,60 @@ class SVR(ModelGeneratorBase):
             start = time.time()
             base_fit_params = analysis_options.get('base_fit_params', {})
             base_fit_params['kernel'] = 'rbf'
-            base_fit_params['C'] = 1000
-            base_fit_params['gamma'] = 0.1
-            rf = SKL_SVR(**base_fit_params)
-            base_rf = rf.fit(train_x, train_y[response])
+            model = SKL_SVR(**base_fit_params)
+            base_model = model.fit(train_x, train_y[response])
             build_time = time.time() - start
 
             # Evaluate with the building them
             self.model_results.append(
                 self.evaluate(
-                    base_rf, response, 'base', test_x, test_y[response], covariates,
-                    self.downsample, build_time, 0
+                    model, response, 'base', test_x, test_y[response], self.downsample,
+                    build_time, 0, covariates=metamodel.covariate_names, scaler=scaler
                 )
             )
 
-            # if not kwargs.get('skip_cv', False):
-            #     rf = SKL_SVR()
-            #
-            #     kfold = 3
-            #     print('Perfoming CV with k-fold equal to %s' % kfold)
-            #     # grab the param grid from what was specified in the metamodels.json file
-            #     param_grid = analysis_options.get('param_grid', {})
-            #     total_candidates = 1
-            #     for param, options in param_grid.items():
-            #         total_candidates = len(options) * total_candidates
-            #
-            #     print('CV will result in %s candidates' % total_candidates)
-            #
-            #     grid_search = GridSearchCV(estimator=rf, param_grid=param_grid, cv=kfold,
-            #                                n_jobs=-1, verbose=2, refit=True)
-            #
-            #     start = time.time()
-            #     grid_search.fit(train_x, train_y[response])
-            #     cv_time = time.time() - start
-            #
-            #     # This should work, but the size of the model is really large after, so
-            #     # trying to recreate the best_rf to save space.
-            #     # best_rf = grid_search.best_estimator_
-            #
-            #     print('The best params were %s' % grid_search.best_params_)
-            #
-            #     # rebuild only the best rf, and save the results
-            #     rf = RandomForestRegressor(**grid_search.best_params_)
-            #     best_rf = rf.fit(train_x, train_y[response])
-            #
-            #     pickle_file(best_rf, '%s/%s' % (self.models_dir, response))
-            #
-            #     # save the cv results
-            #     self.save_cv_results(
-            #         grid_search.cv_results_, response, self.downsample,
-            #         '%s/cv_results_%s.csv' % (self.base_dir, response)
-            #     )
-            #
-            #     self.model_results.append(
-            #         self.evaluate(
-            #             best_rf, response, 'best', test_x, test_y[response], covariates,
-            #             self.downsample, build_time, cv_time
-            #         )
-            #     )
-            # else:
-            #     pickle_file(base_rf, '%s/%s' % (self.models_dir, response))
+            if not kwargs.get('skip_cv', False):
+                model = SKL_SVR()
+
+                kfold = 3
+                print('Perfoming CV with k-fold equal to %s' % kfold)
+                # grab the param grid from what was specified in the metamodels.json file
+                param_grid = analysis_options.get('param_grid', {})
+                total_candidates = 1
+                for param, options in param_grid.items():
+                    total_candidates = len(options) * total_candidates
+
+                print('CV will result in %s candidates' % total_candidates)
+
+                grid_search = GridSearchCV(estimator=model, param_grid=param_grid, cv=kfold,
+                                           n_jobs=-1, verbose=2, refit=True)
+
+                start = time.time()
+                grid_search.fit(train_x, train_y[response])
+                cv_time = time.time() - start
+
+                print('The best params were %s' % grid_search.best_params_)
+
+                # rebuild only the best model, and save the results
+                model = SKL_SVR(**grid_search.best_params_)
+                best_model = model.fit(train_x, train_y[response])
+
+                pickle_file(best_model, '%s/%s' % (self.models_dir, response))
+
+                # save the cv results
+                self.save_cv_results(
+                    grid_search.cv_results_, response, self.downsample,
+                    '%s/cv_results_%s.csv' % (self.base_dir, response)
+                )
+
+                self.model_results.append(
+                    self.evaluate(
+                        best_model, response, 'best', test_x, test_y[response], self.downsample,
+                        build_time, cv_time, covariates=metamodel.covariate_names, scaler=scaler
+                    )
+                )
+            else:
+                pickle_file(base_model, '%s/%s' % (self.models_dir, response))
 
         if self.model_results:
             save_dict_to_csv(self.model_results, '%s/model_results.csv' % self.base_dir)

@@ -17,7 +17,7 @@ class RandomForest(ModelGeneratorBase):
         super(RandomForest, self).__init__(analysis_id, random_seed, **kwargs)
 
     def evaluate(self, model, model_name, model_type, x_data, y_data, downsample,
-                 build_time, cv_time, covariates=None):
+                 build_time, cv_time, covariates=None,  scaler=None):
         """
 
         Evaluate the performance of the forest based on known x_data and y_data.
@@ -35,7 +35,7 @@ class RandomForest(ModelGeneratorBase):
         """
         _yhat, performance = super(RandomForest, self).evaluate(
             model, model_name, model_type, x_data, y_data, downsample,
-            build_time, cv_time, covariates
+            build_time, cv_time, covariates, scaler
         )
 
         importance_data = pd.Series(model.feature_importances_, index=np.asarray(covariates))
@@ -111,17 +111,15 @@ class RandomForest(ModelGeneratorBase):
         df = pd.DataFrame.from_dict(data)
         df.to_csv(filename)
 
-    def build(self, data_file, validation_id, covariates, data_types, responses, **kwargs):
-        super(RandomForest, self).build(data_file, validation_id, covariates, data_types, responses,
-                                        **kwargs)
+    def build(self, data_file, metamodel, **kwargs):
+        super(RandomForest, self).build(data_file, metamodel, **kwargs)
 
         analysis_options = kwargs.get('algorithm_options', {})
 
-        train_x, test_x, train_y, test_y, validate_xy = self.train_test_validate_split(
+        train_x, test_x, train_y, test_y, validate_xy, _scaler = self.train_test_validate_split(
             self.dataset,
-            covariates,
-            responses,
-            validation_id,
+            self.__class__.__name__,
+            metamodel,
             downsample=self.downsample
         )
 
@@ -134,14 +132,15 @@ class RandomForest(ModelGeneratorBase):
             start = time.time()
             base_fit_params = analysis_options.get('base_fit_params', {})
             rf = RandomForestRegressor(**base_fit_params)
-            base_rf = rf.fit(train_x, train_y[response])
+            base_model = rf.fit(train_x, train_y[response])
             build_time = time.time() - start
 
             # Evaluate the forest when building them
             self.model_results.append(
                 self.evaluate(
-                    base_rf, response, 'base', test_x, test_y[response],
-                    self.downsample, build_time, 0, covariates
+                    base_model, response, 'base', test_x, test_y[response],
+                    self.downsample, build_time, 0, covariates=metamodel.covariate_names,
+                    scaler=_scaler
                 )
             )
 
@@ -172,10 +171,10 @@ class RandomForest(ModelGeneratorBase):
                 print('The best params were %s' % grid_search.best_params_)
 
                 # rebuild only the best rf, and save the results
-                rf = RandomForestRegressor(**grid_search.best_params_)
-                best_rf = rf.fit(train_x, train_y[response])
+                model = RandomForestRegressor(**grid_search.best_params_)
+                best_model = model.fit(train_x, train_y[response])
 
-                pickle_file(best_rf, '%s/%s' % (self.models_dir, response))
+                pickle_file(best_model, '%s/%s' % (self.models_dir, response))
 
                 # save the cv results
                 self.save_cv_results(
@@ -185,12 +184,13 @@ class RandomForest(ModelGeneratorBase):
 
                 self.model_results.append(
                     self.evaluate(
-                        best_rf, response, 'best', test_x, test_y[response],
-                        self.downsample, build_time, cv_time, covariates
+                        best_model, response, 'best', test_x, test_y[response],
+                        self.downsample, build_time, cv_time, covariates=metamodel.covariate_names,
+                        scaler=_scaler
                     )
                 )
             else:
-                pickle_file(base_rf, '%s/%s' % (self.models_dir, response))
+                pickle_file(base_model, '%s/%s' % (self.models_dir, response))
 
         if self.model_results:
             save_dict_to_csv(self.model_results, '%s/model_results.csv' % self.base_dir)

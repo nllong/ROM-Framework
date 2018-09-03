@@ -1,4 +1,5 @@
 import fnmatch
+import math
 import os
 import shutil
 import time
@@ -12,7 +13,7 @@ import statsmodels.api as sm
 from scipy import stats
 from scipy.stats import spearmanr, pearsonr
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import RobustScaler
+from sklearn.preprocessing import StandardScaler
 
 
 class ModelGeneratorBase(object):
@@ -83,7 +84,7 @@ class ModelGeneratorBase(object):
         return pd.read_pickle(path)
 
     def evaluate(self, model, model_name, model_type, x_data, y_data, downsample,
-                 build_time, cv_time, covariates=None):
+                 build_time, cv_time, covariates=None, scaler=None):
         """
         Generic base function to evaluate the performance of the models.
 
@@ -96,7 +97,10 @@ class ModelGeneratorBase(object):
         :param build_time:
         :return: Ordered dict
         """
+
         yhat = model.predict(x_data)
+        # if scaler:
+        #     yhat = scaler.inverse_transform(yhat)
 
         errors = abs(yhat - y_data)
         spearman = spearmanr(y_data, yhat)
@@ -118,11 +122,11 @@ class ModelGeneratorBase(object):
             ('spearman', spearman[0]),
             ('pearson', pearson[0]),
             ('time_to_build', build_time),
-            ('time_to_cv', 0),
+            ('time_to_cv', cv_time),
         ])
 
-    def build(self, data_file, validation_id, covariates, data_types, responses, **kwargs):
-        self.responses = responses
+    def build(self, data_file, metamodel, **kwargs):
+        self.responses = metamodel.available_response_names
         self.dataset = pd.read_csv(data_file)
 
         # print list(dataset.columns.values)
@@ -137,27 +141,30 @@ class ModelGeneratorBase(object):
         })
 
         # type cast the columns - this is probably not needed.
+        data_types = metamodel.covariate_types
         self.dataset[data_types['float']] = self.dataset[data_types['float']].astype(float)
         self.dataset[data_types['int']] = self.dataset[data_types['int']].astype(int)
 
-    def train_test_validate_split(self, dataset, covariates, responses, id_and_value,
-                                  downsample=None, scale=False):
+    def apply_cyclic_transform(self, row, column_name, category_count):
+        return math.sin(2 * math.pi * row[column_name] / category_count)
+
+    def train_test_validate_split(self, dataset, model_type, metamodel, downsample=None, scale=False):
         """
         Use the built in method to generate the train and test data. This adds an additional
         set of data for validation. This vaildation dataset is a unique ID that is pulled out
         of the dataset before the test_train method is called.
 
-        :param dataset: dataframe, data to process
-        :param covariates: list, of covariates to keep in the dataset
-        :param responses: list, of responses to keep in the dataset
-        :param id_and_value: str, unique ID of model to extract
+        # :param dataset: dataframe, data to process
+        # :param covariates: list, dict of covariates and information
+        # :param responses: list, of responses to keep in the dataset
+        # :param validation_id: str, unique ID of model to extract
         :param kwargs: downsample - fraction of dataframe to keep (after validation data extraction)
         :return: dataframes, dataframe: 1) dataset with removed validation data, 2) validation data
         """
         print "Initial dataset size is %s" % len(dataset)
-        if id_and_value and id_and_value in dataset['_id'].unique():
+        if metamodel.validation_id and metamodel.validation_id in dataset['_id'].unique():
             print('Extracting validation dataset and converting to date time')
-            validate_xy = dataset[dataset['_id'] == id_and_value]
+            validate_xy = dataset[dataset['_id'] == metamodel.validation_id]
 
             # Covert the validation dataset datetime to actual datetime objects
             # validate_xy['DateTime'] = pd.to_datetime(dataset['DateTime'])
@@ -165,36 +172,51 @@ class ModelGeneratorBase(object):
             # Constrain to minute precision to make this method much faster
             validate_xy['DateTime'] = validate_xy['DateTime'].astype('datetime64[m]')
 
-            dataset = dataset[dataset['_id'] != id_and_value]
+            dataset = dataset[dataset['_id'] != metamodel.validation_id]
         else:
-            raise Exception("Validation id does not exist in dataframe. ID was %s" % id_and_value)
+            raise Exception("Validation id does not exist in dataframe. ID was %s" % metamodel.validation_id)
 
         if downsample:
             num_rows = int(len(dataset.index.values) * downsample)
             print("Downsampling dataframe by %s to %s rows" % (downsample, num_rows))
             dataset = dataset.sample(n=num_rows)
 
-        if scale:
-            scaler = RobustScaler().fit(self.dataset[covariates], dataset[responses])
-            X = scaler.transform(dataset[covariates])
-            Y = scaler.transform(dataset[responses])
-        else:
-            X = dataset[covariates]
-            Y = dataset[responses]
+        for cv in metamodel.covariates():
+            if cv.get('algorithm_options', None):
+                if cv['algorithm_options'].get(model_type, None):
+                    if cv['algorithm_options'][model_type].get('variable_type', None):
+                        if cv['algorithm_options'][model_type]['variable_type'] == 'cyclical':
+                            print("Transforming covariate to be cyclical %s" % cv['name'])
+                            dataset[cv['name']] = dataset.apply(
+                                self.apply_cyclic_transform,
+                                column_name=cv['name'],
+                                category_count=cv['algorithm_options'][model_type]['category_count'],
+                                axis=1
+                            )
 
         train_x, test_x, train_y, test_y = train_test_split(
-            X,
-            Y,
+            dataset[metamodel.covariate_names],
+            dataset[metamodel.available_response_names],
             train_size=0.7,
             test_size=0.3,
             random_state=self.random_seed
         )
 
+        # If scaling, then fit the scaler on the training data, then use the trained data
+        # scalar to scale the test data.
+        if scale:
+            scaler = StandardScaler()
+            # TODO: save off the scaler for use with other datasets?
+            train_x = scaler.fit_transform(train_x)
+            test_x = scaler.transform(test_x)
+        else:
+            scaler = None
+
         print "Dataset size is %s" % len(dataset)
         print "Training dataset size is %s" % len(train_x)
         print "Validation dataset size is %s" % len(validate_xy)
 
-        return train_x, test_x, train_y, test_y, validate_xy
+        return train_x, test_x, train_y, test_y, validate_xy, scaler
 
     def yy_plots(self, y_data, yhat, model_name):
         """

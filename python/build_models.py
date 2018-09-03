@@ -36,8 +36,6 @@ if metamodel.set_analysis(args.analysis_moniker):
             klass = globals()[model_name]
             # Set the random seed so that the test libraries are the same across the models
 
-            print metamodel.algorithm_options
-
             # model = klass(metamodel.analysis_name, 79, downsample=None)
             # model.build(
             #     '../results/%s/simulation_results.csv' % metamodel.results_directory,
@@ -55,10 +53,7 @@ if metamodel.set_analysis(args.analysis_moniker):
                 model = klass(metamodel.analysis_name, 79, downsample=downsample)
                 model.build(
                     '../results/%s/simulation_results.csv' % metamodel.results_directory,
-                    metamodel.validation_id,
-                    metamodel.covariate_names,
-                    metamodel.covariate_types,
-                    metamodel.available_response_names,
+                    metamodel,
                     algorithm_options=metamodel.algorithm_options.get(model_name, {}),
-                    skip_cv=False
+                    skip_cv=downsample > 0.5
                 )

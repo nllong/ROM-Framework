@@ -385,6 +385,14 @@ class Metamodels(object):
 
         return self.file[self.set_i]
 
+    def covariates(self):
+        if self.set_i is None:
+            raise Exception(
+                "Attempting to access analysis without setting. Run analysis.set_analysis(<id>)"
+            )
+
+        return self.file[self.set_i]['covariates']
+
     @property
     def covariate_types(self):
         if self.set_i is None:
