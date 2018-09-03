@@ -27,7 +27,8 @@
         "param_grid": {
           "_comments": "gamma - default is 1/n_features, C - default is 1",
           "C": [0.1, 1, 10],
-          "gamma": [0.25, 0.1, 0.01, 0.001]
+          "gamma": [0.5, 0.1, 0.01],
+          "epsilon": [0.1, 0.25]
         }
       }
     },
@@ -153,7 +154,8 @@
         "param_grid": {
           "_comments": "gamma - default is 1/n_features, C - default is 1",
           "C": [0.1, 1, 10],
-          "gamma": [0.25, 0.1, 0.01, 0.001]
+          "gamma": [0.25, 0.1, 0.01, 0.001],
+          "epsilon": [0.1, 0.25, 0.5]
         }
       }
     },

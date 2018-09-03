@@ -135,6 +135,7 @@ class SVR(ModelGeneratorBase):
                 best_model = model.fit(train_x, train_y[response])
 
                 pickle_file(best_model, '%s/%s' % (self.models_dir, response))
+                pickle_file(scaler, '%s/%s_scaler' % (self.models_dir, response))
 
                 # save the cv results
                 self.save_cv_results(
@@ -150,6 +151,7 @@ class SVR(ModelGeneratorBase):
                 )
             else:
                 pickle_file(base_model, '%s/%s' % (self.models_dir, response))
+                pickle_file(scaler, '%s/%s_scaler' % (self.models_dir, response))
 
         if self.model_results:
             save_dict_to_csv(self.model_results, '%s/model_results.csv' % self.base_dir)

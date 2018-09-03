@@ -17,6 +17,8 @@ parser.add_argument("-a", "--analysis_moniker", help="Name of the Analysis Model
 available_models = parser.add_argument(
     "-m", "--model_type", choices=['All', 'LinearModel', 'RandomForest', 'SVR'],
     default='All', help="Type of model to build")
+downsample = parser.add_argument(
+    "-d", "--downsample", default=None, type=float, help="Build only specific downsample value")
 del available_models.choices[0]
 args = parser.parse_args()
 
@@ -36,18 +38,14 @@ if metamodel.set_analysis(args.analysis_moniker):
             klass = globals()[model_name]
             # Set the random seed so that the test libraries are the same across the models
 
-            # model = klass(metamodel.analysis_name, 79, downsample=None)
-            # model.build(
-            #     '../results/%s/simulation_results.csv' % metamodel.results_directory,
-            #     metamodel.validation_id,
-            #     metamodel.covariate_names,
-            #     metamodel.covariate_types,
-            #     metamodel.available_response_names,
-            #     algorithm_options=metamodel.algorithm_options.get(model_name, {}),
-            #     skip_cv=True
-            # )
+            if args.downsample and args.downsample not in metamodel.downsamples:
+                print("Downsample argument must exist in the downsample list in the JSON")
+                exit(1)
 
             for downsample in metamodel.downsamples:
+                if args.downsample and args.downsample != downsample:
+                    continue
+
                 klass = globals()[model_name]
                 # Set the random seed so that the test libraries are the same across the models
                 model = klass(metamodel.analysis_name, 79, downsample=downsample)

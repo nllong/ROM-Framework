@@ -207,8 +207,8 @@ class ModelGeneratorBase(object):
         if scale:
             scaler = StandardScaler()
             # TODO: save off the scaler for use with other datasets?
-            train_x = scaler.fit_transform(train_x)
-            test_x = scaler.transform(test_x)
+            train_x[train_x.columns] = scaler.fit_transform(train_x[train_x.columns])
+            test_x[test_x.columns] = scaler.transform(test_x[test_x.columns])
         else:
             scaler = None
 

@@ -17,8 +17,10 @@ sns.set(style="ticks", color_codes=True)
 parser = argparse.ArgumentParser()
 parser.add_argument("-a", "--analysis_moniker", help="Name of the Analysis Model")
 available_models = parser.add_argument(
-    "-m", "--model_type", choices=['All', 'LinearModel', 'RandomForest'],
+    "-m", "--model_type", choices=['All', 'LinearModel', 'RandomForest', 'SVR'],
     default='All', help="Type of model to build")
+downsample = parser.add_argument(
+    "-d", "--downsample", default=None, type=float, help="Evaluate only specific downsample value")
 del available_models.choices[0]
 args = parser.parse_args()
 
@@ -98,25 +100,19 @@ if metamodel.set_analysis(args.analysis_moniker):
     # go through the cv_results and create some plots
     for model_name in available_models.choices:
         if args.model_type == 'All' or args.model_type == model_name:
-            # process the full sampled results
-            base_dir = "output/%s/%s" % (args.analysis_moniker, model_name)
-            output_dir = "%s/images/cv_results" % base_dir
+            last_dir = None
+            all_model_results = None
 
-            if os.path.exists(output_dir):
-                shutil.rmtree(output_dir)
-            os.makedirs(output_dir)
+            if args.downsample and args.downsample not in metamodel.downsamples:
+                print("Downsample argument must exist in the downsample list in the JSON")
+                exit(1)
 
-            model_results_file = '%s/model_results.csv' % base_dir
-            process_model_results(model_results_file, output_dir)
+            for index, downsample in enumerate(metamodel.downsamples):
+                if args.downsample and args.downsample != downsample:
+                    continue
 
-            # create a dataframe to add all the model results together
-            all_model_results = pd.read_csv(model_results_file)
-
-            # There is no cross-validation in the full smapled results
-
-            # Now process al the downsampled results
-            for downsample in metamodel.downsamples:
                 base_dir_ds = "output/%s_%s/%s" % (args.analysis_moniker, downsample, model_name)
+                last_dir = base_dir_ds
                 output_dir = "%s/images/cv_results" % base_dir_ds
 
                 if os.path.exists(output_dir):
@@ -127,7 +123,12 @@ if metamodel.set_analysis(args.analysis_moniker):
                 model_results_file = '%s/model_results.csv' % base_dir_ds
                 process_model_results(model_results_file, output_dir)
 
-                all_model_results = pd.concat([all_model_results, pd.read_csv(model_results_file)])
+                # if this is the first file, then read it into the all_model_results to
+                # create a dataframe to add all the model results together
+                if index == 0:
+                    all_model_results = pd.read_csv(model_results_file)
+                else:
+                    all_model_results = pd.concat([all_model_results, pd.read_csv(model_results_file)])
 
                 for response in metamodel.available_response_names:
                     # Process the CV results
@@ -135,5 +136,5 @@ if metamodel.set_analysis(args.analysis_moniker):
                     process_cv_results(cv_result_file, response, output_dir)
 
             # save any combined datasets
-            all_model_results.to_csv('%s/all_model_results.csv' % base_dir, index=False)
+            all_model_results.to_csv('%s/all_model_results.csv' % last_dir, index=False)
 
