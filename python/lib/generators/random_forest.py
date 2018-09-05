@@ -119,7 +119,6 @@ class RandomForest(ModelGeneratorBase):
 
         train_x, test_x, train_y, test_y, validate_xy, _scaler = self.train_test_validate_split(
             self.dataset,
-            self.__class__.__name__,
             metamodel,
             downsample=self.downsample
         )
@@ -127,7 +126,7 @@ class RandomForest(ModelGeneratorBase):
         # save the validate dataframe to be used later to validate the accuracy of the models
         self.save_dataframe(validate_xy, "%s/rf_validation.pkl" % self.validation_dir)
 
-        for response in metamodel.available_response_names:
+        for response in metamodel.available_response_names(self.model_type):
             print "Fitting random forest model for %s" % response
 
             start = time.time()
@@ -140,7 +139,8 @@ class RandomForest(ModelGeneratorBase):
             self.model_results.append(
                 self.evaluate(
                     base_model, response, 'base', test_x, test_y[response],
-                    self.downsample, build_time, 0, covariates=metamodel.covariate_names,
+                    self.downsample, build_time, 0,
+                    covariates=metamodel.covariate_names(self.model_type),
                     scaler=_scaler
                 )
             )
@@ -188,7 +188,8 @@ class RandomForest(ModelGeneratorBase):
                 self.model_results.append(
                     self.evaluate(
                         best_model, response, 'best', test_x, test_y[response],
-                        self.downsample, build_time, cv_time, covariates=metamodel.covariate_names,
+                        self.downsample, build_time, cv_time,
+                        covariates=metamodel.covariate_names(self.model_type),
                         scaler=_scaler
                     )
                 )

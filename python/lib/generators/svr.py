@@ -13,13 +13,13 @@ class SVR(ModelGeneratorBase):
     def __init__(self, analysis_id, random_seed=None, **kwargs):
         super(SVR, self).__init__(analysis_id, random_seed, **kwargs)
 
-    def evaluate(self, model, model_name, model_type, x_data, y_data, downsample,
+    def evaluate(self, model, model_name, model_moniker, x_data, y_data, downsample,
                  build_time, cv_time, covariates=None, scaler=None):
         """
         Evaluate the performance of the forest based on known x_data and y_data.
         """
         yhat, performance = super(SVR, self).evaluate(
-            model, model_name, model_type, x_data, y_data, downsample,
+            model, model_name, model_moniker, x_data, y_data, downsample,
             build_time, cv_time, covariates, scaler
         )
         return performance
@@ -81,7 +81,6 @@ class SVR(ModelGeneratorBase):
 
         train_x, test_x, train_y, test_y, validate_xy, scaler = self.train_test_validate_split(
             self.dataset,
-            self.__class__.__name__,
             metamodel,
             downsample=self.downsample,
             scale=True
@@ -90,7 +89,7 @@ class SVR(ModelGeneratorBase):
         # save the validate dataframe to be used later to validate the accuracy of the models
         self.save_dataframe(validate_xy, "%s/svr_validation.pkl" % self.validation_dir)
 
-        for response in metamodel.available_response_names:
+        for response in metamodel.available_response_names(self.model_type):
             print "Fitting %s model for %s" % (self.__class__.__name__, response)
 
             start = time.time()
@@ -107,7 +106,9 @@ class SVR(ModelGeneratorBase):
             self.model_results.append(
                 self.evaluate(
                     model, response, 'base', test_x, test_y[response], self.downsample,
-                    build_time, 0, covariates=metamodel.covariate_names, scaler=scaler
+                    build_time, 0,
+                    covariates=metamodel.covariate_names(self.model_type),
+                    scaler=scaler
                 )
             )
 
@@ -151,7 +152,9 @@ class SVR(ModelGeneratorBase):
                 self.model_results.append(
                     self.evaluate(
                         best_model, response, 'best', test_x, test_y[response], self.downsample,
-                        build_time, cv_time, covariates=metamodel.covariate_names, scaler=scaler
+                        build_time, cv_time,
+                        covariates=metamodel.covariate_names(self.model_type),
+                        scaler=scaler
                     )
                 )
             else:

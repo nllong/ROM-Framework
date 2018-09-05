@@ -257,7 +257,15 @@
         "name": "hvac_mode",
         "display_name": "HVAC Mode",
         "units": "",
-        "type": "int"
+        "type": "int",
+        "algorithm_options": {
+          "RandomForest": {
+            "ignore": true
+          },
+          "LinearModel": {
+            "ignore": true
+          }
+        }
       }
     ],
     "responses": [

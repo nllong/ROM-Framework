@@ -30,7 +30,6 @@ class LinearModel(ModelGeneratorBase):
 
         train_x, test_x, train_y, test_y, validate_xy, _scaler = self.train_test_validate_split(
             self.dataset,
-            self.__class__.__name__,
             metamodel,
             downsample=self.downsample
         )
@@ -38,7 +37,7 @@ class LinearModel(ModelGeneratorBase):
         # save the validate dataframe to be used later to validate the accuracy of the models
         self.save_dataframe(validate_xy, "%s/lm_validation.pkl" % self.validation_dir)
 
-        for response in metamodel.available_response_names:
+        for response in metamodel.available_response_names(self.model_type):
             print "Fitting Linear Model for %s" % response
             trained_model = LinearRegression()
 

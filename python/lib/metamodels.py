@@ -2,17 +2,11 @@ import gc
 import json
 import os
 import re
-from collections import OrderedDict
-from math import sqrt
+import multiprocessing
 
-import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-import multiprocessing
-from lib.shared import save_dict_to_csv
-from pandas.plotting import lag_plot
-from sklearn.metrics import mean_squared_error
 
 from shared import unpickle_file
 
@@ -133,6 +127,7 @@ class Metamodels(object):
 
         :return: dict, algorithm options
         """
+
         def _remove_comments(data):
             """
             This method recursively goes through a dict and removes any '_comments' keys
@@ -165,10 +160,11 @@ class Metamodels(object):
         """
         Load in the metamodels/generators
         """
-        if not models_to_load:
-            models_to_load = self.available_response_names
-
         self.rom_type = model_type
+
+        if not models_to_load:
+            models_to_load = self.available_response_names(self.rom_type)
+
         print "Loading models %s" % models_to_load
 
         for response in models_to_load:
@@ -188,11 +184,11 @@ class Metamodels(object):
 
         print "Finished loading models"
         print "The responses are:"
-        for index, rs in enumerate(self.available_response_names):
+        for index, rs in enumerate(self.available_response_names(self.rom_type)):
             print "  %s: %s" % (index, rs)
 
         print "The covariates are:"
-        for index, cv in enumerate(self.covariate_names):
+        for index, cv in enumerate(self.covariate_names(self.rom_type)):
             print "  %s: %s" % (index, cv)
 
     def yhat(self, response_name, data):
@@ -203,14 +199,16 @@ class Metamodels(object):
         :param data: pandas DataFrame
         :return:
         """
-        if response_name not in self.available_response_names:
+        if response_name not in self.available_response_names(self.rom_type):
             raise Exception("Model does not have the response '%s'" % response_name)
 
         # verify that the covariates are defined in the dataframe, if not, then remove them before
         # calling the yhat method
 
-        extra_columns_in_df = list(set(data.columns.values) - set(self.covariate_names))
-        missing_data_in_df = list(set(self.covariate_names) - set(data.columns.values))
+        extra_columns_in_df = list(
+            set(data.columns.values) - set(self.covariate_names(self.rom_type)))
+        missing_data_in_df = list(
+            set(self.covariate_names(self.rom_type)) - set(data.columns.values))
 
         if len(extra_columns_in_df) > 0:
             # print "The following columns are not needed in DataFrame"
@@ -224,11 +222,15 @@ class Metamodels(object):
             raise Exception("Need to define %s in DataFrame for model" % missing_data_in_df)
 
         # typecast the columns before running the analysis
-        data[self.covariate_types['float']] = data[self.covariate_types['float']].astype(float)
-        data[self.covariate_types['int']] = data[self.covariate_types['int']].astype(int)
+        data[self.covariate_types(self.rom_type)['float']] = data[
+            self.covariate_types(self.rom_type)['float']
+        ].astype(float)
+        data[self.covariate_types(self.rom_type)['int']] = data[
+            self.covariate_types(self.rom_type)['int']
+        ].astype(int)
 
         # Order the data columns correctly -- this is a magic function.
-        data = data[self.covariate_names]
+        data = data[self.covariate_names(self.rom_type)]
 
         return self.models[response_name].yhat(data)
 
@@ -284,31 +286,6 @@ class Metamodels(object):
                 save_df[unique_value] = new_df[response].values
 
             save_df.to_csv(file_name, index=False)
-
-            # Create heat maps
-            # if save_figure:
-            #     figure_filename = 'output/%s/%s/images/%s_%s.png' % (
-            #         self.analysis_name,
-            #         self.rom_type,
-            #         file_prepend,
-            #         response,
-            #     )
-            #
-            #     # this is a bit cheezy right now, load in the file and process again
-            #     df_heatmap = pd.read_csv(file_name, header=0)
-            #
-            #     # Remove the datetime column before converting the column headers to rounded floats
-            #     df_heatmap = df_heatmap.drop(columns=['datetime'])
-            #     df_heatmap.rename(columns=lambda x: round(float(x), 1), inplace=True)
-            #
-            #     plt.figure()
-            #     f, ax = plt.subplots(figsize=(5, 12))
-            #     sns.heatmap(df_heatmap)
-            #     ax.set_title('%s - Mass Flow %s kg/s' % (response, unique_value))
-            #     ax.set_xlabel('ETS Inlet Temperature')
-            #     ax.set_ylabel('Hour of Year')
-            #     plt.savefig(figure_filename)
-            #     plt.close('all')
 
     def save_3d_csvs(self, data, first_dimension, second_dimension, second_dimension_short_name,
                      file_prepend, save_figure=False):
@@ -383,7 +360,7 @@ class Metamodels(object):
                     plt.close('all')
 
     def model(self, response_name):
-        if response_name not in self.available_response_names:
+        if response_name not in self.available_response_names(self.rom_type):
             raise Exception("Model does not have the response '%s'" % response_name)
 
         return self.models[response_name].model
@@ -401,16 +378,21 @@ class Metamodels(object):
 
         return self.file[self.set_i]
 
-    def covariates(self):
+    def covariates(self, model_type):
         if self.set_i is None:
             raise Exception(
                 "Attempting to access analysis without setting. Run analysis.set_analysis(<id>)"
             )
 
-        return self.file[self.set_i]['covariates']
+        # only return the covariates that don't have ignore true for the type of model
+        results = []
+        for cv in self.file[self.set_i]['covariates']:
+            if not cv.get('algorithm_options', {}).get(model_type, {}).get('ignore', False):
+                results.append(cv)
 
-    @property
-    def covariate_types(self):
+        return results
+
+    def covariate_types(self, model_type):
         if self.set_i is None:
             raise Exception(
                 "Attempting to access analysis without setting. Run analysis.set_analysis(<id>)"
@@ -422,13 +404,12 @@ class Metamodels(object):
             'str': [],
             'int': []
         }
-        for cv in self.file[self.set_i]['covariates']:
+        for cv in self.covariates(model_type):
             data_types[cv['type']].append(cv['name'])
 
         return data_types
 
-    @property
-    def covariate_names(self):
+    def covariate_names(self, model_type):
         """
         Returns a list of covariates. The order in the JSON file must be the order that is
         passed into the metamodel, otherwise the data will not make sense.
@@ -441,10 +422,9 @@ class Metamodels(object):
                 "Attempting to access analysis without setting. Run analysis.set_analysis(<id>)"
             )
 
-        return [cv['name'] for cv in self.file[self.set_i]['covariates']]
+        return [cv['name'] for cv in self.covariates(model_type)]
 
-    @property
-    def available_response_names(self):
+    def available_response_names(self, _model_type):
         if self.set_i is None:
             raise Exception(
                 "Attempting to access analysis without setting. Run analysis.set_analysis(<id>)"
@@ -463,17 +443,3 @@ class Metamodels(object):
                 algorithm_options[k] = eval(string_value)
 
         return algorithm_options
-
-
-if __name__ == "__main__":
-    # test loading the analyses JSON
-    a_file = Metamodels('../metamodels.json')
-
-    if not a_file.set_analysis('dne'):
-        print "Analysis not found"
-
-    if a_file.set_analysis('3ff422c2-ca11-44db-b955-b39a47b011e7'):
-        print "Found Analysis"
-        print a_file.analysis['covariates']
-        print a_file.covariate_names
-        print a_file.available_response_names

@@ -165,17 +165,3 @@ class AnalysisDefinition:
             )
 
         return [cv['name'] for cv in self.file[self.set_i]['responses']]
-
-
-if __name__ == "__main__":
-    # test loading the analyses JSON
-    a_file = Analyses('../metamodels.json')
-
-    if not a_file.set_analysis('dne'):
-        print "Analysis not found"
-
-    if a_file.set_analysis('3ff422c2-ca11-44db-b955-b39a47b011e7'):
-        print "Found Analysis"
-        print a_file.analysis['covariates']
-        print a_file.covariate_names
-        print a_file.available_response_names

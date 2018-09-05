@@ -79,14 +79,13 @@ class ModelGeneratorBase(object):
     def read_dataframe(self, path):
         return pd.read_pickle(path)
 
-    def evaluate(self, model, model_name, model_type, x_data, y_data, downsample,
+    def evaluate(self, model, model_name, model_moniker, x_data, y_data, downsample,
                  build_time, cv_time, covariates=None, scaler=None):
         """
         Generic base function to evaluate the performance of the models.
 
         :param model:
         :param model_name:
-        :param model_type:
         :param x_data:
         :param y_data:
         :param downsample:
@@ -108,7 +107,7 @@ class ModelGeneratorBase(object):
 
         return yhat, OrderedDict([
             ('name', model_name),
-            ('model_type', model_type),
+            ('model_type', model_moniker),
             ('downsample', downsample),
             ('slope', slope),
             ('intercept', intercept),
@@ -136,14 +135,14 @@ class ModelGeneratorBase(object):
         })
 
         # type cast the columns - this is probably not needed.
-        data_types = metamodel.covariate_types
+        data_types = metamodel.covariate_types(self.model_type)
         self.dataset[data_types['float']] = self.dataset[data_types['float']].astype(float)
         self.dataset[data_types['int']] = self.dataset[data_types['int']].astype(int)
 
     def apply_cyclic_transform(self, row, column_name, category_count):
         return math.sin(2 * math.pi * row[column_name] / category_count)
 
-    def train_test_validate_split(self, dataset, model_type, metamodel, downsample=None, scale=False):
+    def train_test_validate_split(self, dataset, metamodel, downsample=None, scale=False):
         """
         Use the built in method to generate the train and test data. This adds an additional
         set of data for validation. This vaildation dataset is a unique ID that is pulled out
@@ -176,22 +175,22 @@ class ModelGeneratorBase(object):
             print("Downsampling dataframe by %s to %s rows" % (downsample, num_rows))
             dataset = dataset.sample(n=num_rows)
 
-        for cv in metamodel.covariates():
+        for cv in metamodel.covariates(self.model_type):
             if cv.get('algorithm_options', None):
-                if cv['algorithm_options'].get(model_type, None):
-                    if cv['algorithm_options'][model_type].get('variable_type', None):
-                        if cv['algorithm_options'][model_type]['variable_type'] == 'cyclical':
+                if cv['algorithm_options'].get(self.model_type, None):
+                    if cv['algorithm_options'][self.model_type].get('variable_type', None):
+                        if cv['algorithm_options'][self.model_type]['variable_type'] == 'cyclical':
                             print("Transforming covariate to be cyclical %s" % cv['name'])
                             dataset[cv['name']] = dataset.apply(
                                 self.apply_cyclic_transform,
                                 column_name=cv['name'],
-                                category_count=cv['algorithm_options'][model_type]['category_count'],
+                                category_count=cv['algorithm_options'][self.model_type]['category_count'],
                                 axis=1
                             )
 
         train_x, test_x, train_y, test_y = train_test_split(
-            dataset[metamodel.covariate_names],
-            dataset[metamodel.available_response_names],
+            dataset[metamodel.covariate_names(self.model_type)],
+            dataset[metamodel.available_response_names(self.model_type)],
             train_size=0.7,
             test_size=0.3,
             random_state=self.random_seed

@@ -56,7 +56,7 @@ if metamodel.set_analysis(args.analysis_moniker):
             metamodel.load_models(model_type[0], downsample=downsample)
 
             # Run the ROM for each of the response variables
-            for response in metamodel.available_response_names:
+            for response in metamodel.available_response_names(model_type[0]):
                 metadata[model_type[0]]['responses'].append(response)
                 single_df["Modeled %s %s" % (model_type[1], response)] = metamodel.yhat(response,
                                                                                         single_df)

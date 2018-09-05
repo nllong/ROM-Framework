@@ -107,7 +107,14 @@ if metamodel.set_analysis(args.analysis_moniker):
                 print("Downsample argument must exist in the downsample list in the JSON")
                 exit(1)
 
-            for index, downsample in enumerate(metamodel.downsamples):
+            # check if the model name has any downsampling override values
+            algo_options = metamodel.algorithm_options.get(model_name, {})
+            algo_options = Metamodels.resolve_algorithm_options(algo_options)
+            downsamples = metamodel.downsamples
+            if algo_options.get('downsamples', None):
+                downsamples = algo_options.get('downsamples')
+
+            for index, downsample in enumerate(downsamples):
                 if args.downsample and args.downsample != downsample:
                     continue
 
@@ -134,7 +141,7 @@ if metamodel.set_analysis(args.analysis_moniker):
                             [all_model_results, pd.read_csv(model_results_file)]
                         )
 
-                for response in metamodel.available_response_names:
+                for response in metamodel.available_response_names(model_name):
                     # Process the CV results
                     cv_result_file = '%s/cv_results_%s.csv' % (base_dir_ds, response)
                     process_cv_results(cv_result_file, response, output_dir)
