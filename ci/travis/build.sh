@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 BUILD_SCOPE=$1
 
 if [ "${BUILD_SCOPE}" == "all" ]; then
@@ -22,7 +24,10 @@ if [ "${BUILD_SCOPE}" == "all" ]; then
     cd python
     python build_models.py -a smoff_test -m LinearModel
     python build_models.py -a smoff_test -m RandomForest
+    python build_models.py -a smoff_test -m SVR
     python evaluate_models.py -a smoff_test -m LinearModel
+    python evaluate_models.py -a smoff_test -m RandomForest
+    python evaluate_models.py -a smoff_test -m SVR
     python validate_models.py -a smoff_test -m RandomForest
     cd ..
 fi
