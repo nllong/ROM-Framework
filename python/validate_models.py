@@ -15,6 +15,8 @@ parser.add_argument("-a", "--analysis_moniker", help="Name of the Analysis Model
 available_models = parser.add_argument("-m", "--model_type",
                                        choices=['All', 'LinearModel', 'RandomForest'],
                                        default='All', help="Type of model to build")
+downsample = parser.add_argument(
+    "-d", "--downsample", default=None, type=float, help="Evaluate only specific downsample value")
 del available_models.choices[0]
 args = parser.parse_args()
 
@@ -28,7 +30,14 @@ print("Loading metamodels.json")
 metamodel = Metamodels('./metamodels.json')
 
 if metamodel.set_analysis(args.analysis_moniker):
+    if args.downsample and args.downsample not in metamodel.downsamples:
+        print("Downsample argument must exist in the downsample list in the JSON")
+        exit(1)
+
     for downsample in metamodel.downsamples:
+        if args.downsample and args.downsample != downsample:
+            continue
+
         validation_dir = "output/%s_%s/ValidationData" % (args.analysis_moniker, downsample)
         output_dir = "%s/images" % validation_dir
 
@@ -42,7 +51,7 @@ if metamodel.set_analysis(args.analysis_moniker):
         # loading the rf or lm data results in the same results since the data are from the same model
         single_df = pd.read_pickle("%s/%s" % (validation_dir, 'rf_validation.pkl'))
 
-        for model_type in [('RandomForest', 'RF'), ('LinearModel', 'LM')]:
+        for model_type in [('RandomForest', 'RF'), ('LinearModel', 'LM'), ('SVR', 'SVR')]:
             metadata[model_type[0]] = {'responses': [], 'moniker': model_type[1]}
             metamodel.load_models(model_type[0], downsample=downsample)
 

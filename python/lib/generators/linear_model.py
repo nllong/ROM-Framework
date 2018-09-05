@@ -38,7 +38,7 @@ class LinearModel(ModelGeneratorBase):
         # save the validate dataframe to be used later to validate the accuracy of the models
         self.save_dataframe(validate_xy, "%s/lm_validation.pkl" % self.validation_dir)
 
-        for response in self.responses:
+        for response in metamodel.available_response_names:
             print "Fitting Linear Model for %s" % response
             trained_model = LinearRegression()
 

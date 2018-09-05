@@ -49,6 +49,8 @@ def post_process_analysis_id(analysis_id)
   FileUtils.mkdir_p save_dir
   # Go through the directories and update the reports to add in the last column of data.
   File.open("#{save_dir}/simulation_results.csv", 'w') do |new_file|
+    heat_mass_flow_index = nil
+    cool_mass_flow_index = nil
     Dir["#{analysis_id}/*/*.csv"].each.with_index do |file, file_index|
       puts "Processing file #{file}"
       dir = File.dirname(file)
@@ -85,13 +87,32 @@ def post_process_analysis_id(analysis_id)
       # puts "New data are: #{new_header} : #{new_data}"
       File.readlines(file).each.with_index do |line, index|
         if file_index.zero? && index.zero?
+          # get the index of few variables to create other indicators for
+          # specific models
+          new_header << 'hvac_mode'
+          line_split = line.split(',')
+          heat_mass_flow_index = line_split.find_index('District Heating Mass Flow Rate')
+          cool_mass_flow_index = line_split.find_index('District Cooling Mass Flow Rate')
+
           # write out the header into the new file
           new_file << "#{line.gsub(' ', '').chomp},#{new_header.join(',')}\n"
         elsif index.zero?
           # ignore the headers in the other files
           next
         else
-          new_file << "#{line.chomp},#{new_data.join(',')}\n"
+          line_split = line.split(',')
+          heat_value = line_split[heat_mass_flow_index].to_f
+          cool_value = line_split[cool_mass_flow_index].to_f
+          hvac_mode = 0
+          if heat_value > 0 && cool_value > 0
+            hvac_mode = 3
+          elsif heat_value > 0
+            hvac_mode = 1
+          elsif cool_value > 0
+            hvac_mode = 2
+          end
+
+          new_file << "#{line.chomp},#{new_data.join(',')},#{hvac_mode}\n"
         end
       end
     end

@@ -1,6 +1,6 @@
 import time
 import zipfile
-
+import multiprocessing
 import pandas as pd
 from lib.shared import pickle_file, save_dict_to_csv, zipdir
 from sklearn.model_selection import GridSearchCV
@@ -88,9 +88,9 @@ class SVR(ModelGeneratorBase):
         )
 
         # save the validate dataframe to be used later to validate the accuracy of the models
-        self.save_dataframe(validate_xy, "%s/rf_validation.pkl" % self.validation_dir)
+        self.save_dataframe(validate_xy, "%s/svr_validation.pkl" % self.validation_dir)
 
-        for response in self.responses:
+        for response in metamodel.available_response_names:
             print "Fitting %s model for %s" % (self.__class__.__name__, response)
 
             start = time.time()
@@ -98,6 +98,9 @@ class SVR(ModelGeneratorBase):
             base_fit_params['kernel'] = 'rbf'
             model = SKL_SVR(**base_fit_params)
             base_model = model.fit(train_x, train_y[response])
+            print(base_model.support_vectors_)
+            print(base_model.support_)
+            print(base_model.n_support_)
             build_time = time.time() - start
 
             # Evaluate with the building them
@@ -121,8 +124,10 @@ class SVR(ModelGeneratorBase):
 
                 print('CV will result in %s candidates' % total_candidates)
 
+                # allow for the computer to be responsive during grid_search
+                n_jobs = max(1, multiprocessing.cpu_count() - 2)
                 grid_search = GridSearchCV(estimator=model, param_grid=param_grid, cv=kfold,
-                                           n_jobs=-1, verbose=2, refit=True)
+                                           n_jobs=n_jobs, verbose=2, refit=True)
 
                 start = time.time()
                 grid_search.fit(train_x, train_y[response])

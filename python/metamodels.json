@@ -9,6 +9,8 @@
     "downsamples": [0.05, 0.15, 0.25, 1.0],
     "algorithm_options": {
       "RandomForest": {
+        "_comments": "If downsamples are specified here, then they will override the parent values",
+        "downsamples": [0.15, 1.0],
         "param_grid": {
           "_comments": "max_depth - default is None, max_features - default is p/3, min_samples_leaf - default is 1, min_samples_split - default is 2, n_estimators - default is 10",
           "max_depth": [null, 3, 6],
@@ -18,15 +20,22 @@
           "n_estimators": [10, 100, 200]
         },
         "base_fit_params": {
+          "_comments": "$NCORES will be replaced with the number of cores on machine. (max($NCORES-x,1))",
           "max_depth": null,
           "n_estimators": 20,
-          "min_samples_split": 2
+          "min_samples_split": 2,
+          "n_jobs": "$NCORES - 2"
         }
       },
       "SVR": {
+        "_comments": "If downsamples are specified here, then they will override the parent values",
+        "downsamples": [0.15],
+        "base_fit_params": {
+          "cache_size": 1000
+        },
         "param_grid": {
           "_comments": "gamma - default is 1/n_features, C - default is 1",
-          "C": [0.1, 1, 10],
+          "C": [0.1, 1],
           "gamma": [0.5, 0.1, 0.01],
           "epsilon": [0.1, 0.25]
         }
@@ -92,6 +101,20 @@
         "display_name": "LPD Average",
         "units": "W/m2",
         "type": "float"
+      },
+      {
+        "name": "hvac_mode",
+        "display_name": "HVAC Mode",
+        "units": "",
+        "type": "int",
+        "algorithm_options": {
+          "RandomForest": {
+            "ignore": true
+          },
+          "LinearModel": {
+            "ignore": true
+          }
+        }
       }
     ],
     "responses": [
@@ -134,28 +157,38 @@
     "display_name": "Small Office Test Dataset",
     "description": "8 Simulations",
     "validation_datapoint_id": "9f1e2940-c9f9-48e0-bf33-fee869fe0b3a",
-    "downsamples": [0.1, 0.25, 1],
+    "downsamples": [0.15, 0.25, 1.0],
     "algorithm_options": {
       "RandomForest": {
+        "_comments": "If downsamples are specified here, then they will override the parent values",
+        "downsamples": [0.15, 1.0],
         "param_grid": {
-           "_comments": "max_depth - default is None, max_features - default is p/3, min_samples_leaf - default is 1, min_samples_split - default is 2, n_estimators - default is 10",
-           "max_depth": [null, 10],
-           "max_features": [0.33, 0.66],
-           "min_samples_leaf": [1, 10],
-           "min_samples_split": [2, 10],
-           "n_estimators": [10, 25]
+          "_comments": "max_depth - default is None, max_features - default is p/3, min_samples_leaf - default is 1, min_samples_split - default is 2, n_estimators - default is 10",
+          "max_depth": [null, 3, 6],
+          "max_features": [0.50, 0.66, 0.75],
+          "min_samples_leaf": [1, 2, 4],
+          "min_samples_split": [2, 3, 5],
+          "n_estimators": [10, 100, 200]
         },
         "base_fit_params": {
+          "_comments": "$NCORES will be replaced with the number of cores on machine. (max($NCORES-x,1))",
           "max_depth": null,
-          "n_estimators": 20
+          "n_estimators": 20,
+          "min_samples_split": 2,
+          "n_jobs": "eval(max(1,multiprocessing.cpu_count() - 4))"
         }
       },
       "SVR": {
+        "_comments": "If downsamples are specified here, then they will override the parent values",
+        "downsamples": [0.15],
+        "base_fit_params": {
+          "cache_size": 1000
+        },
         "param_grid": {
           "_comments": "gamma - default is 1/n_features, C - default is 1",
-          "C": [0.1, 1, 10],
-          "gamma": [0.25, 0.1, 0.01, 0.001],
-          "epsilon": [0.1, 0.25, 0.5]
+          "C": [0.1, 1],
+          "gamma": [0.5, 0.1, 0.01],
+          "epsilon": [0.1, 0.25]
         }
       }
     },
@@ -219,6 +252,12 @@
         "display_name": "LPD Average",
         "units": "W/m2",
         "type": "float"
+      },
+      {
+        "name": "hvac_mode",
+        "display_name": "HVAC Mode",
+        "units": "",
+        "type": "int"
       }
     ],
     "responses": [

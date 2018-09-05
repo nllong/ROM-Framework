@@ -126,9 +126,13 @@ if metamodel.set_analysis(args.analysis_moniker):
                 # if this is the first file, then read it into the all_model_results to
                 # create a dataframe to add all the model results together
                 if index == 0:
-                    all_model_results = pd.read_csv(model_results_file)
+                    if os.path.exists(model_results_file):
+                        all_model_results = pd.read_csv(model_results_file)
                 else:
-                    all_model_results = pd.concat([all_model_results, pd.read_csv(model_results_file)])
+                    if os.path.exists(model_results_file):
+                        all_model_results = pd.concat(
+                            [all_model_results, pd.read_csv(model_results_file)]
+                        )
 
                 for response in metamodel.available_response_names:
                     # Process the CV results
@@ -137,4 +141,3 @@ if metamodel.set_analysis(args.analysis_moniker):
 
             # save any combined datasets
             all_model_results.to_csv('%s/all_model_results.csv' % last_dir, index=False)
-

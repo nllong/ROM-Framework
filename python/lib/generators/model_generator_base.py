@@ -39,10 +39,6 @@ class ModelGeneratorBase(object):
         self.dataset = None
         self.downsample = kwargs.get('downsample', None)
 
-        # Initiliaze responses and covariates
-        self.responses = []
-        self.covariates = []
-
         print("initializing %s" % self.model_type)
 
         # Initialize the directories where results are to be stored.
@@ -126,7 +122,6 @@ class ModelGeneratorBase(object):
         ])
 
     def build(self, data_file, metamodel, **kwargs):
-        self.responses = metamodel.available_response_names
         self.dataset = pd.read_csv(data_file)
 
         # print list(dataset.columns.values)

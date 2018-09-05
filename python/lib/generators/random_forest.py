@@ -1,3 +1,4 @@
+import multiprocessing
 import time
 import zipfile
 
@@ -17,7 +18,7 @@ class RandomForest(ModelGeneratorBase):
         super(RandomForest, self).__init__(analysis_id, random_seed, **kwargs)
 
     def evaluate(self, model, model_name, model_type, x_data, y_data, downsample,
-                 build_time, cv_time, covariates=None,  scaler=None):
+                 build_time, cv_time, covariates=None, scaler=None):
         """
 
         Evaluate the performance of the forest based on known x_data and y_data.
@@ -126,7 +127,7 @@ class RandomForest(ModelGeneratorBase):
         # save the validate dataframe to be used later to validate the accuracy of the models
         self.save_dataframe(validate_xy, "%s/rf_validation.pkl" % self.validation_dir)
 
-        for response in self.responses:
+        for response in metamodel.available_response_names:
             print "Fitting random forest model for %s" % response
 
             start = time.time()
@@ -157,8 +158,10 @@ class RandomForest(ModelGeneratorBase):
 
                 print('CV will result in %s candidates' % total_candidates)
 
+                # allow for the computer to be responsive during grid_search
+                n_jobs = max(1, multiprocessing.cpu_count() - 2)
                 grid_search = GridSearchCV(estimator=rf, param_grid=param_grid, cv=kfold,
-                                           n_jobs=-1, verbose=2, refit=True)
+                                           n_jobs=n_jobs, verbose=2, refit=True)
 
                 start = time.time()
                 grid_search.fit(train_x, train_y[response])

@@ -42,7 +42,15 @@ if metamodel.set_analysis(args.analysis_moniker):
                 print("Downsample argument must exist in the downsample list in the JSON")
                 exit(1)
 
-            for downsample in metamodel.downsamples:
+            # check if the model name has any downsampling override values
+            algo_options = metamodel.algorithm_options.get(model_name, {})
+            algo_options = Metamodels.resolve_algorithm_options(algo_options)
+            downsamples = metamodel.downsamples
+            if algo_options.get('downsamples', None):
+                downsamples = algo_options.get('downsamples')
+
+            print("Running model '%s' with downsamples '%s'" % (model_name, downsamples))
+            for downsample in downsamples:
                 if args.downsample and args.downsample != downsample:
                     continue
 
@@ -52,6 +60,6 @@ if metamodel.set_analysis(args.analysis_moniker):
                 model.build(
                     '../results/%s/simulation_results.csv' % metamodel.results_directory,
                     metamodel,
-                    algorithm_options=metamodel.algorithm_options.get(model_name, {}),
+                    algorithm_options=algo_options,
                     skip_cv=downsample > 0.5
                 )

@@ -1,6 +1,7 @@
 import gc
 import json
 import os
+import re
 from collections import OrderedDict
 from math import sqrt
 
@@ -8,6 +9,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
+import multiprocessing
 from lib.shared import save_dict_to_csv
 from pandas.plotting import lag_plot
 from sklearn.metrics import mean_squared_error
@@ -16,7 +18,7 @@ from shared import unpickle_file
 
 
 class ETSModel:
-    def __init__(self, model_file):
+    def __init__(self, model_file, scaler_file=None):
         """
         Load the model from a pandas pickled dataframe
 
@@ -25,14 +27,21 @@ class ETSModel:
         :param season: String or Int, Season to analyze
 
         """
-        # TODO: Check if the file exists
         self.model_file = model_file
-        if os.path.isfile(model_file):
+        self.scaler_file = scaler_file
+        if os.path.exists(model_file) and os.path.isfile(model_file):
             gc.disable()
             self.model = unpickle_file(model_file)
             gc.enable()
         else:
             raise Exception("File not found, unable to load: %s" % model_file)
+
+        if os.path.exists(scaler_file) and os.path.isfile(scaler_file):
+            gc.disable()
+            self.scaler = unpickle_file(scaler_file)
+            gc.enable()
+        else:
+            self.scaler = None
 
     def yhat(self, data):
         """
@@ -44,6 +53,9 @@ class ETSModel:
         :param data: array of data to estimate
         :return:
         """
+        if self.scaler:
+            data = self.scaler.transform(data)
+
         predictions = self.model.predict(data)
         return predictions
 
@@ -165,10 +177,14 @@ class Metamodels(object):
             if downsample:
                 path = "output/%s_%s/%s/models/%s.pkl" % (
                     self.analysis_name, downsample, self.rom_type, response)
+                scaler_path = "output/%s_%s/%s/models/%s_scaler.pkl" % (
+                    self.analysis_name, downsample, self.rom_type, response)
             else:
                 path = "output/%s/%s/models/%s.pkl" % (self.analysis_name, self.rom_type, response)
+                scaler_path = "output/%s/%s/models/%s_scaler.pkl" % (
+                    self.analysis_name, self.rom_type, response)
 
-            self.models[response] = ETSModel(path)
+            self.models[response] = ETSModel(path, scaler_path)
 
         print "Finished loading models"
         print "The responses are:"
@@ -435,6 +451,18 @@ class Metamodels(object):
             )
 
         return [cv['name'] for cv in self.file[self.set_i]['responses']]
+
+    @classmethod
+    def resolve_algorithm_options(cls, algorithm_options):
+        for k, v in algorithm_options.items():
+            if isinstance(v, dict):
+                algorithm_options[k] = Metamodels.resolve_algorithm_options(v)
+            elif isinstance(v, basestring) and 'eval(' in v:
+                # remove eval() from string in file and then call it
+                string_value = re.search('eval\((.*)\)', v).groups()[0]
+                algorithm_options[k] = eval(string_value)
+
+        return algorithm_options
 
 
 if __name__ == "__main__":
