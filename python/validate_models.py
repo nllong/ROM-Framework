@@ -57,8 +57,21 @@ if metamodel.set_analysis(args.analysis_moniker):
         # this to have the two classes rely on each other.
         metadata = {}
 
-        # loading the rf or lm data results in the same results since the data are from the same model
-        single_df = pd.read_pickle("%s/%s" % (validation_dir, 'rf_validation.pkl'))
+        # List of response files to load based on priority. The SVR models have an additional
+        # variable that is needed, so prioritize that one
+        preferred_response_file = [
+            "%s/%s" % (validation_dir, 'svr_validation.pkl'),
+            "%s/%s" % (validation_dir, 'rf_validation.pkl'),
+            "%s/%s" % (validation_dir, 'lm_validation.pkl'),
+        ]
+        for f in preferred_response_file:
+            if os.path.exists(f):
+                print('Loading validation data from %s' % f)
+                single_df = pd.read_pickle(f)
+                break
+        else:
+            single_df = None
+
 
         models = [(m, NAMEMAP[m]) for m in args.model_type]
 

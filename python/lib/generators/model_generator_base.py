@@ -14,6 +14,7 @@ from scipy import stats
 from scipy.stats import spearmanr, pearsonr
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from ..shared import apply_cyclic_transform
 
 
 class ModelGeneratorBase(object):
@@ -141,9 +142,6 @@ class ModelGeneratorBase(object):
         self.dataset[data_types['float']] = self.dataset[data_types['float']].astype(float)
         self.dataset[data_types['int']] = self.dataset[data_types['int']].astype(int)
 
-    def apply_cyclic_transform(self, row, column_name, category_count):
-        return math.sin(2 * math.pi * row[column_name] / category_count)
-
     def train_test_validate_split(self, dataset, metamodel, downsample=None, scale=False):
         """
         Use the built in method to generate the train and test data. This adds an additional
@@ -185,7 +183,7 @@ class ModelGeneratorBase(object):
                         if cv['algorithm_options'][self.model_type]['variable_type'] == 'cyclical':
                             print("Transforming covariate to be cyclical %s" % cv['name'])
                             dataset[cv['name']] = dataset.apply(
-                                self.apply_cyclic_transform,
+                                apply_cyclic_transform,
                                 column_name=cv['name'],
                                 category_count=cv['algorithm_options'][self.model_type][
                                     'category_count'],
@@ -203,8 +201,7 @@ class ModelGeneratorBase(object):
         # If scaling, then fit the scaler on the training data, then use the trained data
         # scalar to scale the test data.
         if scale:
-            scalers = {}
-            scalers['features'] = StandardScaler()
+            scalers = {'features': StandardScaler()}
             train_x[train_x.columns] = scalers['features'].fit_transform(train_x[train_x.columns])
             test_x[test_x.columns] = scalers['features'].transform(test_x[test_x.columns])
 

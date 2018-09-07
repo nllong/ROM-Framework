@@ -1,8 +1,13 @@
 import cPickle
 import csv
 import gzip
+import math
 import os
 import re
+
+
+def apply_cyclic_transform(row, column_name, category_count):
+    return math.sin(2 * math.pi * row[column_name] / category_count)
 
 
 def pickle_file(obj, filename, gzipfile=False):

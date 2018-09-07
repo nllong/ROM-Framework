@@ -3,17 +3,16 @@ import json
 import os
 import re
 import time
-import multiprocessing
-
+import multiprocessing  # noqa
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-from shared import unpickle_file
+from shared import unpickle_file, apply_cyclic_transform
 
 
 class ETSModel:
-    def __init__(self, model_file, scaler_file=None):
+    def __init__(self, response_name, model_file, scaler_file=None):
         """
         Load the model from a pandas pickled dataframe
 
@@ -22,6 +21,7 @@ class ETSModel:
         :param season: String or Int, Season to analyze
 
         """
+        self.response_name = response_name
         self.model_file = model_file
         self.scaler_file = scaler_file
         if os.path.exists(model_file) and os.path.isfile(model_file):
@@ -33,10 +33,10 @@ class ETSModel:
 
         if os.path.exists(scaler_file) and os.path.isfile(scaler_file):
             gc.disable()
-            self.scaler = unpickle_file(scaler_file)
+            self.scalers = unpickle_file(scaler_file)
             gc.enable()
         else:
-            self.scaler = None
+            self.scalers = None
 
     def yhat(self, data):
         """
@@ -48,10 +48,16 @@ class ETSModel:
         :param data: array of data to estimate
         :return:
         """
-        if self.scaler:
-            data = self.scaler.transform(data)
+        # Transform the feature data
+        if self.scalers:
+            data[data.columns] = self.scalers['features'].transform(data[data.columns])
 
         predictions = self.model.predict(data)
+
+        # Inverse transform out the response data
+        if self.scalers:
+            predictions = self.scalers[self.response_name].inverse_transform(predictions)
+
         return predictions
 
     def __str__(self):
@@ -183,14 +189,14 @@ class Metamodels(object):
             if downsample:
                 path = "output/%s_%s/%s/models/%s.pkl" % (
                     self.analysis_name, downsample, self.rom_type, response)
-                scaler_path = "output/%s_%s/%s/models/%s_scaler.pkl" % (
-                    self.analysis_name, downsample, self.rom_type, response)
+                scaler_path = "output/%s_%s/%s/models/scalers.pkl" % (
+                    self.analysis_name, downsample, self.rom_type)
             else:
                 path = "output/%s/%s/models/%s.pkl" % (self.analysis_name, self.rom_type, response)
                 scaler_path = "output/%s/%s/models/scalers.pkl" % (
                     self.analysis_name, self.rom_type)
 
-            self.models[response] = ETSModel(path, scaler_path)
+            self.models[response] = ETSModel(response, path, scaler_path)
             metrics['response'].append(response)
             metrics['model_type'].append(model_type)
             metrics['downsample'].append(downsample)
@@ -248,6 +254,21 @@ class Metamodels(object):
 
         # Order the data columns correctly -- this is a magic function.
         data = data[self.covariate_names(self.rom_type)]
+
+        # transform cyclical columns
+        for cv in self.covariates(self.rom_type):
+            if cv.get('algorithm_options', None):
+                if cv['algorithm_options'].get(self.rom_type, None):
+                    if cv['algorithm_options'][self.rom_type].get('variable_type', None):
+                        if cv['algorithm_options'][self.rom_type]['variable_type'] == 'cyclical':
+                            print("Transforming covariate to be cyclical %s" % cv['name'])
+                            data[cv['name']] = data.apply(
+                                apply_cyclic_transform,
+                                column_name=cv['name'],
+                                category_count=cv['algorithm_options'][self.rom_type][
+                                    'category_count'],
+                                axis=1
+                            )
 
         return self.models[response_name].yhat(data)
 
@@ -451,6 +472,7 @@ class Metamodels(object):
 
     @classmethod
     def resolve_algorithm_options(cls, algorithm_options):
+
         for k, v in algorithm_options.items():
             if isinstance(v, dict):
                 algorithm_options[k] = Metamodels.resolve_algorithm_options(v)
