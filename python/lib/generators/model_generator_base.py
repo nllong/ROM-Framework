@@ -94,8 +94,10 @@ class ModelGeneratorBase(object):
         """
 
         yhat = model.predict(x_data)
-        # if scaler:
-        #     yhat = scaler.inverse_transform(yhat)
+
+        if scaler:
+            yhat = scaler[model_name].inverse_transform(yhat)
+            y_data = scaler[model_name].inverse_transform(y_data)
 
         errors = abs(yhat - y_data)
         spearman = spearmanr(y_data, yhat)
@@ -168,7 +170,8 @@ class ModelGeneratorBase(object):
 
             dataset = dataset[dataset['_id'] != metamodel.validation_id]
         else:
-            raise Exception("Validation id does not exist in dataframe. ID was %s" % metamodel.validation_id)
+            raise Exception(
+                "Validation id does not exist in dataframe. ID was %s" % metamodel.validation_id)
 
         if downsample:
             num_rows = int(len(dataset.index.values) * downsample)
@@ -184,7 +187,8 @@ class ModelGeneratorBase(object):
                             dataset[cv['name']] = dataset.apply(
                                 self.apply_cyclic_transform,
                                 column_name=cv['name'],
-                                category_count=cv['algorithm_options'][self.model_type]['category_count'],
+                                category_count=cv['algorithm_options'][self.model_type][
+                                    'category_count'],
                                 axis=1
                             )
 
@@ -199,18 +203,27 @@ class ModelGeneratorBase(object):
         # If scaling, then fit the scaler on the training data, then use the trained data
         # scalar to scale the test data.
         if scale:
-            scaler = StandardScaler()
-            # TODO: save off the scaler for use with other datasets?
-            train_x[train_x.columns] = scaler.fit_transform(train_x[train_x.columns])
-            test_x[test_x.columns] = scaler.transform(test_x[test_x.columns])
+            scalers = {}
+            scalers['features'] = StandardScaler()
+            train_x[train_x.columns] = scalers['features'].fit_transform(train_x[train_x.columns])
+            test_x[test_x.columns] = scalers['features'].transform(test_x[test_x.columns])
+
+            for response in metamodel.available_response_names(self.model_type):
+                scalers[response] = StandardScaler()
+                train_y[response] = scalers[response].fit_transform(
+                    train_y[response].values.reshape(-1, 1)
+                )
+                test_y[response] = scalers[response].transform(
+                    test_y[response].values.reshape(-1, 1)
+                )
         else:
-            scaler = None
+            scalers = None
 
         print "Dataset size is %s" % len(dataset)
         print "Training dataset size is %s" % len(train_x)
         print "Validation dataset size is %s" % len(validate_xy)
 
-        return train_x, test_x, train_y, test_y, validate_xy, scaler
+        return train_x, test_x, train_y, test_y, validate_xy, scalers
 
     def yy_plots(self, y_data, yhat, model_name):
         """

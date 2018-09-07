@@ -14,7 +14,8 @@ class LinearModel(ModelGeneratorBase):
     def evaluate(self, model, model_name, model_type, x_data, y_data, downsample,
                  build_time, cv_time, covariates=None, scaler=None):
         """
-        Evaluate the performance of the forest based on known x_data and y_data.
+        Evaluate the performance of the forest based on known x_data and y_data. If the
+        model was scaled, then the test data will already be scaled.
         """
         yhat, performance = super(LinearModel, self).evaluate(
             model, model_name, model_type, x_data, y_data, downsample,

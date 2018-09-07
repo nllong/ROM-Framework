@@ -2,6 +2,7 @@ import gc
 import json
 import os
 import re
+import time
 import multiprocessing
 
 import matplotlib.pyplot as plt
@@ -159,6 +160,12 @@ class Metamodels(object):
     def load_models(self, model_type, models_to_load=[], downsample=None):
         """
         Load in the metamodels/generators
+
+        :param model_type: str, type of model (e.g. RandomForest, LinearModel, etc)
+        :param models_to_load: list, name of responses to load
+        :param downsample: float, percent of downsample for loading the correct model
+        :return: dict, { model, response, load time, disk size]
+
         """
         self.rom_type = model_type
 
@@ -167,9 +174,12 @@ class Metamodels(object):
 
         print "Loading models %s" % models_to_load
 
+        metrics = {'response': [], 'model_type': [], 'downsample': [],
+                   'load_time': [], 'disk_size': []}
         for response in models_to_load:
             print "Loading model for response: %s" % response
 
+            start = time.time()
             if downsample:
                 path = "output/%s_%s/%s/models/%s.pkl" % (
                     self.analysis_name, downsample, self.rom_type, response)
@@ -177,10 +187,15 @@ class Metamodels(object):
                     self.analysis_name, downsample, self.rom_type, response)
             else:
                 path = "output/%s/%s/models/%s.pkl" % (self.analysis_name, self.rom_type, response)
-                scaler_path = "output/%s/%s/models/%s_scaler.pkl" % (
-                    self.analysis_name, self.rom_type, response)
+                scaler_path = "output/%s/%s/models/scalers.pkl" % (
+                    self.analysis_name, self.rom_type)
 
             self.models[response] = ETSModel(path, scaler_path)
+            metrics['response'].append(response)
+            metrics['model_type'].append(model_type)
+            metrics['downsample'].append(downsample)
+            metrics['load_time'].append(time.time() - start)
+            metrics['disk_size'].append(os.path.getsize(path))
 
         print "Finished loading models"
         print "The responses are:"
@@ -190,6 +205,8 @@ class Metamodels(object):
         print "The covariates are:"
         for index, cv in enumerate(self.covariate_names(self.rom_type)):
             print "  %s: %s" % (index, cv)
+
+        return metrics
 
     def yhat(self, response_name, data):
         """

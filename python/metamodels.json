@@ -35,7 +35,7 @@
         },
         "param_grid": {
           "_comments": "gamma - default is 1/n_features, C - default is 1",
-          "C": [0.1, 1],
+          "C": [0.1, 1, 10],
           "gamma": [0.5, 0.1, 0.01],
           "epsilon": [0.1, 0.25]
         }
@@ -157,7 +157,7 @@
     "display_name": "Small Office Test Dataset",
     "description": "8 Simulations",
     "validation_datapoint_id": "9f1e2940-c9f9-48e0-bf33-fee869fe0b3a",
-    "downsamples": [0.15, 0.25, 1.0],
+    "downsamples": [0.15, 1.0],
     "algorithm_options": {
       "RandomForest": {
         "_comments": "If downsamples are specified here, then they will override the parent values",
@@ -186,7 +186,7 @@
         },
         "param_grid": {
           "_comments": "gamma - default is 1/n_features, C - default is 1",
-          "C": [0.1, 1],
+          "C": [0.1, 1, 10],
           "gamma": [0.5, 0.1, 0.01],
           "epsilon": [0.1, 0.25]
         }

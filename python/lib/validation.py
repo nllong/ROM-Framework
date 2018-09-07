@@ -135,8 +135,38 @@ def validate_dataframe(df, metadata, image_save_dir):
     fig.clf()
     plt.clf()
 
+    all_columns = ['SiteOutdoorAirDrybulbTemperature', 'Total HVAC Energy']
+    for model_type, model_data in metadata.items():
+        all_columns.append('Total HVAC Energy %s' % model_data['moniker'])
+        melted_df = pd.melt(
+            df[['SiteOutdoorAirDrybulbTemperature', 'Total HVAC Energy', 'Total HVAC Energy %s' % model_data['moniker']]],
+            id_vars='SiteOutdoorAirDrybulbTemperature',
+            var_name='Model',
+            value_name='Energy'
+        )
+        melted_df['Dummy'] = 0
+
+        lmplot = sns.lmplot(
+            x='SiteOutdoorAirDrybulbTemperature',
+            y='Energy',
+            hue='Model',
+            data=melted_df,
+            ci=None,
+            palette="muted",
+            height=8,
+            scatter_kws={"s": 50, "alpha": 1},
+            fit_reg=False,
+        )
+        fig = lmplot.fig
+        plt.title("Total Energy vs Temperature (Combined)")
+        fig.savefig('%s/validation_energy_combined_%s.png' % (image_save_dir, model_data['moniker']))
+        fig.tight_layout()
+        fig.clf()
+        plt.clf()
+
+    # plot energy vs outdoor temperature for all of the responses
     melted_df = pd.melt(
-        df[['SiteOutdoorAirDrybulbTemperature', 'Total HVAC Energy', 'Total HVAC Energy RF']],
+        df[all_columns],
         id_vars='SiteOutdoorAirDrybulbTemperature',
         var_name='Model',
         value_name='Energy'
@@ -156,7 +186,7 @@ def validate_dataframe(df, metadata, image_save_dir):
     )
     fig = lmplot.fig
     plt.title("Total Energy vs Temperature (Combined)")
-    fig.savefig('%s/validation_energy_combined.png' % image_save_dir)
+    fig.savefig('%s/validation_energy_combined_all.png' % image_save_dir)
     fig.tight_layout()
     fig.clf()
     plt.clf()
