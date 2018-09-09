@@ -58,3 +58,9 @@ following:
     
     There are many arguments that are passed to the command line. To see the parameters run
     `python smoffice.py --help`.
+
+# TODO
+
+Instructions on building models.
+
+* Install graphviz (brew install graphviz)

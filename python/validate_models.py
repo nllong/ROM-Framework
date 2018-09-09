@@ -5,6 +5,7 @@
 import argparse
 import os
 import time
+import shutil
 
 import pandas as pd
 
@@ -50,8 +51,9 @@ if metamodel.set_analysis(args.analysis_moniker):
         validation_dir = "output/%s_%s/ValidationData" % (args.analysis_moniker, downsample)
         output_dir = "%s/images" % validation_dir
 
-        if not os.path.exists(output_dir):
-            os.makedirs(output_dir)
+        if os.path.exists(output_dir):
+            shutil.rmtree(output_dir)
+        os.makedirs(output_dir)
 
         # VALIDATE MODELS - load the model into the Metamodel class. Seems like we can simplify
         # this to have the two classes rely on each other.
@@ -71,7 +73,6 @@ if metamodel.set_analysis(args.analysis_moniker):
                 break
         else:
             single_df = None
-
 
         models = [(m, NAMEMAP[m]) for m in args.model_type]
 
@@ -103,6 +104,6 @@ if metamodel.set_analysis(args.analysis_moniker):
         # save the model performance data
         print metrics
         df = pd.DataFrame.from_dict(metrics)
-        df.to_csv('%s/metrics.csv' % validation_dir, index=False)
+        df.to_csv('%s/metrics.csv' % output_dir, index=False)
 
-        validate_dataframe(single_df, metadata, validation_dir)
+        validate_dataframe(single_df, metadata, output_dir)

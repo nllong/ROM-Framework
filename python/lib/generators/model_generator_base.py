@@ -260,14 +260,22 @@ class ModelGeneratorBase(object):
             plt.clf()
 
         # Hex plots for YY data
-        sns.set(style="ticks")
-        newplt = sns.jointplot(
-            data['Y'], data['Yhat'], kind="hex"
-        )
-        # plt.subplots_adjust(top=0.9)
-        # newplt.fig.suptitle("Training Set: Y-Y Plot for %s" % model_name)
-        # plt.title("Training Set: Y-Y Plot for %s" % model_name)
-        newplt.savefig('%s/fig_yy_hexplot_%s.png' % (self.images_dir, model_name))
+
+        # Full resolution YY Plots
+        with plt.rc_context(dict(sns.axes_style("ticks"))):
+            newplt = sns.jointplot(
+                data['Y'], data['Yhat'], kind="hex", space=0
+            )
+            newplt.savefig('%s/fig_yy_hexplot_%s.png' % (self.images_dir, model_name))
+
+            # Remove 0,0 points for higher resolution
+            sub_data = data[(data.Y != 0) & (data.Yhat != 0)]
+            # Hex plots for YY data
+            newplt = sns.jointplot(
+                sub_data['Y'], sub_data['Yhat'], kind="hex", space=0
+            )
+            newplt.savefig('%s/fig_yy_hexplot_hres_%s.png' % (self.images_dir, model_name))
+
         plt.clf()
 
     def anova_plots(self, y_data, yhat, model_name):

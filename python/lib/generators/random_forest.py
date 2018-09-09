@@ -6,9 +6,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import os
 from lib.shared import pickle_file, save_dict_to_csv, zipdir
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import GridSearchCV
+from sklearn.tree import export_graphviz
 
 from model_generator_base import ModelGeneratorBase
 
@@ -16,6 +18,14 @@ from model_generator_base import ModelGeneratorBase
 class RandomForest(ModelGeneratorBase):
     def __init__(self, analysis_id, random_seed=None, **kwargs):
         super(RandomForest, self).__init__(analysis_id, random_seed, **kwargs)
+
+    def export_tree_png(self, tree, covariates, filename):
+        export_graphviz(tree, feature_names=np.asarray(covariates), filled=True, rounded=True)
+        copy_tree_path = os.path.join(os.path.dirname(filename), 'tree.dot')
+        os.rename('tree.dot', copy_tree_path)
+        os.system('dot -Tpng %s -o %s' % (copy_tree_path, filename))
+        if os.path.exists(copy_tree_path):
+            os.remove(copy_tree_path)
 
     def evaluate(self, model, model_name, model_type, x_data, y_data, downsample,
                  build_time, cv_time, covariates=None, scaler=None):
@@ -52,6 +62,10 @@ class RandomForest(ModelGeneratorBase):
         fig.savefig('%s/fig_importance_%s.png' % (self.images_dir, model_name))
         fig.clf()
         plt.clf()
+
+        # plot a single tree
+        tree_file_name = '%s/fig_first_tree_%s.png' % (self.images_dir, model_name)
+        self.export_tree_png(model.estimators_[0], covariates, tree_file_name)
 
         # add some more data to the model evaluation dict
         performance['n_estimators'] = model.n_estimators
