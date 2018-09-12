@@ -76,7 +76,6 @@ def process_model_results(model_results_file, output_dir):
     if os.path.exists(model_results_file):
         # Process the model results
         df = pd.read_csv(model_results_file)
-        df['index_1'] = df.index
 
         melted_df = pd.melt(
             df[['name', 'time_to_build', 'time_to_cv']],
@@ -96,12 +95,21 @@ def process_model_results(model_results_file, output_dir):
         plt.clf()
 
 
+def process_all_model_results(data, validation_dir):
+    # for unique_value in data['name'].unique():
+    sub_df = data[data['model_type'] == 'best'].sort_values(by=['name', 'model_method'])
+
+    data.to_csv('%s/all_model_results.csv' % validation_dir, index=False)
+
+    keep_cols = ['name', 'model_method', 'pearson']
+    sub_df[keep_cols].to_csv('%s/pcc_model_results.csv' % validation_dir, index=False)
+
+
 if metamodel.set_analysis(args.analysis_moniker):
     # go through the cv_results and create some plots
+    all_model_results = {}
     for model_name in available_models.choices:
         if args.model_type == 'All' or args.model_type == model_name:
-            last_dir = None
-            all_model_results = None
 
             if args.downsample and args.downsample not in metamodel.downsamples:
                 print("Downsample argument must exist in the downsample list in the JSON")
@@ -110,6 +118,7 @@ if metamodel.set_analysis(args.analysis_moniker):
             # check if the model name has any downsampling override values
             algo_options = metamodel.algorithm_options.get(model_name, {})
             algo_options = Metamodels.resolve_algorithm_options(algo_options)
+
             downsamples = metamodel.downsamples
             if algo_options.get('downsamples', None):
                 downsamples = algo_options.get('downsamples')
@@ -119,9 +128,8 @@ if metamodel.set_analysis(args.analysis_moniker):
                     continue
 
                 base_dir_ds = "output/%s_%s/%s" % (args.analysis_moniker, downsample, model_name)
-                last_dir = base_dir_ds
-                output_dir = "%s/images/cv_results" % base_dir_ds
 
+                output_dir = "%s/images/cv_results" % base_dir_ds
                 if os.path.exists(output_dir):
                     shutil.rmtree(output_dir)
                 os.makedirs(output_dir)
@@ -132,13 +140,19 @@ if metamodel.set_analysis(args.analysis_moniker):
 
                 # if this is the first file, then read it into the all_model_results to
                 # create a dataframe to add all the model results together
-                if index == 0:
+                if str(downsample) not in all_model_results.keys():
                     if os.path.exists(model_results_file):
-                        all_model_results = pd.read_csv(model_results_file)
+                        all_model_results[str(downsample)] = pd.read_csv(model_results_file)
+                        all_model_results[str(downsample)]['model_method'] = model_name
                 else:
                     if os.path.exists(model_results_file):
-                        all_model_results = pd.concat(
-                            [all_model_results, pd.read_csv(model_results_file)]
+                        new_df = pd.read_csv(model_results_file)
+                        new_df['model_method'] = model_name
+                        all_model_results[str(downsample)] = pd.concat(
+                            [all_model_results[str(downsample)], new_df],
+                            axis=0,
+                            ignore_index=True,
+                            sort=False
                         )
 
                 for response in metamodel.available_response_names(model_name):
@@ -146,5 +160,15 @@ if metamodel.set_analysis(args.analysis_moniker):
                     cv_result_file = '%s/cv_results_%s.csv' % (base_dir_ds, response)
                     process_cv_results(cv_result_file, response, output_dir)
 
-            # save any combined datasets
-            all_model_results.to_csv('%s/all_model_results.csv' % last_dir, index=False)
+    # save any combined datasets for the downsampled instance
+    for index, data in all_model_results.items():
+        if data.shape[0] > 0:
+            # combine all the model results together and evaluate the results
+            validation_dir = "output/%s_%s/ValidationData/evaluation_images" % (
+                args.analysis_moniker, index
+            )
+            if os.path.exists(validation_dir):
+                shutil.rmtree(validation_dir)
+            os.makedirs(validation_dir)
+
+            process_all_model_results(data, validation_dir)
