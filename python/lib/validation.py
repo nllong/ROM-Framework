@@ -3,34 +3,28 @@ from math import sqrt
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import seaborn as sns
-from lib.shared import save_dict_to_csv
 from pandas.plotting import lag_plot
 from sklearn.metrics import mean_squared_error
 
+from lib.shared import save_dict_to_csv
+
 
 def plot_energy_temp(melted_df, filename):
-    sns.set(color_codes=True)
-    plt.rcParams['figure.figsize'] = [15, 10]
-    sns.set(style="whitegrid")
-
-    lmplot = sns.lmplot(
-        x='SiteOutdoorAirDrybulbTemperature',
-        y='Energy',
-        hue='Model',
-        data=melted_df,
-        ci=None,
-        palette="muted",
-        height=8,
-        scatter_kws={"s": 50, "alpha": 1},
-        fit_reg=False,
-    )
-    fig = lmplot.fig
-    fig.savefig(filename)
-    fig.tight_layout()
-    fig.clf()
-    plt.clf()
+    with plt.rc_context(dict(sns.axes_style("whitegrid"))):
+        f, ax = plt.subplots(figsize=(8, 5))
+        newplt = sns.scatterplot(
+            x="SiteOutdoorAirDrybulbTemperature",
+            y="Energy",
+            style="Model",
+            data=melted_df,
+            ax=ax).get_figure()
+        ax.set_xlabel('Site Outdoor Air Drybulb Temperature (deg C)')
+        ax.set_ylabel('Total HVAC Energy (GJ)')
+        newplt.savefig(filename)
+        plt.clf()
 
 
 def plot_timeseries(melted_df, filename):
@@ -39,18 +33,40 @@ def plot_timeseries(melted_df, filename):
 
     sns.set(color_codes=True)
     plt.rcParams['figure.figsize'] = [15, 10]
-    sns.set(style="whitegrid")
 
-    fig, ax = plt.subplots()
-    sns.tsplot(melted_df, time='DateTime', unit='Dummy', condition='Variable', value='Value', ax=ax)
-    # newplt.set_title("%s: %s vs EnergyPlus %s" % (season, model_data['moniker'], response))
-    ax.xaxis.set_major_formatter(mpl.ticker.FuncFormatter(date_formatter))
+    with plt.rc_context(dict(sns.axes_style("whitegrid"))):
+        fig, ax = plt.subplots()
+        sns.tsplot(melted_df, time='DateTime', unit='Dummy', condition='Variable', value='Value',
+                   ax=ax)
+        # newplt.set_title("%s: %s vs EnergyPlus %s" % (season, model_data['moniker'], response))
+        ax.xaxis.set_major_formatter(mpl.ticker.FuncFormatter(date_formatter))
 
-    # put the labels at 45deg since they tend to be too long
-    fig.autofmt_xdate()
-    fig.savefig(filename)
-    fig.clf()
-    plt.clf()
+        # put the labels at 45deg since they tend to be too long
+        fig.autofmt_xdate()
+        fig.savefig(filename)
+        fig.clf()
+        plt.clf()
+
+
+def save_metrics(df, output_dir):
+    # save the model performance data
+    df.to_csv('%s/metrics.csv' % output_dir, index=False)
+    df['disk_size'] = df['disk_size'].astype(float)
+    df['ind'] = df.index
+    df['Disk Size (Log)'] = np.log(df.disk_size)
+    df['Response'] = df.response
+    df['Type'] = df.model_type
+
+    # plot the disk size
+    with plt.rc_context(dict(sns.axes_style("whitegrid"))):
+        f, ax = plt.subplots(figsize=(6.5, 6.5))
+        newplt = sns.scatterplot(x="ind", y="Disk Size (Log)",
+                                 style="Type", hue="Response",
+                                 sizes=(10, 200), data=df, ax=ax).get_figure()
+        ax.set_xlabel('Index')
+        ax.set_ylabel('Disk Size (log(MB))')
+        newplt.savefig('%s/fig_performance_disk_size.png' % (output_dir))
+        plt.clf()
 
 
 def validate_dataframe(df, metadata, image_save_dir):
@@ -245,10 +261,4 @@ def validate_dataframe(df, metadata, image_save_dir):
 
         print all_responses
 
-
         # plot all the modeled timeseries resutls on a single plot
-
-
-
-
-

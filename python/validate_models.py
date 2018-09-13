@@ -10,7 +10,7 @@ import shutil
 import pandas as pd
 
 from lib.metamodels import Metamodels
-from lib.validation import validate_dataframe
+from lib.validation import validate_dataframe, save_metrics
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-a", "--analysis_moniker", help="Name of the Analysis Model")
@@ -102,8 +102,7 @@ if metamodel.set_analysis(args.analysis_moniker):
                 metrics['run_time_single'].append(time.time() - start)
 
         # save the model performance data
-        print metrics
-        df = pd.DataFrame.from_dict(metrics)
-        df.to_csv('%s/metrics.csv' % output_dir, index=False)
+        save_metrics(pd.DataFrame.from_dict(metrics), output_dir)
 
+        # run bunch of validations on the loaded models
         validate_dataframe(single_df, metadata, output_dir)

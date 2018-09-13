@@ -235,13 +235,13 @@ class Metamodels(object):
 
         if len(extra_columns_in_df) > 0:
             # print "The following columns are not needed in DataFrame"
-            print extra_columns_in_df
+            # print extra_columns_in_df
             print "Removing unneeded column before evaluation"
             data = data.drop(columns=extra_columns_in_df)
 
         if len(missing_data_in_df) > 0:
             print "Error: The following columns are missing in the DataFrame"
-            print missing_data_in_df
+            # print missing_data_in_df
             raise Exception("Need to define %s in DataFrame for model" % missing_data_in_df)
 
         # typecast the columns before running the analysis
