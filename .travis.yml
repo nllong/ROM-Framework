@@ -12,16 +12,13 @@ before_install:
   - rvm install 2.2.4
   - gem install bundler -v 1.16.1
 install:
-  - pip install -r python/requirements.txt
-  - cd results && bundle install && cd ..
+  - pip install -r requirements.txt
+  - cd data && bundle install && cd ..
 before_script:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
 script:
-  - ./ci/travis/build.sh all
-#  - cd python && python meta_analysis.py && cd ..
-#  - cd python && python smoffice_cli.py -a 3ff422c2-ca11-44db-b955-b39a47b011e7 && cd ..
-#  - cd python && python smoffice_cli.py -a 66fb9766-26e7-4bed-bdf9-0fbfbc8d6c7e --mass-flow-heating 4 && cd ..
-after_success:
-  - ./ci/travis/deploy-artifacts.sh
+  - ./ci/build.sh all
+#after_success:
+#  - ./ci/deploy-artifacts.sh

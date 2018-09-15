@@ -64,3 +64,9 @@ following:
 Instructions on building models.
 
 * Install graphviz (brew install graphviz)
+
+Installation right from the source tree (or via pip from PyPI)
+
+```bash
+    python setup.py install
+```

@@ -1,11 +1,10 @@
 .idea
-.Rproj.user
-.RData
-.Rhistory
 *.pyc
 *.pkl
 .python-version
 python/.python-version
+data/*/*.zip
+data/*/simulation_results.csv
 R/.Rproj.user
 R/.RData
 R/.Rhistory
@@ -15,3 +14,7 @@ results/*/*/data_point/
 python/output/**/models
 results/**/data_point.zip
 .ipynb_checkpoints
+output
+ROM_Framework.egg-info/
+build/
+dist/

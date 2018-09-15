@@ -1,0 +1,442 @@
+[
+  {
+    "results_directory": "smoff_parametric_sweep",
+    "building_type": "Small Office",
+    "name": "smoff_parametric_sweep",
+    "display_name": "Small Office Varying Inlet Temp",
+    "description": "100 Simulations, varying inlet temperature and delta-T",
+    "validation_datapoint_id": "21e6f96e-387b-4d99-89d5-9aeb89d1fc08",
+    "downsamples": [0.05, 0.15, 0.25, 1.0],
+    "algorithm_options": {
+      "RandomForest": {
+        "_comments": "If downsamples are specified here, then they will override the parent values",
+        "downsamples": [0.05, 0.15, 0.25, 1.0],
+        "param_grid": {
+          "_comments": "max_depth - default is None, max_features - default is p/3, min_samples_leaf - default is 1, min_samples_split - default is 2, n_estimators - default is 10",
+          "max_depth": [null, 3, 6],
+          "max_features": [0.50, 0.66, 0.75],
+          "min_samples_leaf": [1, 2, 4],
+          "min_samples_split": [2, 3, 5],
+          "n_estimators": [10, 100, 200]
+        },
+        "base_fit_params": {
+          "_comments": "These can take on python eval commands, see n_jobs as example.",
+          "max_depth": null,
+          "n_estimators": 20,
+          "min_samples_split": 2,
+          "n_jobs": "eval(max(1,multiprocessing.cpu_count() - 2))"
+        }
+      },
+      "SVR": {
+        "_comments": "If downsamples are specified here, then they will override the parent values",
+        "downsamples": [0.05, 0.15],
+        "base_fit_params": {
+          "cache_size": 1500
+        },
+        "param_grid": {
+          "_comments": "gamma - default is 1/n_features, C - default is 1",
+          "C": [0.1, 1, 10],
+          "gamma": [0.5, 0.1, 0.01],
+          "epsilon": [0.1, 0.25]
+        }
+      }
+    },
+    "covariates": [
+      {
+        "name": "Month",
+        "display_name": "Month",
+        "units": "",
+        "type": "int",
+        "algorithm_options": {
+          "SVR": {
+            "variable_type": "cyclical",
+            "category_count": 12
+          }
+        }
+      },
+      {
+        "name": "Hour",
+        "display_name": "Hour",
+        "units": "",
+        "type": "int",
+        "algorithm_options": {
+          "SVR": {
+            "variable_type": "cyclical",
+            "category_count": 24
+          }
+        }
+      },
+      {
+        "name": "DayofWeek",
+        "display_name": "Day of Week",
+        "units": "",
+        "type": "int",
+        "algorithm_options": {
+          "SVR": {
+            "variable_type": "cyclical",
+            "category_count": 7
+          }
+        }
+      },
+      {
+        "name": "SiteOutdoorAirDrybulbTemperature",
+        "display_name": "Dry Bulb Temperature",
+        "units": "C",
+        "type": "float"
+      },
+      {
+        "name": "SiteOutdoorAirRelativeHumidity",
+        "display_name": "Relative Humidity",
+        "units": "%",
+        "type": "float"
+      },
+      {
+        "name": "ETSInletTemperature",
+        "display_name": "Ambient Loop Inlet Temperature",
+        "units": "C",
+        "type": "float"
+      },
+      {
+        "name": "lpd_average",
+        "display_name": "LPD Average",
+        "units": "W/m2",
+        "type": "float"
+      },
+      {
+        "name": "hvac_mode",
+        "display_name": "HVAC Mode",
+        "units": "",
+        "type": "int",
+        "algorithm_options": {
+          "RandomForest": {
+            "ignore": true
+          },
+          "LinearModel": {
+            "ignore": true
+          }
+        }
+      }
+    ],
+    "responses": [
+      {
+        "name": "HeatingElectricity",
+        "display_name": "Heating Electric Energy",
+        "units": "J"
+      },
+      {
+        "name": "CoolingElectricity",
+        "display_name": "Cooling Electric Energy",
+        "units": "J"
+      },
+      {
+        "name": "DistrictCoolingChilledWaterEnergy",
+        "display_name": "Ambient Loop Cooling Energy",
+        "units": "J"
+      },
+      {
+        "name": "DistrictHeatingHotWaterEnergy",
+        "display_name": "Ambient Loop Heating Energy",
+        "units": "J"
+      },
+      {
+        "name": "ETSHeatingOutletTemperature",
+        "display_name": "Building Heating Outlet Temperature",
+        "units": "C"
+      },
+      {
+        "name": "ETSCoolingOutletTemperature",
+        "display_name": "Building Cooling Outlet Temperature",
+        "units": "C"
+      }
+    ]
+  },
+  {
+    "results_directory": "retail_parametric_sweep",
+    "building_type": "Retail",
+    "name": "retail_parametric_sweep",
+    "display_name": "Retail Varying Inlet Temp",
+    "description": "100 Simulations, varying inlet temperature and delta-T",
+    "validation_datapoint_id": "1682190d-51cd-4576-8b10-865aaeaa3da2",
+    "downsamples": [0.05, 0.15, 0.25, 1.0],
+    "algorithm_options": {
+      "RandomForest": {
+        "_comments": "If downsamples are specified here, then they will override the parent values",
+        "downsamples": [0.05, 0.15, 0.25, 1.0],
+        "param_grid": {
+          "_comments": "max_depth - default is None, max_features - default is p/3, min_samples_leaf - default is 1, min_samples_split - default is 2, n_estimators - default is 10",
+          "max_depth": [null, 3, 6],
+          "max_features": [0.50, 0.66, 0.75],
+          "min_samples_leaf": [1, 2, 4],
+          "min_samples_split": [2, 3, 5],
+          "n_estimators": [10, 100, 200]
+        },
+        "base_fit_params": {
+          "_comments": "These can take on python eval commands, see n_jobs as example.",
+          "max_depth": null,
+          "n_estimators": 20,
+          "min_samples_split": 2,
+          "n_jobs": "eval(max(1,multiprocessing.cpu_count() - 2))"
+        }
+      },
+      "SVR": {
+        "_comments": "If downsamples are specified here, then they will override the parent values",
+        "downsamples": [0.05, 0.15],
+        "base_fit_params": {
+          "cache_size": 1500
+        },
+        "param_grid": {
+          "_comments": "gamma - default is 1/n_features, C - default is 1",
+          "C": [0.1, 1, 10],
+          "gamma": [0.5, 0.1, 0.01],
+          "epsilon": [0.1, 0.25]
+        }
+      }
+    },
+    "covariates": [
+      {
+        "name": "Month",
+        "display_name": "Month",
+        "units": "",
+        "type": "int",
+        "algorithm_options": {
+          "SVR": {
+            "variable_type": "cyclical",
+            "category_count": 12
+          }
+        }
+      },
+      {
+        "name": "Hour",
+        "display_name": "Hour",
+        "units": "",
+        "type": "int",
+        "algorithm_options": {
+          "SVR": {
+            "variable_type": "cyclical",
+            "category_count": 24
+          }
+        }
+      },
+      {
+        "name": "DayofWeek",
+        "display_name": "Day of Week",
+        "units": "",
+        "type": "int",
+        "algorithm_options": {
+          "SVR": {
+            "variable_type": "cyclical",
+            "category_count": 7
+          }
+        }
+      },
+      {
+        "name": "SiteOutdoorAirDrybulbTemperature",
+        "display_name": "Dry Bulb Temperature",
+        "units": "C",
+        "type": "float"
+      },
+      {
+        "name": "SiteOutdoorAirRelativeHumidity",
+        "display_name": "Relative Humidity",
+        "units": "%",
+        "type": "float"
+      },
+      {
+        "name": "ETSInletTemperature",
+        "display_name": "Ambient Loop Inlet Temperature",
+        "units": "C",
+        "type": "float"
+      },
+      {
+        "name": "lpd_average",
+        "display_name": "LPD Average",
+        "units": "W/m2",
+        "type": "float"
+      },
+      {
+        "name": "hvac_mode",
+        "display_name": "HVAC Mode",
+        "units": "",
+        "type": "int",
+        "algorithm_options": {
+          "RandomForest": {
+            "ignore": true
+          },
+          "LinearModel": {
+            "ignore": true
+          }
+        }
+      }
+    ],
+    "responses": [
+      {
+        "name": "HeatingElectricity",
+        "display_name": "Heating Electric Energy",
+        "units": "J"
+      },
+      {
+        "name": "CoolingElectricity",
+        "display_name": "Cooling Electric Energy",
+        "units": "J"
+      },
+      {
+        "name": "DistrictCoolingChilledWaterEnergy",
+        "display_name": "Ambient Loop Cooling Energy",
+        "units": "J"
+      },
+      {
+        "name": "DistrictHeatingHotWaterEnergy",
+        "display_name": "Ambient Loop Heating Energy",
+        "units": "J"
+      },
+      {
+        "name": "ETSHeatingOutletTemperature",
+        "display_name": "Building Heating Outlet Temperature",
+        "units": "C"
+      },
+      {
+        "name": "ETSCoolingOutletTemperature",
+        "display_name": "Building Cooling Outlet Temperature",
+        "units": "C"
+      }
+    ]
+  },
+  {
+    "results_directory": "smoff_test",
+    "building_type": "Small Office Test",
+    "name": "smoff_test",
+    "display_name": "Small Office Test Dataset",
+    "description": "8 Simulations",
+    "validation_datapoint_id": "9f1e2940-c9f9-48e0-bf33-fee869fe0b3a",
+    "downsamples": [0.15, 1.0],
+    "algorithm_options": {
+      "RandomForest": {
+        "_comments": "If downsamples are specified here, then they will override the parent values",
+        "downsamples": [0.15, 1.0],
+        "param_grid": {
+          "_comments": "max_depth - default is None, max_features - default is p/3, min_samples_leaf - default is 1, min_samples_split - default is 2, n_estimators - default is 10",
+          "max_depth": [null, 3, 6],
+          "max_features": [0.50, 0.66, 0.75],
+          "min_samples_leaf": [1, 2, 4],
+          "min_samples_split": [2, 3, 5],
+          "n_estimators": [10, 100, 200]
+        },
+        "base_fit_params": {
+          "_comments": "These can take on python eval commands, see n_jobs as example.",
+          "max_depth": null,
+          "n_estimators": 20,
+          "min_samples_split": 2,
+          "n_jobs": "eval(max(1,multiprocessing.cpu_count() - 4))"
+        }
+      },
+      "SVR": {
+        "_comments": "If downsamples are specified here, then they will override the parent values",
+        "downsamples": [0.15],
+        "base_fit_params": {
+          "cache_size": 1000
+        },
+        "param_grid": {
+          "_comments": "gamma - default is 1/n_features, C - default is 1",
+          "C": [0.1, 1, 10],
+          "gamma": [0.5, 0.1, 0.01],
+          "epsilon": [0.1, 0.25]
+        }
+      }
+    },
+    "covariates": [
+      {
+        "name": "Month",
+        "display_name": "Month",
+        "units": "",
+        "type": "int",
+        "algorithm_options": {
+          "SVR": {
+            "variable_type": "cyclical",
+            "category_count": 12
+          }
+        }
+      },
+      {
+        "name": "Hour",
+        "display_name": "Hour",
+        "units": "",
+        "type": "int",
+        "algorithm_options": {
+          "SVR": {
+            "variable_type": "cyclical",
+            "category_count": 24
+          }
+        }
+      },
+      {
+        "name": "DayofWeek",
+        "display_name": "Day of Week",
+        "units": "",
+        "type": "int",
+        "algorithm_options": {
+          "SVR": {
+            "variable_type": "cyclical",
+            "category_count": 7
+          }
+        }
+      },
+      {
+        "name": "SiteOutdoorAirDrybulbTemperature",
+        "display_name": "Dry Bulb Temperature",
+        "units": "C",
+        "type": "float"
+      },
+      {
+        "name": "SiteOutdoorAirRelativeHumidity",
+        "display_name": "Relative Humidity",
+        "units": "%",
+        "type": "float"
+      },
+      {
+        "name": "ETSInletTemperature",
+        "display_name": "Ambient Loop Inlet Temperature",
+        "units": "C",
+        "type": "float"
+      },
+      {
+        "name": "lpd_average",
+        "display_name": "LPD Average",
+        "units": "W/m2",
+        "type": "float"
+      },
+      {
+        "name": "hvac_mode",
+        "display_name": "HVAC Mode",
+        "units": "",
+        "type": "int",
+        "algorithm_options": {
+          "RandomForest": {
+            "ignore": true
+          },
+          "LinearModel": {
+            "ignore": true
+          }
+        }
+      }
+    ],
+    "responses": [
+      {
+        "name": "HeatingElectricity",
+        "display_name": "Heating Electric Energy",
+        "units": "J"
+      },
+      {
+        "name": "DistrictHeatingHotWaterEnergy",
+        "display_name": "Ambient Loop Heating Energy",
+        "units": "J"
+      },
+      {
+        "name": "ETSHeatingOutletTemperature",
+        "display_name": "Building Heating Outlet Temperature",
+        "units": "C"
+      }
+    ]
+  }
+]
+
+
