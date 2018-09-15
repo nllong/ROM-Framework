@@ -9,7 +9,7 @@ import seaborn as sns
 sns.set(style="ticks", color_codes=True)
 
 
-def process_cv_results(cv_result_file, response, output_dir):
+def evaluate_process_cv_results(cv_result_file, response, output_dir):
     if os.path.exists(cv_result_file):
         # load the cv results
         print("Reading CV results file: %s" % cv_result_file)
@@ -47,7 +47,7 @@ def process_cv_results(cv_result_file, response, output_dir):
             plt.clf()
 
 
-def process_model_results(model_results_file, output_dir):
+def evaluate_process_model_results(model_results_file, output_dir):
     if os.path.exists(model_results_file):
         # Process the model results
         df = pd.read_csv(model_results_file)
@@ -70,7 +70,7 @@ def process_model_results(model_results_file, output_dir):
         plt.clf()
 
 
-def process_all_model_results(data, validation_dir):
+def evaluate_process_all_model_results(data, validation_dir):
     # for unique_value in data['name'].unique():
     sub_df = data[data['model_type'] == 'best'].sort_values(by=['name', 'model_method'])
 

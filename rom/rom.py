@@ -12,7 +12,7 @@ from pyfiglet import Figlet
 
 from evaluate_helpers import *
 from metamodels import Metamodels
-from validation_helpers import validate_dataframe, save_metrics
+from validation_helpers import validate_dataframe, validation_save_metrics
 
 ## Make sure to keep these models here, optimizing imports will remove these
 from generators.linear_model import LinearModel
@@ -87,7 +87,7 @@ if metamodel.set_analysis(args.analysis_moniker):
 
                     # Process the model results
                     model_results_file = '%s/model_results.csv' % base_dir_ds
-                    process_model_results(model_results_file, output_dir)
+                    evaluate_process_model_results(model_results_file, output_dir)
 
                     # if this is the first file, then read it into the all_model_results to
                     # create a dataframe to add all the model results together
@@ -109,7 +109,7 @@ if metamodel.set_analysis(args.analysis_moniker):
                     for response in metamodel.available_response_names(model_name):
                         # Process the CV results
                         cv_result_file = '%s/cv_results_%s.csv' % (base_dir_ds, response)
-                        process_cv_results(cv_result_file, response, output_dir)
+                        evaluate_process_cv_results(cv_result_file, response, output_dir)
 
         # Below are some options that reqire all the models to be processed before running
         if args.action == 'evaluate':
@@ -124,7 +124,7 @@ if metamodel.set_analysis(args.analysis_moniker):
                         shutil.rmtree(validation_dir)
                     os.makedirs(validation_dir)
 
-                    process_all_model_results(data, validation_dir)
+                    evaluate_process_all_model_results(data, validation_dir)
 
     elif args.action == 'validate':
         # validate requires iterating over the downsamples before the models
@@ -190,7 +190,7 @@ if metamodel.set_analysis(args.analysis_moniker):
                     metrics['run_time_single'].append(time.time() - start)
 
             # save the model performance data
-            save_metrics(pd.DataFrame.from_dict(metrics), output_dir)
+            validation_save_metrics(pd.DataFrame.from_dict(metrics), output_dir)
 
             # run bunch of validations on the loaded models
             validate_dataframe(single_df, metadata, output_dir)

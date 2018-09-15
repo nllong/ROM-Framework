@@ -1,4 +1,4 @@
-import multiprocessing
+import os
 import time
 import zipfile
 
@@ -6,13 +6,12 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import os
-from rom.shared import pickle_file, save_dict_to_csv, zipdir
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import GridSearchCV
 from sklearn.tree import export_graphviz
 
 from model_generator_base import ModelGeneratorBase
+from rom.shared import pickle_file, save_dict_to_csv, zipdir
 
 
 class RandomForest(ModelGeneratorBase):
@@ -174,9 +173,8 @@ class RandomForest(ModelGeneratorBase):
                 print('CV will result in %s candidates' % total_candidates)
 
                 # allow for the computer to be responsive during grid_search
-                n_jobs = max(1, multiprocessing.cpu_count() - 2)
                 grid_search = GridSearchCV(estimator=rf, param_grid=param_grid, cv=kfold,
-                                           n_jobs=n_jobs, verbose=2, refit=True)
+                                           verbose=2, refit=True)
 
                 start = time.time()
                 grid_search.fit(train_x, train_y[response])

@@ -1,12 +1,12 @@
 import time
 import zipfile
-import multiprocessing
+
 import pandas as pd
-from rom.shared import pickle_file, save_dict_to_csv, zipdir
 from sklearn.model_selection import GridSearchCV
 from sklearn.svm import SVR as SKL_SVR
 
 from model_generator_base import ModelGeneratorBase
+from rom.shared import pickle_file, save_dict_to_csv, zipdir
 
 
 class SVR(ModelGeneratorBase):
@@ -123,10 +123,8 @@ class SVR(ModelGeneratorBase):
                 print('CV will result in %s candidates' % total_candidates)
 
                 # allow for the computer to be responsive during grid_search
-                n_jobs = max(1, multiprocessing.cpu_count() - 2)
                 grid_search = GridSearchCV(estimator=model, param_grid=param_grid, cv=kfold,
-                                           n_jobs=n_jobs, verbose=2, refit=True)
-
+                                           verbose=2, refit=True)
                 start = time.time()
                 grid_search.fit(train_x, train_y[response])
                 cv_time = time.time() - start

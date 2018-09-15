@@ -12,7 +12,7 @@ from sklearn.metrics import mean_squared_error
 from shared import save_dict_to_csv
 
 
-def plot_energy_temp(melted_df, filename):
+def validation_plot_energy_temp(melted_df, filename):
     with plt.rc_context(dict(sns.axes_style("whitegrid"))):
         f, ax = plt.subplots(figsize=(8, 5))
         newplt = sns.scatterplot(
@@ -27,7 +27,7 @@ def plot_energy_temp(melted_df, filename):
         plt.clf()
 
 
-def plot_timeseries(melted_df, filename):
+def validation_plot_timeseries(melted_df, filename):
     def date_formatter(x, pos):
         return pd.to_datetime(x)
 
@@ -48,7 +48,7 @@ def plot_timeseries(melted_df, filename):
         plt.clf()
 
 
-def save_metrics(df, output_dir):
+def validation_save_metrics(df, output_dir):
     # save the model performance data
     df.to_csv('%s/metrics.csv' % output_dir, index=False)
     df['disk_size'] = df['disk_size'].astype(float)
@@ -234,7 +234,7 @@ def validate_dataframe(df, metadata, image_save_dir):
         melted_df['Dummy'] = 0
         filename = '%s/fig_validation_energy_combined_%s.png' % (
             image_save_dir, model_data['moniker'])
-        plot_energy_temp(melted_df, filename)
+        validation_plot_energy_temp(melted_df, filename)
 
     # plot energy vs outdoor temperature for all of the responses
     melted_df = pd.melt(
@@ -245,7 +245,7 @@ def validate_dataframe(df, metadata, image_save_dir):
     )
     melted_df['Dummy'] = 0
     filename = '%s/fig_validation_energy_combined_all.png' % image_save_dir
-    plot_energy_temp(melted_df, filename)
+    validation_plot_energy_temp(melted_df, filename)
 
     # create a subselection of the data, and run some other plots
     sub_data = {
@@ -278,7 +278,7 @@ def validate_dataframe(df, metadata, image_save_dir):
                 melted_df['Dummy'] = 0
                 filename = '%s/fig_validation_ts_%s_%s_%s.png' % (
                     image_save_dir, season, response, model_data['moniker'])
-                plot_timeseries(melted_df, filename)
+                validation_plot_timeseries(melted_df, filename)
 
         # now plot all the modeled responses together
         for response, models in all_responses.items():
@@ -292,7 +292,7 @@ def validate_dataframe(df, metadata, image_save_dir):
             melted_df['Dummy'] = 0
             filename = '%s/fig_validation_ts_%s_%s_combined.png' % (
                 image_save_dir, season, response)
-            plot_timeseries(melted_df, filename)
+            validation_plot_timeseries(melted_df, filename)
 
         print all_responses
 

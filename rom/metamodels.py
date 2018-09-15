@@ -3,6 +3,7 @@ import json
 import os
 import re
 import time
+
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
@@ -10,7 +11,8 @@ import seaborn as sns
 from shared import unpickle_file, apply_cyclic_transform
 
 # do not remove multiprocessing.
-import multiprocessing
+# import multiprocessing
+
 class ETSModel:
     def __init__(self, response_name, model_file, scaler_file=None):
         """
