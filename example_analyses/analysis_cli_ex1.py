@@ -1,9 +1,4 @@
-# connect to R from python
-
 import argparse
-# pyenv virtualenv 2.7.14 modelica-2.7.14
-# In R run: install.packages('randomForest')
-# pip install rpy2==2.8.6
 from datetime import datetime
 
 from lib.ets_model import ETSModel

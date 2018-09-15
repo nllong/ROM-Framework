@@ -2,28 +2,33 @@
   "variables": [
     {
       "name": "Month",
-      "data_source": "epw",
-      "data_source_field": "month"
+      "data_source": "value",
+      "value": 6
     },
     {
       "name": "Hour",
-      "data_source": "epw",
-      "data_source_field": "hour"
+      "data_source": "value",
+      "value": 12
     },
     {
       "name": "DayofWeek",
-      "data_source": "epw",
-      "data_source_field": "day"
+      "data_source": "value",
+      "value": 3
     },
     {
       "name": "SiteOutdoorAirDrybulbTemperature",
-      "data_source": "epw",
-      "data_source_field": "dry_bulb"
+      "data_source": "value",
+      "value": 35
     },
     {
       "name": "SiteOutdoorAirRelativeHumidity",
-      "data_source": "epw",
-      "data_source_field": "rh"
+      "data_source": "value",
+      "value": 50
+    },
+    {
+      "name": "ETSInletTemperature",
+      "data_source": "value",
+      "value": 20
     },
     {
       "name": "lpd_average",
@@ -34,6 +39,11 @@
       "name": "epd_average",
       "data_source": "value",
       "value": 6.6
+    },
+    {
+      "name": "hvac_mode",
+      "data_source": "value",
+      "value": 2
     }
   ]
 }

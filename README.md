@@ -59,6 +59,9 @@ following:
     There are many arguments that are passed to the command line. To see the parameters run
     `python smoffice.py --help`.
 
+```
+./rom-runner.py run -a smoff_parametric_sweep -m SVR LinearModel -ad example_analyses/smoff-single.json -d 0.15 -o junk.csv
+```
 # TODO
 
 Instructions on building models.

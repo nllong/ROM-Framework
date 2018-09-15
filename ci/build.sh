@@ -23,5 +23,5 @@ if [ "${BUILD_SCOPE}" == "all" ]; then
     # One off builds using ID number - small office with delta T, 10 samples
     ./rom-runner.py build -a smoff_test
     ./rom-runner.py evaluate -a smoff_test
-    ./rom-runner.py validate -a smoff_test
+    ./rom-runner.py validate -a smoff_test -m LinearModel RandomForest
 fi

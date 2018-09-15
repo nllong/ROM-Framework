@@ -43,6 +43,11 @@
       "name": "epd_average",
       "data_source": "value",
       "value": 6.6
+    },
+    {
+      "name": "hvac_mode",
+      "data_source": "value",
+      "value": 3
     }
   ]
 }

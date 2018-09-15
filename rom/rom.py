@@ -13,6 +13,7 @@ from pyfiglet import Figlet
 from evaluate_helpers import *
 from metamodels import Metamodels
 from validation_helpers import validate_dataframe, validation_save_metrics
+from analysis_definition.analysis_definition import AnalysisDefinition
 
 ## Make sure to keep these models here, optimizing imports will remove these
 from generators.linear_model import LinearModel
@@ -31,11 +32,16 @@ print f.renderText('ROM Framework')
 parser = argparse.ArgumentParser()
 parser.add_argument('action', default=None, choices=['build', 'evaluate', 'validate', 'run'])
 parser.add_argument('-f', '--file', help='Description file to use', default='metamodels.json')
-parser.add_argument('-a', '--analysis_moniker', help='Name of the Analysis Model', required=True)
-available_models = parser.add_argument("-m", "--model_type", nargs='*',
+parser.add_argument('-a', '--analysis-moniker', help='Name of the Analysis Model', required=True)
+available_models = parser.add_argument("-m", "--model-type", nargs='*',
                                        choices=['LinearModel', 'RandomForest', 'SVR'],
                                        default=['LinearModel', 'RandomForest', 'SVR'],
                                        help="Type of model to build")
+
+# Run file options
+parser.add_argument('-ad', '--analysis-definition', help='Definition of an analysis to run using the ROMs', default=None)
+parser.add_argument('-w', '--weather', help='Weather file to run analysis-definition', default=None)
+parser.add_argument('-o', '--output', help='File to save the results to', default=None)
 downsample = parser.add_argument(
     '-d', '--downsample', default=None, type=float, help='Build only specific downsample value')
 args = parser.parse_args()
@@ -125,7 +131,6 @@ if metamodel.set_analysis(args.analysis_moniker):
                     os.makedirs(validation_dir)
 
                     evaluate_process_all_model_results(data, validation_dir)
-
     elif args.action == 'validate':
         # validate requires iterating over the downsamples before the models
         if args.downsample and args.downsample not in metamodel.downsamples:
@@ -149,18 +154,18 @@ if metamodel.set_analysis(args.analysis_moniker):
 
             # List of response files to load based on priority. The SVR models have an additional
             # variable that is needed, so prioritize that one
-            preferred_response_file = [
+            preferred_validation_data = [
                 "%s/%s" % (validation_dir, 'svr_validation.pkl'),
                 "%s/%s" % (validation_dir, 'rf_validation.pkl'),
                 "%s/%s" % (validation_dir, 'lm_validation.pkl'),
             ]
-            for f in preferred_response_file:
+            for f in preferred_validation_data:
                 if os.path.exists(f):
                     print('Loading validation data from %s' % f)
-                    single_df = pd.read_pickle(f)
+                    validation_df = pd.read_pickle(f)
                     break
             else:
-                single_df = None
+                validation_df = None
 
             models = [(m, NAMEMAP[m]) for m in args.model_type]
 
@@ -180,11 +185,11 @@ if metamodel.set_analysis(args.analysis_moniker):
 
                     start = time.time()
                     var_name = "Modeled %s %s" % (model_type[1], response)
-                    single_df[var_name] = metamodel.yhat(response, single_df)
+                    validation_df[var_name] = metamodel.yhat(response, validation_df)
                     metrics['run_time_8760'].append(time.time() - start)
 
                     # grab a single row for performance benchmarking
-                    single_row = single_df.iloc[[5]]
+                    single_row = validation_df.iloc[[5]]
                     start = time.time()
                     metamodel.yhat(response, single_row)
                     metrics['run_time_single'].append(time.time() - start)
@@ -193,4 +198,42 @@ if metamodel.set_analysis(args.analysis_moniker):
             validation_save_metrics(pd.DataFrame.from_dict(metrics), output_dir)
 
             # run bunch of validations on the loaded models
-            validate_dataframe(single_df, metadata, output_dir)
+            validate_dataframe(validation_df, metadata, output_dir)
+    elif args.action == 'run':
+        print("Running")
+        if not args.downsample:
+            print("Must supply at least one downsample when running ROM models")
+            exit(1)
+        elif not args.analysis_definition:
+            print("Must supply analysis definition when running ROM models")
+            exit(1)
+
+        analysis = AnalysisDefinition(args.analysis_definition)
+
+        # load the weather data if it exists
+        if args.weather:
+            analysis.load_weather_file(args.weather)
+        data = analysis.as_dataframe()
+
+        # get a list of models with short names
+        metadata = {}
+        models = [(m, NAMEMAP[m]) for m in args.model_type]
+        for model in models:
+            metadata[model[0]] = {'responses': [], 'moniker': model[1]}
+
+            # Load the reducted order models
+            metamodel.load_models(model[0], downsample=args.downsample)
+
+            # Run the ROM for each of the response variables
+            for response in metamodel.available_response_names(model[0]):
+                metadata[model[0]]['responses'].append(response)
+
+                var_name = "Modeled %s %s" % (model[1], response)
+                data[var_name] = metamodel.yhat(response, data)
+
+        print data.describe()
+        if args.output:
+            data.to_csv(args.output)
+
+
+
