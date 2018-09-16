@@ -43,7 +43,7 @@ parser.add_argument('-ad', '--analysis-definition', help='Definition of an analy
 parser.add_argument('-w', '--weather', help='Weather file to run analysis-definition', default=None)
 parser.add_argument('-o', '--output', help='File to save the results to', default=None)
 downsample = parser.add_argument(
-    '-d', '--downsample', default=None, type=float, help='Build only specific downsample value')
+    '-d', '--downsample', default=None, type=float, help='Specific down sample value')
 args = parser.parse_args()
 
 print('Passed build_models.py args: %s' % args)

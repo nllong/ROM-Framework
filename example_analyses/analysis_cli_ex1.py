@@ -1,15 +1,17 @@
 import argparse
-from datetime import datetime
 
-from lib.ets_model import ETSModel
+from ..rom.metamodels import Metamodels
 
 # parse the anlaysis.json and determine the model
 
 parser = argparse.ArgumentParser()
-parser.add_argument("-a", "--analysis_id", default="3ff422c2-ca11-44db-b955-b39a47b011e7",
+parser.add_argument('-f', '--file', help='Description file to use', default='metamodels.json')
+parser.add_argument("-a", "--analysis_id", default="smoff_parametric_sweep",
                     help="ID of the Analysis Models")
-parser.add_argument("--model", default='system', help="Model Name: system, ambient, or outlet")
-parser.add_argument("--season", default='heating', help="Season: heating or cooling")
+downsample = parser.add_argument(
+    '-d', '--downsample', default=None, type=float, help='Selected down sample value')
+parser.add_argument("--model", default='LinearModel', choices=['LinearModel', 'RandomForest', 'SVR'])
+parser.add_argument("--response", default='ETSOutletTemperature', help="Response name")
 parser.add_argument("-d", "--day_of_week", type=int, default=0, help="Day of Week: 0-Sun to 6-Sat")
 parser.add_argument("-m", "--month", type=int, default=1, help="Month: 1-Jan to 12-Dec")
 parser.add_argument("-H", "--hour", type=int, default=9, help="Hour of Day: 0 to 23")
@@ -18,29 +20,16 @@ parser.add_argument("-T", "--outdoor_drybulb", type=float, default=29.5,
 parser.add_argument("-RH", "--outdoor_rh", type=float, default=50,
                     help="Percent Outdoor Relative Humidity")
 parser.add_argument("-i", "--inlet_temp", type=float, default=20, help="Inlet Temperature")
-parser.add_argument("--mass-flow-heating", type=float, default=0.05,
-                    help="Heating Mass Flow Rate (kg/s)")
-parser.add_argument("--mass-flow-cooling", type=float, default=0.05,
-                    help="Cooling Mass Flow Rate (kg/s)")
 
 args = parser.parse_args()
 
 print "Loading model"
+metamodel = Metamodels(args.file)
+metamodel.load_models(args.model, models_to_load=[args.response], downsample=args.downsample)
 
-# Check which model is being loaded to determine the arguments (this is manual right now)
-
-print datetime.now().strftime("%H:%M:%S.%f")
-model = ETSModel("output/%s/models" % args.analysis_id, 0, 0)
-print datetime.now().strftime("%H:%M:%S.%f")
-
-# model = ETSModel(args.model, args.season)
 print "Predicting..."
-if args.analysis_id == '3ff422c2-ca11-44db-b955-b39a47b011e7':
-    yhat = model.yhat(args.month, args.hour, args.day_of_week, args.outdoor_drybulb,
-                      args.outdoor_rh, args.inlet_temp)
-elif args.analysis_id == '66fb9766-26e7-4bed-bdf9-0fbfbc8d6c7e':
-    yhat = model.yhat(args.month, args.hour, args.day_of_week, args.outdoor_drybulb,
-                      args.outdoor_rh, args.inlet_temp, args.mass_flow_heating,
-                      args.mass_flow_cooling)
+yhat = metamodel.yhat(args.response, [args.month, args.hour, args.day_of_week, args.outdoor_drybulb,
+                      args.outdoor_rh, args.inlet_temp])
+print yhat
 
-print "Result is %s" % yhat
+
