@@ -4,4 +4,3 @@
 
 # Import the ROM framework, which will call the argparser
 from rom.rom import *
-

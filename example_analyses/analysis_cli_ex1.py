@@ -29,7 +29,5 @@ metamodel.load_models(args.model, models_to_load=[args.response], downsample=arg
 
 print "Predicting..."
 yhat = metamodel.yhat(args.response, [args.month, args.hour, args.day_of_week, args.outdoor_drybulb,
-                      args.outdoor_rh, args.inlet_temp])
+                                      args.outdoor_rh, args.inlet_temp])
 print yhat
-
-

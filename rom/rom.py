@@ -15,11 +15,11 @@ from metamodels import Metamodels
 from validation_helpers import validate_dataframe, validation_save_metrics
 from analysis_definition.analysis_definition import AnalysisDefinition
 
-## Make sure to keep these models here, optimizing imports will remove these
+# Make sure to keep these models here, optimizing imports will remove these
 from generators.linear_model import LinearModel
 from generators.random_forest import RandomForest
 from generators.svr import SVR
-## End include
+# End include
 
 NAMEMAP = {
     'LinearModel': 'LM',
@@ -234,6 +234,3 @@ if metamodel.set_analysis(args.analysis_moniker):
         print data.describe()
         if args.output:
             data.to_csv(args.output)
-
-
-

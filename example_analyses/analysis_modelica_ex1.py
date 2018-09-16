@@ -1,8 +1,6 @@
 # Make sure that the python path is set, such as by running
 # export PYTHONPATH=`pwd`
 
-import os
-
 from ..rom.metamodels import Metamodels
 
 
@@ -45,4 +43,3 @@ def run_model(values):
 
     print('Predicting...')
     return metamodel.yhat(response, [month, hour, day_of_week, t_outdoor, rh, inlet_temp])
-

@@ -78,4 +78,3 @@ def evaluate_process_all_model_results(data, validation_dir):
 
     keep_cols = ['name', 'model_method', 'pearson']
     sub_df[keep_cols].to_csv('%s/pcc_model_results.csv' % validation_dir, index=False)
-

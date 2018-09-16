@@ -13,6 +13,7 @@ from shared import unpickle_file, apply_cyclic_transform
 # do not remove multiprocessing.
 # import multiprocessing
 
+
 class ETSModel:
     def __init__(self, response_name, model_file, scaler_file=None):
         """
