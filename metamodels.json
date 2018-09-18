@@ -6,11 +6,11 @@
     "display_name": "Small Office Varying Inlet Temp",
     "description": "100 Simulations, varying inlet temperature and delta-T",
     "validation_datapoint_id": "21e6f96e-387b-4d99-89d5-9aeb89d1fc08",
-    "downsamples": [0.05, 0.15, 0.25, 1.0],
+    "downsamples": [0.01, 0.02, 0.03, 0.05, 0.15, 0.25, 1.0],
     "algorithm_options": {
       "RandomForest": {
         "_comments": "If downsamples are specified here, then they will override the parent values",
-        "downsamples": [0.05, 0.15, 0.25, 1.0],
+        "downsamples": [0.01, 0.02, 0.03, 0.05, 0.15, 0.25, 1.0],
         "param_grid": {
           "_comments": "max_depth - default is None, max_features - default is p/3, min_samples_leaf - default is 1, min_samples_split - default is 2, n_estimators - default is 10",
           "max_depth": [null, 3, 6],
@@ -28,7 +28,7 @@
       },
       "SVR": {
         "_comments": "If downsamples are specified here, then they will override the parent values",
-        "downsamples": [0.05, 0.15],
+        "downsamples": [0.01, 0.02, 0.03, 0.05, 0.15],
         "base_fit_params": {
           "cache_size": 1500
         },
@@ -156,11 +156,11 @@
     "display_name": "Retail Varying Inlet Temp",
     "description": "100 Simulations, varying inlet temperature and delta-T",
     "validation_datapoint_id": "1682190d-51cd-4576-8b10-865aaeaa3da2",
-    "downsamples": [0.05, 0.15, 0.25, 1.0],
+    "downsamples": [0.01, 0.02, 0.03, 0.05, 0.15, 0.25, 1.0],
     "algorithm_options": {
       "RandomForest": {
         "_comments": "If downsamples are specified here, then they will override the parent values",
-        "downsamples": [0.05, 0.15, 0.25, 1.0],
+        "downsamples": [0.01, 0.02, 0.03, 0.05, 0.15, 0.25, 1.0],
         "param_grid": {
           "_comments": "max_depth - default is None, max_features - default is p/3, min_samples_leaf - default is 1, min_samples_split - default is 2, n_estimators - default is 10",
           "max_depth": [null, 3, 6],
@@ -178,7 +178,7 @@
       },
       "SVR": {
         "_comments": "If downsamples are specified here, then they will override the parent values",
-        "downsamples": [0.05, 0.15],
+        "downsamples": [0.01, 0.02, 0.03, 0.05, 0.15],
         "base_fit_params": {
           "cache_size": 1500
         },
