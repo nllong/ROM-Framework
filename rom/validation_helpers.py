@@ -24,24 +24,31 @@ def validation_plot_energy_temp(melted_df, filename):
         ax.set_xlabel('Site Outdoor Air Drybulb Temperature (deg C)')
         ax.set_ylabel('Total HVAC Energy (GJ)')
         newplt.savefig(filename)
+        newplt.clf()
         plt.clf()
 
 
 def validation_plot_timeseries(melted_df, filename):
     def date_formatter(x, pos):
-        return pd.to_datetime(x)
+        return pd.to_datetime(x).strftime('%Y-%m-%d\n %H:%M')
 
     sns.set(color_codes=True)
-    plt.rcParams['figure.figsize'] = [15, 10]
+    plt.rcParams['figure.figsize'] = [10, 4]
 
     with plt.rc_context(dict(sns.axes_style("whitegrid"))):
         fig, ax = plt.subplots()
+        # sns.lineplot(x='DateTime', y='Value', hue='Variable', data=melted_df, ax=ax)
         sns.tsplot(melted_df, time='DateTime', unit='Dummy', condition='Variable', value='Value',
                    ax=ax)
-        # newplt.set_title("%s: %s vs EnergyPlus %s" % (season, model_data['moniker'], response))
-        ax.xaxis.set_major_formatter(mpl.ticker.FuncFormatter(date_formatter))
+        # convert all xtick labels to selected format from ms timestamp
+        # ax.set_xticklabels(
+        #     [pd.to_datetime(tm).strftime('%Y-%m-%d\n %H:%M:%S') for tm in ax.get_xticks()],
+        #     rotation=50)
 
-        # put the labels at 45deg since they tend to be too long
+        ax.xaxis.set_major_formatter(mpl.ticker.FuncFormatter(date_formatter))
+        ax.set(xlabel='', ylabel='Energy (GJ)')
+
+        # put the labels at an angle since they tend to be too long
         fig.autofmt_xdate()
         fig.savefig(filename)
         fig.clf()
@@ -66,6 +73,7 @@ def validation_save_metrics(df, output_dir):
         ax.set_xlabel('Index')
         ax.set_ylabel('Log Disk Size (log(MB))')
         newplt.savefig('%s/fig_performance_disk_size.png' % (output_dir))
+        newplt.clf()
         plt.clf()
 
     # plot the load and run times
@@ -283,8 +291,6 @@ def validate_dataframe(df, metadata, image_save_dir):
         # now plot all the modeled responses together
         for response, models in all_responses.items():
             selected_columns = ['DateTime', response] + models
-            print selected_columns
-
             melted_df = pd.melt(season_df[selected_columns],
                                 id_vars='DateTime',
                                 var_name='Variable',
@@ -293,7 +299,5 @@ def validate_dataframe(df, metadata, image_save_dir):
             filename = '%s/fig_validation_ts_%s_%s_combined.png' % (
                 image_save_dir, season, response)
             validation_plot_timeseries(melted_df, filename)
-
-        print all_responses
 
         # plot all the modeled timeseries resutls on a single plot

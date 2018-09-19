@@ -266,6 +266,8 @@ class ModelGeneratorBase(object):
                 data['Y'], data['Yhat'], kind="hex", space=0
             )
             newplt.savefig('%s/fig_yy_hexplot_%s.png' % (self.images_dir, model_name))
+            newplt.clf()
+            plt.clf()
 
             # Remove 0,0 points for higher resolution
             sub_data = data[(data.Y != 0) & (data.Yhat != 0)]
@@ -274,8 +276,8 @@ class ModelGeneratorBase(object):
                 sub_data['Y'], sub_data['Yhat'], kind="hex", space=0
             )
             newplt.savefig('%s/fig_yy_hexplot_hres_%s.png' % (self.images_dir, model_name))
-
-        plt.clf()
+            newplt.clf()
+            plt.clf()
 
     def anova_plots(self, y_data, yhat, model_name):
         residuals = y_data - yhat
