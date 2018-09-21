@@ -15,10 +15,6 @@ def run_model(values):
     rh = float(values[7])
     inlet_temp = float(values[8])
 
-    print('Loading model')
-    metamodel = Metamodels(args.file)
-    metamodel.load_models(args.model, models_to_load=[args.response], downsample=args.downsample)
-
     if model == 1:
         model = 'LinearModel'
     elif model == 2:
