@@ -1,5 +1,5 @@
 # import cPickle  # python 2
-import six; from six.moves import cPickle
+import pickle
 import csv
 import gzip
 import math
@@ -23,7 +23,7 @@ def pickle_file(obj, filename, gzipfile=False):
         gfile = gzip.open('%s.pklzip' % filename, 'wb')
     else:
         gfile = open('%s.pkl' % filename, 'wb')
-    cPickle.dump(obj, gfile)
+    pickle.dump(obj, gfile)
     gfile.close()
 
 
@@ -38,7 +38,7 @@ def unpickle_file(filename):
         gfile = gzip.open(filename, 'rb')
     else:
         gfile = open(filename, 'rb')
-    return cPickle.load(gfile)
+    return pickle.load(gfile)
 
 
 def save_dict_to_csv(data, filename):

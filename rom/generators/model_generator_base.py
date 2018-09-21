@@ -13,7 +13,7 @@ from scipy import stats
 from scipy.stats import spearmanr, pearsonr
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from ..shared import apply_cyclic_transform
+from ..shared import apply_cyclic_transform, pickle_file
 
 
 class ModelGeneratorBase(object):
@@ -74,10 +74,7 @@ class ModelGeneratorBase(object):
                 os.remove('%s/%s' % (self.base_dir, filename))
 
     def save_dataframe(self, dataframe, path):
-        dataframe.to_pickle(path)
-
-    def read_dataframe(self, path):
-        return pd.read_pickle(path)
+        pickle_file(dataframe, path)
 
     def evaluate(self, model, model_name, model_moniker, x_data, y_data, downsample,
                  build_time, cv_time, covariates=None, scaler=None):

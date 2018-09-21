@@ -14,7 +14,7 @@ from .evaluate_helpers import *
 from .metamodels import Metamodels
 from .validation_helpers import validate_dataframe, validation_save_metrics
 from .analysis_definition.analysis_definition import AnalysisDefinition
-
+from .shared import unpickle_file
 # Make sure to keep these models here, optimizing imports will remove these
 from .generators.linear_model import LinearModel
 from .generators.random_forest import RandomForest
@@ -162,7 +162,7 @@ if metamodel.set_analysis(args.analysis_moniker):
             for f in preferred_validation_data:
                 if os.path.exists(f):
                     print('Loading validation data from %s' % f)
-                    validation_df = pd.read_pickle(f)
+                    validation_df = unpickle_file(f)
                     break
             else:
                 validation_df = None
