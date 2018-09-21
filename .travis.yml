@@ -1,7 +1,7 @@
 sudo: true
 language: python
 python:
-  - 2.7
+  - 3.7
 rvm:
   - 2.2.4
 env:
