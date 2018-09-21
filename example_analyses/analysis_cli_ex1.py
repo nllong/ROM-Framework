@@ -23,11 +23,11 @@ parser.add_argument("-i", "--inlet_temp", type=float, default=20, help="Inlet Te
 
 args = parser.parse_args()
 
-print "Loading model"
+print("Loading model")
 metamodel = Metamodels(args.file)
 metamodel.load_models(args.model, models_to_load=[args.response], downsample=args.downsample)
 
-print "Predicting..."
+print("Predicting...")
 yhat = metamodel.yhat(args.response, [args.month, args.hour, args.day_of_week, args.outdoor_drybulb,
                                       args.outdoor_rh, args.inlet_temp])
-print yhat
+print(yhat)

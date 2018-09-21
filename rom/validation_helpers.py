@@ -9,7 +9,7 @@ import seaborn as sns
 from pandas.plotting import lag_plot
 from sklearn.metrics import mean_squared_error
 
-from shared import save_dict_to_csv
+from .shared import save_dict_to_csv
 
 
 def validation_plot_energy_temp(melted_df, filename):

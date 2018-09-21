@@ -65,8 +65,6 @@ class AnalysisDefinition:
         self.filename = definition_file
         self.file = json.load(open(self.filename))
 
-        # print json.dumps(self.file, indent=2)
-
     def load_weather_file(self, weather_file):
         """
         Load in the weather file and convert the field names to what is expected in the

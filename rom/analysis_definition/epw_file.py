@@ -79,21 +79,21 @@ class EpwFile:
             reader = csv.reader(csvfile)
             for row in reader:
                 if row[0] == 'LOCATION':
-                    print 'Parsing Location'
+                    print('Parsing Location')
                 elif row[0] == 'DESIGN CONDITIONS':
-                    print 'Parsing Design Conditions'
+                    print('Parsing Design Conditions')
                 elif row[0] == 'TYPICAL/EXTREME PERIODS':
-                    print 'Parsing Typical / Extreme Periods'
+                    print('Parsing Typical / Extreme Periods')
                 elif row[0] == 'GROUND TEMPERATURES':
-                    print 'Parsing Ground Temperatures'
+                    print('Parsing Ground Temperatures')
                 elif row[0] == 'HOLIDAYS/DAYLIGHT SAVINGS':
-                    print 'Parsing Holidays / Dayling'
+                    print('Parsing Holidays / Dayling')
                 elif row[0] == 'COMMENTS 1':
-                    print 'Parsing Comments 1'
+                    print('Parsing Comments 1')
                 elif row[0] == 'COMMENTS 2':
-                    print 'Parsing Comments 2'
+                    print('Parsing Comments 2')
                 elif row[0] == 'DATA PERIODS':
-                    print 'Parsing Data Periods'
+                    print('Parsing Data Periods')
                 else:
                     self._append_row(row)
 
@@ -129,4 +129,4 @@ if __name__ == '__main__':
 
     for index, datum in enumerate(epw.data):
         if index < 10:
-            print datum
+            print(datum)

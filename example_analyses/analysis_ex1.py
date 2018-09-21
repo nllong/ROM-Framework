@@ -18,9 +18,9 @@ data = analysis.as_dataframe()
 # TODO: add a method to calculate all responses automatically
 data['RF_ETSHeatingOutletTemperature'] = reduced_order_model.yhat('ETSHeatingOutletTemperature', data)
 
-print data
-print data.describe()
-print data.iloc[0]
-print data.iloc[7]
-print data[(data.Hour == 1) & (data.SiteOutdoorAirDrybulbTemperature == 7.8) & (data.DistrictHeatingMassFlowRate == 0) & (data.SiteOutdoorAirRelativeHumidity == 73) & (data.ETSInletTemperature == 15.4355)]
-print data.columns.to_series().groupby(data.dtypes).groups
+print(data)
+print(data.describe())
+print(data.iloc[0])
+print(data.iloc[7])
+print(data[(data.Hour == 1) & (data.SiteOutdoorAirDrybulbTemperature == 7.8) & (data.DistrictHeatingMassFlowRate == 0) & (data.SiteOutdoorAirRelativeHumidity == 73) & (data.ETSInletTemperature == 15.4355)])
+print(data.columns.to_series().groupby(data.dtypes).groups)

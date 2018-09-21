@@ -10,15 +10,15 @@ import time
 
 from pyfiglet import Figlet
 
-from evaluate_helpers import *
-from metamodels import Metamodels
-from validation_helpers import validate_dataframe, validation_save_metrics
-from analysis_definition.analysis_definition import AnalysisDefinition
+from .evaluate_helpers import *
+from .metamodels import Metamodels
+from .validation_helpers import validate_dataframe, validation_save_metrics
+from .analysis_definition.analysis_definition import AnalysisDefinition
 
 # Make sure to keep these models here, optimizing imports will remove these
-from generators.linear_model import LinearModel
-from generators.random_forest import RandomForest
-from generators.svr import SVR
+from .generators.linear_model import LinearModel
+from .generators.random_forest import RandomForest
+from .generators.svr import SVR
 # End include
 
 NAMEMAP = {
@@ -27,7 +27,7 @@ NAMEMAP = {
     'SVR': 'SVR',
 }
 f = Figlet()
-print f.renderText('ROM Framework')
+print(f.renderText('ROM Framework'))
 
 parser = argparse.ArgumentParser()
 parser.add_argument('action', default=None, choices=['build', 'evaluate', 'validate', 'run'])
@@ -231,6 +231,6 @@ if metamodel.set_analysis(args.analysis_moniker):
                 var_name = "Modeled %s %s" % (model[1], response)
                 data[var_name] = metamodel.yhat(response, data)
 
-        print data.describe()
+        print(data.describe())
         if args.output:
             data.to_csv(args.output)

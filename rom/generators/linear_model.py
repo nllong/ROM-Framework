@@ -1,10 +1,10 @@
 import time
 import zipfile
 
-from rom.shared import pickle_file, save_dict_to_csv, zipdir
+from ..shared import pickle_file, save_dict_to_csv, zipdir
 from sklearn.linear_model import LinearRegression
 
-from model_generator_base import ModelGeneratorBase
+from .model_generator_base import ModelGeneratorBase
 
 
 class LinearModel(ModelGeneratorBase):
@@ -39,7 +39,7 @@ class LinearModel(ModelGeneratorBase):
         self.save_dataframe(validate_xy, "%s/lm_validation.pkl" % self.validation_dir)
 
         for response in metamodel.available_response_names(self.model_type):
-            print "Fitting Linear Model for %s" % response
+            print("Fitting Linear Model for %s" % response)
             trained_model = LinearRegression()
 
             start = time.time()

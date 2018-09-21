@@ -1,4 +1,5 @@
-import cPickle
+# import cPickle  # python 2
+import six; from six.moves import cPickle
 import csv
 import gzip
 import math
@@ -41,7 +42,7 @@ def unpickle_file(filename):
 
 
 def save_dict_to_csv(data, filename):
-    with open(filename, 'wb') as cfile:
+    with open(filename, 'w') as cfile:
         writer = csv.DictWriter(cfile, data[0].keys())
         writer.writeheader()
         writer.writerows(data)

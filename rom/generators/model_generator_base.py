@@ -13,7 +13,7 @@ from scipy import stats
 from scipy.stats import spearmanr, pearsonr
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from rom.shared import apply_cyclic_transform
+from ..shared import apply_cyclic_transform
 
 
 class ModelGeneratorBase(object):
@@ -125,7 +125,6 @@ class ModelGeneratorBase(object):
     def build(self, data_file, metamodel, **kwargs):
         self.dataset = pd.read_csv(data_file)
 
-        # print list(dataset.columns.values)
         if 'DistrictCoolingOutletTemperature' in list(self.dataset.columns.values):
             self.dataset = self.dataset.drop('DistrictCoolingOutletTemperature', 1)
         # update some of the column names so they make sense to this model
@@ -154,7 +153,7 @@ class ModelGeneratorBase(object):
         :param kwargs: downsample - fraction of dataframe to keep (after validation data extraction)
         :return: dataframes, dataframe: 1) dataset with removed validation data, 2) validation data
         """
-        print "Initial dataset size is %s" % len(dataset)
+        print("Initial dataset size is %s" % len(dataset))
         if metamodel.validation_id and metamodel.validation_id in dataset['_id'].unique():
             print('Extracting validation dataset and converting to date time')
             validate_xy = dataset[dataset['_id'] == metamodel.validation_id]
@@ -215,9 +214,9 @@ class ModelGeneratorBase(object):
         else:
             scalers = None
 
-        print "Dataset size is %s" % len(dataset)
-        print "Training dataset size is %s" % len(train_x)
-        print "Validation dataset size is %s" % len(validate_xy)
+        print("Dataset size is %s" % len(dataset))
+        print("Training dataset size is %s" % len(train_x))
+        print("Validation dataset size is %s" % len(validate_xy))
 
         return train_x, test_x, train_y, test_y, validate_xy, scalers
 
@@ -266,7 +265,6 @@ class ModelGeneratorBase(object):
                 data['Y'], data['Yhat'], kind="hex", space=0
             )
             newplt.savefig('%s/fig_yy_hexplot_%s.png' % (self.images_dir, model_name))
-            newplt.clf()
             plt.clf()
 
             # Remove 0,0 points for higher resolution
@@ -276,7 +274,6 @@ class ModelGeneratorBase(object):
                 sub_data['Y'], sub_data['Yhat'], kind="hex", space=0
             )
             newplt.savefig('%s/fig_yy_hexplot_hres_%s.png' % (self.images_dir, model_name))
-            newplt.clf()
             plt.clf()
 
     def anova_plots(self, y_data, yhat, model_name):

@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
-from shared import unpickle_file, apply_cyclic_transform
+from .shared import unpickle_file, apply_cyclic_transform
 
 # do not remove multiprocessing.
 # import multiprocessing
@@ -181,12 +181,12 @@ class Metamodels(object):
         if not models_to_load:
             models_to_load = self.available_response_names(self.rom_type)
 
-        print "Loading models %s" % models_to_load
+        print("Loading models %s" % models_to_load)
 
         metrics = {'response': [], 'model_type': [], 'downsample': [],
                    'load_time': [], 'disk_size': []}
         for response in models_to_load:
-            print "Loading model for response: %s" % response
+            print("Loading model for response: %s" % response)
 
             start = time.time()
             if downsample:
@@ -206,14 +206,14 @@ class Metamodels(object):
             metrics['load_time'].append(time.time() - start)
             metrics['disk_size'].append(os.path.getsize(path))
 
-        print "Finished loading models"
-        print "The responses are:"
+        print("Finished loading models")
+        print("The responses are:")
         for index, rs in enumerate(self.available_response_names(self.rom_type)):
-            print "  %s: %s" % (index, rs)
+            print("  %s: %s" % (index, rs))
 
-        print "The covariates are:"
+        print("The covariates are:")
         for index, cv in enumerate(self.covariate_names(self.rom_type)):
-            print "  %s: %s" % (index, cv)
+            print("  %s: %s" % (index, cv))
 
         return metrics
 
@@ -237,14 +237,11 @@ class Metamodels(object):
             set(self.covariate_names(self.rom_type)) - set(data.columns.values))
 
         if len(extra_columns_in_df) > 0:
-            # print "The following columns are not needed in DataFrame"
-            # print extra_columns_in_df
-            print "Removing unneeded column before evaluation"
+            print("Removing unneeded column before evaluation")
             data = data.drop(columns=extra_columns_in_df)
 
         if len(missing_data_in_df) > 0:
-            print "Error: The following columns are missing in the DataFrame"
-            # print missing_data_in_df
+            print("Error: The following columns are missing in the DataFrame")
             raise Exception("Need to define %s in DataFrame for model" % missing_data_in_df)
 
         # typecast the columns before running the analysis
@@ -311,7 +308,7 @@ class Metamodels(object):
             os.makedirs(lookup_table_dir)
 
         for response in self.loaded_models:
-            print "Creating CSV for %s" % response
+            print("Creating CSV for %s" % response)
 
             # TODO: look into using DataFrame.pivot() to transform data
             file_name = '%s/%s_%s.csv' % (
@@ -354,7 +351,7 @@ class Metamodels(object):
             os.makedirs(lookup_table_dir)
 
         for response in self.loaded_models:
-            print "Creating CSV for %s" % response
+            print("Creating CSV for %s" % response)
 
             # TODO: look into using DataFrame.pivot() to transform data
             for unique_value in data[second_dimension].unique():
@@ -479,7 +476,7 @@ class Metamodels(object):
         for k, v in algorithm_options.items():
             if isinstance(v, dict):
                 algorithm_options[k] = Metamodels.resolve_algorithm_options(v)
-            elif isinstance(v, basestring) and 'eval(' in v:
+            elif isinstance(v, str) and 'eval(' in v:
                 # remove eval() from string in file and then call it
                 string_value = re.search('eval\((.*)\)', v).groups()[0]
                 algorithm_options[k] = eval(string_value)
