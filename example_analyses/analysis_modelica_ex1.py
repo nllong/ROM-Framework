@@ -3,6 +3,12 @@
 
 from ..rom.metamodels import Metamodels
 
+def load_models(metamodel_filename, model_type, models_to_load, downsample):
+    metamodels = Metamodels(metamodel_filename)
+    metamodels.load_models(model_type, models_to_load=models_to_load, downsample=downsample)
+
+    return metamodels
+
 
 def run_model(values):
     model = int(values[0])
@@ -26,7 +32,7 @@ def run_model(values):
         response = 'CoolingElectricity'
     elif response == 2:
         response = 'HeatingElectricity'
-    elif response = 3:
+    elif response == 3:
         response = 'DistrictCoolingChilledWaterEnergy'
     elif response == 4:
         response = 'DistrictHeatingHotWaterEnergy'
