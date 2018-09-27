@@ -15,18 +15,18 @@ class SVR(ModelGeneratorBase):
     def __init__(self, analysis_id, random_seed=None, **kwargs):
         super(SVR, self).__init__(analysis_id, random_seed, **kwargs)
 
-    def evaluate(self, model, model_name, model_moniker, x_data, y_data, downsample,
+    def evaluate(self, model, model_name, model_moniker, x_data, y_data, down_sample,
                  build_time, cv_time, covariates=None, scaler=None):
         """
         Evaluate the performance of the forest based on known x_data and y_data.
         """
         yhat, performance = super(SVR, self).evaluate(
-            model, model_name, model_moniker, x_data, y_data, downsample,
+            model, model_name, model_moniker, x_data, y_data, down_sample,
             build_time, cv_time, covariates, scaler
         )
         return performance
 
-    def save_cv_results(self, cv_results, response, downsample, filename):
+    def save_cv_results(self, cv_results, response, down_sample, filename):
         """
         Save the cv_results to a CSV file. Data in the cv_results file looks like the following.
 
@@ -59,13 +59,13 @@ class SVR(ModelGeneratorBase):
         """
 
         data = {}
-        data['downsample'] = []
+        data['down_sample'] = []
         for params in cv_results['params']:
             for param, value in params.items():
                 if not data.get(param, None):
                     data[param] = []
                 data[param].append(value)
-                data['downsample'] = downsample
+                data['down_sample'] = down_sample
                 data['response'] = response
         data['mean_train_score'] = cv_results['mean_train_score']
         data['mean_test_score'] = cv_results['mean_test_score']
@@ -84,7 +84,7 @@ class SVR(ModelGeneratorBase):
         train_x, test_x, train_y, test_y, validate_xy, scaler = self.train_test_validate_split(
             self.dataset,
             metamodel,
-            downsample=self.downsample,
+            down_sample=self.down_sample,
             scale=True
         )
 
@@ -104,7 +104,7 @@ class SVR(ModelGeneratorBase):
             # Evaluate with the building them
             self.model_results.append(
                 self.evaluate(
-                    model, response, 'base', test_x, test_y[response], self.downsample,
+                    model, response, 'base', test_x, test_y[response], self.down_sample,
                     build_time, 0,
                     covariates=metamodel.covariate_names(self.model_type),
                     scaler=scaler
@@ -142,13 +142,13 @@ class SVR(ModelGeneratorBase):
 
                 # save the cv results
                 self.save_cv_results(
-                    grid_search.cv_results_, response, self.downsample,
+                    grid_search.cv_results_, response, self.down_sample,
                     '%s/cv_results_%s.csv' % (self.base_dir, response)
                 )
 
                 self.model_results.append(
                     self.evaluate(
-                        best_model, response, 'best', test_x, test_y[response], self.downsample,
+                        best_model, response, 'best', test_x, test_y[response], self.down_sample,
                         build_time, cv_time,
                         covariates=metamodel.covariate_names(self.model_type),
                         scaler=scaler

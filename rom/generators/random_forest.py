@@ -27,7 +27,7 @@ class RandomForest(ModelGeneratorBase):
         if os.path.exists(copy_tree_path):
             os.remove(copy_tree_path)
 
-    def evaluate(self, model, model_name, model_type, x_data, y_data, downsample,
+    def evaluate(self, model, model_name, model_type, x_data, y_data, down_sample,
                  build_time, cv_time, covariates=None, scaler=None):
         """
 
@@ -38,14 +38,14 @@ class RandomForest(ModelGeneratorBase):
         :param model_type:
         :param x_data:
         :param y_data:
-        :param downsample:
+        :param down_sample:
         :param build_time:
         :param cv_time:
         :param covariates:
         :return:
         """
         _yhat, performance = super(RandomForest, self).evaluate(
-            model, model_name, model_type, x_data, y_data, downsample,
+            model, model_name, model_type, x_data, y_data, down_sample,
             build_time, cv_time, covariates, scaler
         )
 
@@ -64,7 +64,7 @@ class RandomForest(ModelGeneratorBase):
         plt.clf()
 
         # plot a single tree
-        if downsample <= 0.01:
+        if down_sample <= 0.01:
             tree_file_name = '%s/fig_first_tree_%s.png' % (self.images_dir, model_name)
             self.export_tree_png(model.estimators_[0], covariates, tree_file_name)
 
@@ -77,7 +77,7 @@ class RandomForest(ModelGeneratorBase):
 
         return performance
 
-    def save_cv_results(self, cv_results, response, downsample, filename):
+    def save_cv_results(self, cv_results, response, down_sample, filename):
         """
         Save the cv_results to a CSV file. Data in the cv_results file looks like the following.
 
@@ -110,13 +110,13 @@ class RandomForest(ModelGeneratorBase):
         """
 
         data = {}
-        data['downsample'] = []
+        data['down_sample'] = []
         for params in cv_results['params']:
             for param, value in params.items():
                 if not data.get(param, None):
                     data[param] = []
                 data[param].append(value)
-                data['downsample'] = downsample
+                data['down_sample'] = down_sample
                 data['response'] = response
         data['mean_train_score'] = cv_results['mean_train_score']
         data['mean_test_score'] = cv_results['mean_test_score']
@@ -135,7 +135,7 @@ class RandomForest(ModelGeneratorBase):
         train_x, test_x, train_y, test_y, validate_xy, _scaler = self.train_test_validate_split(
             self.dataset,
             metamodel,
-            downsample=self.downsample
+            down_sample=self.down_sample
         )
 
         # save the validate dataframe to be used later to validate the accuracy of the models
@@ -154,7 +154,7 @@ class RandomForest(ModelGeneratorBase):
             self.model_results.append(
                 self.evaluate(
                     base_model, response, 'base', test_x, test_y[response],
-                    self.downsample, build_time, 0,
+                    self.down_sample, build_time, 0,
                     covariates=metamodel.covariate_names(self.model_type),
                     scaler=_scaler
                 )
@@ -196,14 +196,14 @@ class RandomForest(ModelGeneratorBase):
 
                 # save the cv results
                 self.save_cv_results(
-                    grid_search.cv_results_, response, self.downsample,
+                    grid_search.cv_results_, response, self.down_sample,
                     '%s/cv_results_%s.csv' % (self.base_dir, response)
                 )
 
                 self.model_results.append(
                     self.evaluate(
                         best_model, response, 'best', test_x, test_y[response],
-                        self.downsample, build_time, cv_time,
+                        self.down_sample, build_time, cv_time,
                         covariates=metamodel.covariate_names(self.model_type),
                         scaler=_scaler
                     )

@@ -3,9 +3,10 @@
 
 from ..rom.metamodels import Metamodels
 
-def load_models(metamodel_filename, model_type, models_to_load, downsample):
+
+def load_models(metamodel_filename, model_type, models_to_load, down_sample):
     metamodels = Metamodels(metamodel_filename)
-    metamodels.load_models(model_type, models_to_load=models_to_load, downsample=downsample)
+    metamodels.load_models(model_type, models_to_load=models_to_load, down_sample=down_sample)
 
     return metamodels
 
@@ -13,7 +14,7 @@ def load_models(metamodel_filename, model_type, models_to_load, downsample):
 def run_model(values):
     model = int(values[0])
     response = int(values[1])
-    downsample = float(values[2])
+    down_sample = float(values[2])
     month = int(values[3])
     hour = int(values[4])
     day_of_week = int(values[5])
@@ -41,7 +42,7 @@ def run_model(values):
 
     print('Loading model')
     metamodel = Metamodels('metamodels.json')
-    metamodel.load_models(model, models_to_load=[response], downsample=downsample)
+    metamodel.load_models(model, models_to_load=[response], down_sample=down_sample)
 
     print('Predicting...')
     return metamodel.yhat(response, [month, hour, day_of_week, t_outdoor, rh, inlet_temp])

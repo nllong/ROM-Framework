@@ -43,8 +43,8 @@ available_models = parser.add_argument("-m", "--model-type", nargs='*',
 parser.add_argument('-ad', '--analysis-definition', help='Definition of an analysis to run using the ROMs', default=None)
 parser.add_argument('-w', '--weather', help='Weather file to run analysis-definition', default=None)
 parser.add_argument('-o', '--output', help='File to save the results to', default=None)
-downsample = parser.add_argument(
-    '-d', '--downsample', default=None, type=float, help='Specific down sample value')
+down_sample = parser.add_argument(
+    '-d', '--down-sample', default=None, type=float, help='Specific down sample value')
 args = parser.parse_args()
 
 print('Passed build_models.py args: %s' % args)
@@ -55,37 +55,37 @@ if metamodel.set_analysis(args.analysis_moniker):
     if args.action in ['build', 'evaluate']:
         all_model_results = {}
         for model_name in args.model_type:
-            if args.downsample and args.downsample not in metamodel.downsamples:
-                print("Downsample argument must exist in the downsample list in the JSON")
+            if args.down_sample and args.down_sample not in metamodel.down_samples:
+                print("Down sample argument must exist in the down sample list in the JSON")
                 exit(1)
 
             # check if the model name has any downsampling override values
             algo_options = metamodel.algorithm_options.get(model_name, {})
             algo_options = Metamodels.resolve_algorithm_options(algo_options)
-            downsamples = metamodel.downsamples
-            if algo_options.get('downsamples', None):
-                downsamples = algo_options.get('downsamples')
+            down_samples = metamodel.down_samples
+            if algo_options.get('down_samples', None):
+                down_samples = algo_options.get('down_samples')
 
-            print("Running %s model '%s' with downsamples '%s'" % (args.action, model_name, downsamples))
+            print("Running %s model '%s' with down samples '%s'" % (args.action, model_name, down_samples))
 
-            for downsample in downsamples:
-                if args.downsample and args.downsample != downsample:
+            for down_sample in down_samples:
+                if args.down_sample and args.down_sample != down_sample:
                     continue
 
                 if args.action == 'build':
                     klass = globals()[model_name]
                     # Set the random seed so that the test libraries are the same across the
                     # models
-                    model = klass(metamodel.analysis_name, 79, downsample=downsample)
+                    model = klass(metamodel.analysis_name, 79, down_sample=down_sample)
                     model.build(
                         'data/%s/simulation_results.csv' % metamodel.results_directory,
                         metamodel,
                         algorithm_options=algo_options,
-                        skip_cv=downsample > 0.5
+                        skip_cv=down_sample > 0.5
                     )
                 elif args.action == 'evaluate':
                     base_dir_ds = "output/%s_%s/%s" % (
-                        args.analysis_moniker, downsample, model_name)
+                        args.analysis_moniker, down_sample, model_name)
 
                     output_dir = "%s/images/cv_results" % base_dir_ds
                     if os.path.exists(output_dir):
@@ -98,16 +98,16 @@ if metamodel.set_analysis(args.analysis_moniker):
 
                     # if this is the first file, then read it into the all_model_results to
                     # create a dataframe to add all the model results together
-                    if str(downsample) not in all_model_results.keys():
+                    if str(down_sample) not in all_model_results.keys():
                         if os.path.exists(model_results_file):
-                            all_model_results[str(downsample)] = pd.read_csv(model_results_file)
-                            all_model_results[str(downsample)]['model_method'] = model_name
+                            all_model_results[str(down_sample)] = pd.read_csv(model_results_file)
+                            all_model_results[str(down_sample)]['model_method'] = model_name
                     else:
                         if os.path.exists(model_results_file):
                             new_df = pd.read_csv(model_results_file)
                             new_df['model_method'] = model_name
-                            all_model_results[str(downsample)] = pd.concat(
-                                [all_model_results[str(downsample)], new_df],
+                            all_model_results[str(down_sample)] = pd.concat(
+                                [all_model_results[str(down_sample)], new_df],
                                 axis=0,
                                 ignore_index=True,
                                 sort=False
@@ -120,7 +120,7 @@ if metamodel.set_analysis(args.analysis_moniker):
 
         # Below are some options that reqire all the models to be processed before running
         if args.action == 'evaluate':
-            # save any combined datasets for the downsampled instance
+            # save any combined datasets for the down sampled instance
             for index, data in all_model_results.items():
                 if data.shape[0] > 0:
                     # combine all the model results together and evaluate the results
@@ -133,16 +133,16 @@ if metamodel.set_analysis(args.analysis_moniker):
 
                     evaluate_process_all_model_results(data, validation_dir)
     elif args.action == 'validate':
-        # validate requires iterating over the downsamples before the models
-        if args.downsample and args.downsample not in metamodel.downsamples:
-            print("Downsample argument must exist in the downsample list in the JSON")
+        # validate requires iterating over the down samples before the models
+        if args.down_sample and args.down_sample not in metamodel.down_samples:
+            print("Down sample argument must exist in the down sample list in the JSON")
             exit(1)
 
-        for downsample in metamodel.downsamples:
-            if args.downsample and args.downsample != downsample:
+        for down_sample in metamodel.down_samples:
+            if args.down_sample and args.down_sample != down_sample:
                 continue
 
-            validation_dir = "output/%s_%s/ValidationData" % (args.analysis_moniker, downsample)
+            validation_dir = "output/%s_%s/ValidationData" % (args.analysis_moniker, down_sample)
             output_dir = "%s/images" % validation_dir
 
             if os.path.exists(output_dir):
@@ -171,13 +171,13 @@ if metamodel.set_analysis(args.analysis_moniker):
             models = [(m, NAMEMAP[m]) for m in args.model_type]
 
             # dict to store the load time results
-            metrics = {'response': [], 'model_type': [], 'downsample': [], 'load_time': [],
+            metrics = {'response': [], 'model_type': [], 'down_sample': [], 'load_time': [],
                        'disk_size': [], 'run_time_single': [], 'run_time_8760': []}
             for model_type in models:
                 metadata[model_type[0]] = {'responses': [], 'moniker': model_type[1]}
 
-                if metamodel.models_exist(model_type[0], downsample=downsample):
-                    ind_metrics = metamodel.load_models(model_type[0], downsample=downsample)
+                if metamodel.models_exist(model_type[0], down_sample=down_sample):
+                    ind_metrics = metamodel.load_models(model_type[0], down_sample=down_sample)
                     for item, values in ind_metrics.items():
                         metrics[item] = metrics[item] + ind_metrics[item]
 
@@ -196,7 +196,7 @@ if metamodel.set_analysis(args.analysis_moniker):
                         metamodel.yhat(response, single_row)
                         metrics['run_time_single'].append(time.time() - start)
                 else:
-                    print("Persisted models for %s:%s do not exist" % (model_type[0], downsample))
+                    print("Persisted models for %s:%s do not exist" % (model_type[0], down_sample))
 
             # save the model performance data
             validation_save_metrics(pd.DataFrame.from_dict(metrics), output_dir)
@@ -205,8 +205,8 @@ if metamodel.set_analysis(args.analysis_moniker):
             validate_dataframe(validation_df, metadata, output_dir)
     elif args.action == 'run':
         print("Running")
-        if not args.downsample:
-            print("Must supply at least one downsample when running ROM models")
+        if not args.down_sample:
+            print("Must supply at least one down sample when running ROM models")
             exit(1)
         elif not args.analysis_definition:
             print("Must supply analysis definition when running ROM models")
@@ -226,7 +226,7 @@ if metamodel.set_analysis(args.analysis_moniker):
             metadata[model[0]] = {'responses': [], 'moniker': model[1]}
 
             # Load the reducted order models
-            metamodel.load_models(model[0], downsample=args.downsample)
+            metamodel.load_models(model[0], down_sample=args.down_sample)
 
             # Run the ROM for each of the response variables
             for response in metamodel.available_response_names(model[0]):

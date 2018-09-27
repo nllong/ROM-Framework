@@ -8,8 +8,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-f', '--file', help='Description file to use', default='metamodels.json')
 parser.add_argument("-a", "--analysis_id", default="smoff_parametric_sweep",
                     help="ID of the Analysis Models")
-downsample = parser.add_argument(
-    '-d', '--downsample', default=None, type=float, help='Selected down sample value')
+parser.add_argument(
+    '-d', '--down-sample', default=None, type=float, help='Selected down sample value')
 parser.add_argument("--model", default='LinearModel', choices=['LinearModel', 'RandomForest', 'SVR'])
 parser.add_argument("--response", default='ETSOutletTemperature', help="Response name")
 parser.add_argument("-d", "--day_of_week", type=int, default=0, help="Day of Week: 0-Sun to 6-Sat")
@@ -25,7 +25,7 @@ args = parser.parse_args()
 
 print("Loading model")
 metamodel = Metamodels(args.file)
-metamodel.load_models(args.model, models_to_load=[args.response], downsample=args.downsample)
+metamodel.load_models(args.model, models_to_load=[args.response], down_sample=args.down_sample)
 
 print("Predicting...")
 yhat = metamodel.yhat(args.response, [args.month, args.hour, args.day_of_week, args.outdoor_drybulb,

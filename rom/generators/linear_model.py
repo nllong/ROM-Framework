@@ -11,14 +11,14 @@ class LinearModel(ModelGeneratorBase):
     def __init__(self, analysis_id, random_seed=None, **kwargs):
         super(LinearModel, self).__init__(analysis_id, random_seed, **kwargs)
 
-    def evaluate(self, model, model_name, model_type, x_data, y_data, downsample,
+    def evaluate(self, model, model_name, model_type, x_data, y_data, down_sample,
                  build_time, cv_time, covariates=None, scaler=None):
         """
         Evaluate the performance of the forest based on known x_data and y_data. If the
         model was scaled, then the test data will already be scaled.
         """
         yhat, performance = super(LinearModel, self).evaluate(
-            model, model_name, model_type, x_data, y_data, downsample,
+            model, model_name, model_type, x_data, y_data, down_sample,
             build_time, cv_time, covariates, scaler
         )
         self.anova_plots(y_data, yhat, model_name)
@@ -32,7 +32,7 @@ class LinearModel(ModelGeneratorBase):
         train_x, test_x, train_y, test_y, validate_xy, _scaler = self.train_test_validate_split(
             self.dataset,
             metamodel,
-            downsample=self.downsample
+            down_sample=self.down_sample
         )
 
         # save the validate dataframe to be used later to validate the accuracy of the models
@@ -50,7 +50,7 @@ class LinearModel(ModelGeneratorBase):
 
             self.model_results.append(
                 self.evaluate(
-                    trained_model, response, 'best', test_x, test_y[response], self.downsample,
+                    trained_model, response, 'best', test_x, test_y[response], self.down_sample,
                     build_time, 0
                 )
             )

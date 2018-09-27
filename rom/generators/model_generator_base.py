@@ -28,8 +28,8 @@ class ModelGeneratorBase(object):
             See below
 
         :Keyword Arguments:
-            * *downsample* (``double``) -- Fraction to downsample the dataframe. If this exists
-              then the data will be downsampled, and the results will be stored in a directory with
+            * *down_sample* (``double``) -- Fraction to down sample the dataframe. If this exists
+              then the data will be down sampled, and the results will be stored in a directory with
               this value appended.
         """
         self.analysis_id = analysis_id
@@ -37,20 +37,20 @@ class ModelGeneratorBase(object):
         self.model_results = []
         self.model_type = self.__class__.__name__
         self.dataset = None
-        self.downsample = kwargs.get('downsample', None)
+        self.down_sample = kwargs.get('down_sample', None)
 
         print("initializing %s" % self.model_type)
 
         # Initialize the directories where results are to be stored.
-        if self.downsample:
-            self.base_dir = 'output/%s_%s/%s' % (self.analysis_id, self.downsample, self.model_type)
+        if self.down_sample:
+            self.base_dir = 'output/%s_%s/%s' % (self.analysis_id, self.down_sample, self.model_type)
         else:
             self.base_dir = 'output/%s/%s' % (self.analysis_id, self.model_type)
         self.images_dir = '%s/images' % self.base_dir
         self.models_dir = '%s/models' % self.base_dir
-        if self.downsample:
+        if self.down_sample:
             self.validation_dir = 'output/%s_%s/ValidationData' % (
-                self.analysis_id, self.downsample)
+                self.analysis_id, self.down_sample)
         else:
             self.validation_dir = 'output/%s/ValidationData' % self.analysis_id
         self.data_dir = '%s/data' % self.base_dir
@@ -76,7 +76,7 @@ class ModelGeneratorBase(object):
     def save_dataframe(self, dataframe, path):
         pickle_file(dataframe, path)
 
-    def evaluate(self, model, model_name, model_moniker, x_data, y_data, downsample,
+    def evaluate(self, model, model_name, model_moniker, x_data, y_data, down_sample,
                  build_time, cv_time, covariates=None, scaler=None):
         """
         Generic base function to evaluate the performance of the models.
@@ -85,7 +85,7 @@ class ModelGeneratorBase(object):
         :param model_name:
         :param x_data:
         :param y_data:
-        :param downsample:
+        :param down_sample:
         :param build_time:
         :return: Ordered dict
         """
@@ -107,7 +107,7 @@ class ModelGeneratorBase(object):
         return yhat, OrderedDict([
             ('name', model_name),
             ('model_type', model_moniker),
-            ('downsample', downsample),
+            ('down_sample', down_sample),
             ('slope', slope),
             ('intercept', intercept),
             ('mae', np.mean(errors)),
@@ -137,7 +137,7 @@ class ModelGeneratorBase(object):
         self.dataset[data_types['float']] = self.dataset[data_types['float']].astype(float)
         self.dataset[data_types['int']] = self.dataset[data_types['int']].astype(int)
 
-    def train_test_validate_split(self, dataset, metamodel, downsample=None, scale=False):
+    def train_test_validate_split(self, dataset, metamodel, down_sample=None, scale=False):
         """
         Use the built in method to generate the train and test data. This adds an additional
         set of data for validation. This vaildation dataset is a unique ID that is pulled out
@@ -147,7 +147,7 @@ class ModelGeneratorBase(object):
         # :param covariates: list, dict of covariates and information
         # :param responses: list, of responses to keep in the dataset
         # :param validation_id: str, unique ID of model to extract
-        :param kwargs: downsample - fraction of dataframe to keep (after validation data extraction)
+        :param kwargs: down sample - fraction of dataframe to keep (after validation data extraction)
         :return: dataframes, dataframe: 1) dataset with removed validation data, 2) validation data
         """
         print("Initial dataset size is %s" % len(dataset))
@@ -166,9 +166,9 @@ class ModelGeneratorBase(object):
             raise Exception(
                 "Validation id does not exist in dataframe. ID was %s" % metamodel.validation_id)
 
-        if downsample:
-            num_rows = int(len(dataset.index.values) * downsample)
-            print("Downsampling dataframe by %s to %s rows" % (downsample, num_rows))
+        if down_sample:
+            num_rows = int(len(dataset.index.values) * down_sample)
+            print("Downsampling dataframe by %s to %s rows" % (down_sample, num_rows))
             dataset = dataset.sample(n=num_rows)
 
         for cv in metamodel.covariates(self.model_type):

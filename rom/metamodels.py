@@ -122,13 +122,13 @@ class Metamodels(object):
         return self.file[self.set_i]['name']
 
     @property
-    def downsamples(self):
+    def down_samples(self):
         """
-        Return the downsamples list
+        Return the down_samples list
 
-        :return: list, downsamples
+        :return: list, down_samples
         """
-        return self.file[self.set_i].get('downsamples', None)
+        return self.file[self.set_i].get('down_samples', None)
 
     @property
     def algorithm_options(self):
@@ -166,7 +166,7 @@ class Metamodels(object):
         """
         return self.file[self.set_i]['validation_datapoint_id']
 
-    def models_exist(self, model_type, models_to_load=[], downsample=None):
+    def models_exist(self, model_type, models_to_load=[], down_sample=None):
         # check if the models exist, if not, then return false
         self.rom_type = model_type
 
@@ -176,11 +176,11 @@ class Metamodels(object):
         print("Checking if models exist %s" % models_to_load)
         exist = []
         for response in models_to_load:
-            if downsample:
+            if down_sample:
                 path = "output/%s_%s/%s/models/%s.pkl" % (
-                    self.analysis_name, downsample, self.rom_type, response)
+                    self.analysis_name, down_sample, self.rom_type, response)
                 scaler_path = "output/%s_%s/%s/models/scalers.pkl" % (
-                    self.analysis_name, downsample, self.rom_type)
+                    self.analysis_name, down_sample, self.rom_type)
             else:
                 path = "output/%s/%s/models/%s.pkl" % (self.analysis_name, self.rom_type, response)
                 scaler_path = "output/%s/%s/models/scalers.pkl" % (
@@ -190,13 +190,13 @@ class Metamodels(object):
 
         return all(exist)
 
-    def load_models(self, model_type, models_to_load=[], downsample=None):
+    def load_models(self, model_type, models_to_load=[], down_sample=None):
         """
         Load in the metamodels/generators
 
         :param model_type: str, type of model (e.g. RandomForest, LinearModel, etc)
         :param models_to_load: list, name of responses to load
-        :param downsample: float, percent of downsample for loading the correct model
+        :param down_sample: float, percent of down_sample for loading the correct model
         :return: dict, { model, response, load time, disk size]
 
         """
@@ -205,17 +205,17 @@ class Metamodels(object):
         if not models_to_load:
             models_to_load = self.available_response_names(self.rom_type)
 
-        metrics = {'response': [], 'model_type': [], 'downsample': [],
+        metrics = {'response': [], 'model_type': [], 'down_sample': [],
                    'load_time': [], 'disk_size': []}
         for response in models_to_load:
             print("Loading %s model for response: %s" % (model_type, response))
 
             start = time.time()
-            if downsample:
+            if down_sample:
                 path = "output/%s_%s/%s/models/%s.pkl" % (
-                    self.analysis_name, downsample, self.rom_type, response)
+                    self.analysis_name, down_sample, self.rom_type, response)
                 scaler_path = "output/%s_%s/%s/models/scalers.pkl" % (
-                    self.analysis_name, downsample, self.rom_type)
+                    self.analysis_name, down_sample, self.rom_type)
             else:
                 path = "output/%s/%s/models/%s.pkl" % (self.analysis_name, self.rom_type, response)
                 scaler_path = "output/%s/%s/models/scalers.pkl" % (
@@ -224,7 +224,7 @@ class Metamodels(object):
             self.models[response] = ETSModel(response, path, scaler_path)
             metrics['response'].append(response)
             metrics['model_type'].append(model_type)
-            metrics['downsample'].append(downsample)
+            metrics['down_sample'].append(down_sample)
             metrics['load_time'].append(time.time() - start)
             metrics['disk_size'].append(os.path.getsize(path))
 

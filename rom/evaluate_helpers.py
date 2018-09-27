@@ -17,7 +17,7 @@ def evaluate_process_cv_results(cv_result_file, response, output_dir):
         df = df.drop('response', 1)
         # Fill in the max_depth that has NA when it was set to auto
         df = df.fillna(0)
-        df = df.drop('downsample', 1)
+        df = df.drop('down_sample', 1)
         df = df.drop('mean_score_time', 1)
         df = df.drop('rank_test_score', 1)
         df = df.drop('mean_train_score', 1)
