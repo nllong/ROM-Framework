@@ -166,6 +166,30 @@ class Metamodels(object):
         """
         return self.file[self.set_i]['validation_datapoint_id']
 
+    def models_exist(self, model_type, models_to_load=[], downsample=None):
+        # check if the models exist, if not, then return false
+        self.rom_type = model_type
+
+        if not models_to_load:
+            models_to_load = self.available_response_names(self.rom_type)
+
+        print("Checking if models exist %s" % models_to_load)
+        exist = []
+        for response in models_to_load:
+            if downsample:
+                path = "output/%s_%s/%s/models/%s.pkl" % (
+                    self.analysis_name, downsample, self.rom_type, response)
+                scaler_path = "output/%s_%s/%s/models/scalers.pkl" % (
+                    self.analysis_name, downsample, self.rom_type)
+            else:
+                path = "output/%s/%s/models/%s.pkl" % (self.analysis_name, self.rom_type, response)
+                scaler_path = "output/%s/%s/models/scalers.pkl" % (
+                    self.analysis_name, self.rom_type)
+
+            exist.append(os.path.exists(path))
+
+        return all(exist)
+
     def load_models(self, model_type, models_to_load=[], downsample=None):
         """
         Load in the metamodels/generators
@@ -181,12 +205,10 @@ class Metamodels(object):
         if not models_to_load:
             models_to_load = self.available_response_names(self.rom_type)
 
-        print("Loading models %s" % models_to_load)
-
         metrics = {'response': [], 'model_type': [], 'downsample': [],
                    'load_time': [], 'disk_size': []}
         for response in models_to_load:
-            print("Loading model for response: %s" % response)
+            print("Loading %s model for response: %s" % (model_type, response))
 
             start = time.time()
             if downsample:
@@ -237,7 +259,7 @@ class Metamodels(object):
             set(self.covariate_names(self.rom_type)) - set(data.columns.values))
 
         if len(extra_columns_in_df) > 0:
-            print("Removing unneeded column before evaluation")
+            # print("Removing unneeded column before evaluation")
             data = data.drop(columns=extra_columns_in_df)
 
         if len(missing_data_in_df) > 0:

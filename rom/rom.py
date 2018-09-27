@@ -9,6 +9,7 @@ import shutil
 import time
 
 from pyfiglet import Figlet
+# from pprint import pprint as pp
 
 from .evaluate_helpers import *
 from .metamodels import Metamodels
@@ -175,24 +176,27 @@ if metamodel.set_analysis(args.analysis_moniker):
             for model_type in models:
                 metadata[model_type[0]] = {'responses': [], 'moniker': model_type[1]}
 
-                ind_metrics = metamodel.load_models(model_type[0], downsample=downsample)
-                for item, values in ind_metrics.items():
-                    metrics[item] = metrics[item] + ind_metrics[item]
+                if metamodel.models_exist(model_type[0], downsample=downsample):
+                    ind_metrics = metamodel.load_models(model_type[0], downsample=downsample)
+                    for item, values in ind_metrics.items():
+                        metrics[item] = metrics[item] + ind_metrics[item]
 
-                # Run the ROM for each of the response variables
-                for response in metamodel.available_response_names(model_type[0]):
-                    metadata[model_type[0]]['responses'].append(response)
+                    # Run the ROM for each of the response variables
+                    for response in metamodel.available_response_names(model_type[0]):
+                        metadata[model_type[0]]['responses'].append(response)
 
-                    start = time.time()
-                    var_name = "Modeled %s %s" % (model_type[1], response)
-                    validation_df[var_name] = metamodel.yhat(response, validation_df)
-                    metrics['run_time_8760'].append(time.time() - start)
+                        start = time.time()
+                        var_name = "Modeled %s %s" % (model_type[1], response)
+                        validation_df[var_name] = metamodel.yhat(response, validation_df)
+                        metrics['run_time_8760'].append(time.time() - start)
 
-                    # grab a single row for performance benchmarking
-                    single_row = validation_df.iloc[[5]]
-                    start = time.time()
-                    metamodel.yhat(response, single_row)
-                    metrics['run_time_single'].append(time.time() - start)
+                        # grab a single row for performance benchmarking
+                        single_row = validation_df.iloc[[5]]
+                        start = time.time()
+                        metamodel.yhat(response, single_row)
+                        metrics['run_time_single'].append(time.time() - start)
+                else:
+                    print("Persisted models for %s:%s do not exist" % (model_type[0], downsample))
 
             # save the model performance data
             validation_save_metrics(pd.DataFrame.from_dict(metrics), output_dir)

@@ -156,7 +156,7 @@
     "display_name": "Retail Varying Inlet Temp",
     "description": "100 Simulations, varying inlet temperature and delta-T",
     "validation_datapoint_id": "1682190d-51cd-4576-8b10-865aaeaa3da2",
-    "downsamples": [0.01, 0.02, 0.03, 0.05, 0.15, 0.10, 0.25, 1.0],
+    "downsamples": [0.01, 0.02, 0.03, 0.05, 0.15, 0.25, 1.0],
     "algorithm_options": {
       "RandomForest": {
         "_comments": "If downsamples are specified here, then they will override the parent values",
@@ -178,7 +178,7 @@
       },
       "SVR": {
         "_comments": "If downsamples are specified here, then they will override the parent values",
-        "downsamples": [0.01, 0.02, 0.03, 0.05, 0.10],
+        "downsamples": [0.01, 0.02, 0.03, 0.05],
         "base_fit_params": {
           "cache_size": 2000
         },

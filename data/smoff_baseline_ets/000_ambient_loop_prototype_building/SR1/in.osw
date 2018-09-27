@@ -1,0 +1,8 @@
+{
+   "created_at" : "20180818T154445Z",
+   "hash" : "EF668361",
+   "seed_file" : "in.osm",
+   "steps" : [],
+   "updated_at" : "20180818T154445Z",
+   "weather_file" : "in.epw"
+}
