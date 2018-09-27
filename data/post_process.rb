@@ -221,6 +221,7 @@ if options[:post_process]
   else
     puts "No analysis_id passed, post processing all the results"
     Dir['*'].select {|f| File.directory? f}.each do |dir|
+      next if dir =~ /single_simulations/
       post_process_analysis_id(dir)
     end
   end
