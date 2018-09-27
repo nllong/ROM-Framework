@@ -22,7 +22,7 @@ def validation_plot_energy_temp(melted_df, filename):
             data=melted_df,
             ax=ax).get_figure()
         ax.set_xlabel('Site Outdoor Air Drybulb Temperature (deg C)')
-        ax.set_ylabel('Total HVAC Energy (GJ)')
+        ax.set_ylabel('Total HVAC Power (W)')
         newplt.savefig(filename)
         newplt.clf()
         plt.clf()
@@ -46,7 +46,10 @@ def validation_plot_timeseries(melted_df, filename):
         #     rotation=50)
 
         ax.xaxis.set_major_formatter(mpl.ticker.FuncFormatter(date_formatter))
-        ax.set(xlabel='', ylabel='Energy (GJ)')
+        if 'Temperature' in filename:
+            ax.set(xlabel='', ylabel='Temperature (deg C)')
+        else:
+            ax.set(xlabel='', ylabel='Power (W)')
 
         # put the labels at an angle since they tend to be too long
         fig.autofmt_xdate()
@@ -66,7 +69,7 @@ def validation_save_metrics(df, output_dir):
 
     # plot the disk size
     with plt.rc_context(dict(sns.axes_style("whitegrid"))):
-        f, ax = plt.subplots(figsize=(6.5, 6.5))
+        f, ax = plt.subplots(figsize=(10, 4))
         newplt = sns.scatterplot(x="ind", y="Disk Size (Log)",
                                  style="Type", hue="Response",
                                  sizes=(10, 200), data=df, ax=ax).get_figure()
@@ -83,13 +86,13 @@ def validation_save_metrics(df, output_dir):
                                      aggfunc=np.average)
     # covert back to a dataframe
     table = pd.DataFrame(table.to_records())
-    table['Load Time (Log)'] = np.log(table.load_time)
+    # table['Load Time (Log)'] = np.log(table.load_time)
     with plt.rc_context(dict(sns.axes_style('whitegrid'))):
-        fig = plt.figure(figsize=(6.5, 6.5))
+        fig = plt.figure(figsize=(10, 4))
         # defaults to the ax in the figure.
-        ax = sns.barplot(x='Type', y='Load Time (Log)', data=table)
+        ax = sns.barplot(x='Type', y='load_time', data=table)
         ax.set_xlabel('Model Type')
-        ax.set_ylabel('Log Average Time (log(seconds))')
+        ax.set_ylabel('Average Time (seconds)')
         plt.tight_layout()
         fig.savefig('%s/fig_performance_load_time.png' % output_dir)
         fig.clf()
@@ -101,11 +104,11 @@ def validation_save_metrics(df, output_dir):
 
     melted_df = pd.melt(table[['Type', 'Run Time - Single', 'Run Time - 8760']], id_vars='Type')
     with plt.rc_context(dict(sns.axes_style('whitegrid'))):
-        fig = plt.figure(figsize=(6.5, 6.5))
+        fig = plt.figure(figsize=(10, 4))
         # defaults to the ax in the figure.
         ax = sns.barplot(x="Type", y="value", hue="variable", data=melted_df)
         ax.set_xlabel('Model Type')
-        ax.set_ylabel('Log Average Time (log(seconds))')
+        ax.set_ylabel('Average Time (seconds)')
         plt.tight_layout()
         fig.savefig('%s/fig_performance_run_time.png' % output_dir)
         fig.clf()
@@ -211,26 +214,24 @@ def validate_dataframe(df, metadata, image_save_dir):
             # save data to image dir, because that is the only directory that I know of right now
         save_dict_to_csv(errors, "%s/statistics.csv" % image_save_dir)
 
+    # Convert Energy to Watts
+    df['Total HVAC Energy'] = df['Total HVAC Energy'] / 277777.77
+
     # one off plots
-    lmplot = sns.lmplot(
-        x='SiteOutdoorAirDrybulbTemperature',
-        y='Total HVAC Energy',
-        data=df,
-        ci=None,
-        palette="muted",
-        height=8,
-        scatter_kws={"s": 50, "alpha": 1},
-        fit_reg=False,
+    melted_df = pd.melt(
+        df[['SiteOutdoorAirDrybulbTemperature', 'Total HVAC Energy']],
+        id_vars='SiteOutdoorAirDrybulbTemperature',
+        var_name='Model',
+        value_name='Energy'
     )
-    fig = lmplot.fig
-    plt.title("Total Energy vs Temperature (Actual)")
-    fig.savefig('%s/fig_validation_energy_actual.png' % image_save_dir)
-    fig.tight_layout()
-    fig.clf()
-    plt.clf()
+    melted_df['Dummy'] = 0
+    filename = '%s/fig_validation_energy_actual.png' % image_save_dir
+    validation_plot_energy_temp(melted_df, filename)
 
     all_columns = ['SiteOutdoorAirDrybulbTemperature', 'Total HVAC Energy']
     for model_type, model_data in metadata.items():
+        # covert to Watts
+        df['Total HVAC Energy %s' % model_data['moniker']] = df['Total HVAC Energy %s' % model_data['moniker']] / 277777.77
         all_columns.append('Total HVAC Energy %s' % model_data['moniker'])
         melted_df = pd.melt(
             df[['SiteOutdoorAirDrybulbTemperature', 'Total HVAC Energy',
@@ -277,6 +278,10 @@ def validate_dataframe(df, metadata, image_save_dir):
         for model_type, model_data in metadata.items():
             for response in model_data['responses']:
                 modeled_name = "Modeled %s %s" % (model_data['moniker'], response)
+                if 'Temperature' not in response:
+                    # convert to watts
+                    season_df[response] = season_df[response] / 277777.77
+                    season_df[modeled_name] = season_df[modeled_name] / 277777.77
 
                 selected_columns = ['DateTime', response, modeled_name]
                 melted_df = pd.melt(season_df[selected_columns],

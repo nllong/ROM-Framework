@@ -178,7 +178,7 @@
       },
       "SVR": {
         "_comments": "If downsamples are specified here, then they will override the parent values",
-        "downsamples": [0.01, 0.02, 0.03, 0.05],
+        "downsamples": [0.01, 0.02, 0.03, 0.05, 0.15],
         "base_fit_params": {
           "cache_size": 2000
         },

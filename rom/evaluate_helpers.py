@@ -51,6 +51,9 @@ def evaluate_process_model_results(model_results_file, output_dir):
     if os.path.exists(model_results_file):
         # Process the model results
         df = pd.read_csv(model_results_file)
+        df = df[df.model_type == 'best']
+        df = df[df.name != 'ETSCoolingOutletTemperature']
+        df.loc[df.name == 'ETSHeatingOutletTemperature', 'name'] = 'ETSOutletTemperature'
 
         melted_df = pd.melt(
             df[['name', 'time_to_build', 'time_to_cv']],
