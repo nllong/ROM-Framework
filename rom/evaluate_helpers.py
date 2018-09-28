@@ -51,10 +51,15 @@ def evaluate_process_model_results(model_results_file, output_dir):
     if os.path.exists(model_results_file):
         # Process the model results
         df = pd.read_csv(model_results_file)
-        df = df[df.model_type == 'best']
-        df = df[df.name != 'ETSCoolingOutletTemperature']
-        df.loc[df.name == 'ETSHeatingOutletTemperature', 'name'] = 'ETSOutletTemperature'
+        # If best exists, then use that, otherwise, just use what is in the column
+        if 'best' in df.model_type.unique():
+            df = df[df.model_type == 'best']
+        # if there are two similar columns then remove one of them and update the name of the remaining item
+        if all(x in ['ETSHeatingOutletTemperature', 'ETSCoolingOutletTemperature'] for x in df.name.unique()):
+            df = df[df.name != 'ETSCoolingOutletTemperature']
+            df.loc[df.name == 'ETSHeatingOutletTemperature', 'name'] = 'ETSOutletTemperature'
 
+        # melt the data for plot purposes
         melted_df = pd.melt(
             df[['name', 'time_to_build', 'time_to_cv']],
             id_vars='name',
@@ -62,6 +67,7 @@ def evaluate_process_model_results(model_results_file, output_dir):
             value_name='time'
         )
 
+        # plot the data
         fig = plt.figure(figsize=(8, 3), dpi=100)
         # defaults to the ax in the figure.
         ax = sns.barplot(x='time', y='name', hue='model', data=melted_df, ci=None)

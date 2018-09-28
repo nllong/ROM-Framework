@@ -1,6 +1,7 @@
 .idea
 *.pyc
 *.pkl
+.tox
 .python-version
 python/.python-version
 data/*/*.zip

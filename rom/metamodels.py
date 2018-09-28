@@ -10,6 +10,7 @@ import seaborn as sns
 
 from .shared import unpickle_file, apply_cyclic_transform
 
+
 # do not remove multiprocessing.
 # import multiprocessing
 
@@ -166,6 +167,16 @@ class Metamodels(object):
         """
         return self.file[self.set_i]['validation_datapoint_id']
 
+    def model_paths(self, model_type, response, downsample=None):
+        if downsample:
+            model_path = "output/%s_%s/%s/models/%s.pkl" % (self.analysis_name, downsample, model_type, response)
+            scaler_path = "output/%s_%s/%s/models/scalers.pkl" % (self.analysis_name, downsample, model_type)
+        else:
+            model_path = "output/%s/%s/models/%s.pkl" % (self.analysis_name, model_type, response)
+            scaler_path = "output/%s/%s/models/scalers.pkl" % (self.analysis_name, model_type)
+
+        return model_path, scaler_path
+
     def models_exist(self, model_type, models_to_load=[], downsample=None):
         # check if the models exist, if not, then return false
         self.rom_type = model_type
@@ -176,17 +187,8 @@ class Metamodels(object):
         print("Checking if models exist %s" % models_to_load)
         exist = []
         for response in models_to_load:
-            if downsample:
-                path = "output/%s_%s/%s/models/%s.pkl" % (
-                    self.analysis_name, downsample, self.rom_type, response)
-                scaler_path = "output/%s_%s/%s/models/scalers.pkl" % (
-                    self.analysis_name, downsample, self.rom_type)
-            else:
-                path = "output/%s/%s/models/%s.pkl" % (self.analysis_name, self.rom_type, response)
-                scaler_path = "output/%s/%s/models/scalers.pkl" % (
-                    self.analysis_name, self.rom_type)
-
-            exist.append(os.path.exists(path))
+            model_path, _ = self.model_paths(self.rom_type, response, downsample)
+            exist.append(os.path.exists(model_path))
 
         return all(exist)
 
@@ -211,22 +213,14 @@ class Metamodels(object):
             print("Loading %s model for response: %s" % (model_type, response))
 
             start = time.time()
-            if downsample:
-                path = "output/%s_%s/%s/models/%s.pkl" % (
-                    self.analysis_name, downsample, self.rom_type, response)
-                scaler_path = "output/%s_%s/%s/models/scalers.pkl" % (
-                    self.analysis_name, downsample, self.rom_type)
-            else:
-                path = "output/%s/%s/models/%s.pkl" % (self.analysis_name, self.rom_type, response)
-                scaler_path = "output/%s/%s/models/scalers.pkl" % (
-                    self.analysis_name, self.rom_type)
+            model_path, scaler_path = self.model_paths(self.rom_type, response, downsample)
 
-            self.models[response] = ETSModel(response, path, scaler_path)
+            self.models[response] = ETSModel(response, model_path, scaler_path)
             metrics['response'].append(response)
             metrics['model_type'].append(model_type)
             metrics['downsample'].append(downsample)
             metrics['load_time'].append(time.time() - start)
-            metrics['disk_size'].append(os.path.getsize(path))
+            metrics['disk_size'].append(os.path.getsize(model_path))
 
         print("Finished loading models")
         print("The responses are:")

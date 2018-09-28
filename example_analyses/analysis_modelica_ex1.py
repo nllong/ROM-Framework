@@ -3,6 +3,7 @@
 
 from ..rom.metamodels import Metamodels
 
+
 def load_models(metamodel_filename, model_type, models_to_load, downsample):
     metamodels = Metamodels(metamodel_filename)
     metamodels.load_models(model_type, models_to_load=models_to_load, downsample=downsample)

@@ -10,7 +10,6 @@ from .model_generator_base import ModelGeneratorBase
 from ..shared import pickle_file, save_dict_to_csv, zipdir
 
 
-
 class SVR(ModelGeneratorBase):
     def __init__(self, analysis_id, random_seed=None, **kwargs):
         super(SVR, self).__init__(analysis_id, random_seed, **kwargs)
