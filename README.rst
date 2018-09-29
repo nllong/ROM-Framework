@@ -74,5 +74,5 @@ Not yet complete.
     :target: https://travis-ci.org/nllong/ROM-Framework
 
 .. |docs| image:: https://readthedocs.org/projects/reduced-order-modeling-framework/badge/?version=latest
-    :target: https://reduced-order-modeling-framework.readthedocs.io/en/latest/?badge=latest
+    :target: https://reduced-order-modeling-framework.readthedocs.io/en/develop/?badge=develop
     :alt: Documentation Status

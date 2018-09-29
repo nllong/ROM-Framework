@@ -1,8 +1,6 @@
 # /usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-
-
 Example analysis script demonstrating how to programatically load and run already persisted
 reduced order models. This example loads two response variables (models) from the small office
 random forest reduced order models. The loaded models are then passed through the
