@@ -1,6 +1,6 @@
 # Ambient Loop Reduced Order Models
 
-[![Build Status](https://travis-ci.org/nllong/ambient-loop-analysis.svg?branch=develop)](https://travis-ci.org/nllong/ambient-loop-analysis)
+[![Build Status](https://travis-ci.org/nllong/ROM-Framework.svg?branch=develop)](https://travis-ci.org/nllong/ROM-Framework)
 [![Documentation Status](https://readthedocs.org/projects/reduced-order-modeling-framework/badge/?version=latest)](https://reduced-order-modeling-framework.readthedocs.io/en/latest/?badge=latest)
 
 ## Instructions
