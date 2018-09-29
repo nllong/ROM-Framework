@@ -4,6 +4,7 @@
    :maxdepth: 1
    :caption: Contents:
 
+   getting-started
    code
 
 

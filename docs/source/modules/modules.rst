@@ -1,11 +1,6 @@
-ambient_loop
-============
+Source Code
+===========
 
 .. toctree::
-   :maxdepth: 4
-
-   example_analyses
-   rom
-   rom-runner
-   rom.analysis_definition
-   rom.generators
+   :maxdepth: 2
+   :caption: Contents:

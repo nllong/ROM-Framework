@@ -34,14 +34,17 @@ Installation from Source
 ========================
 
 1) Install Python and pip
-1) Clone this repo
-1) Install the Python dependencies
 
-    .. code-block::
+2) Clone this repo
+
+3) Install the Python dependencies
+
+    .. code-block:: sql
+        :linenos:
 
         pip install -r requirements.txt
 
-1) (Optional) install graphviz to visualize decision trees
+4) (Optional) install graphviz to visualize decision trees
 
     * OSX: :code:`brew install graphviz`
 
@@ -54,19 +57,22 @@ hourly samples of building energy consumption with several characteristics for e
 example shown here is only the basics, for further instructions view the complete documentation
 on `readthedocs <https://reduced-order-modeling-framework.readthedocs.io/en/develop/>`_.
 
-    ./rom-runner build -a smoff_test
-    ./rom-runner evaluate -a smoff_test
-    ./rom-runner validate -a smoff_test
+    .. code-block:: bash
+        :linenos:
+
+        ./rom-runner build -a smoff_test
+        ./rom-runner evaluate -a smoff_test
+        ./rom-runner validate -a smoff_test
 
 Installation from PyPI
 ======================
 
-To be completed.
+Not yet complete.
 
 
 .. |build| image:: https://travis-ci.org/nllong/ROM-Framework.svg?branch=develop
     :target: https://travis-ci.org/nllong/ROM-Framework
 
 .. |docs| image:: https://readthedocs.org/projects/reduced-order-modeling-framework/badge/?version=latest
-    :target: https://reduced-order-modeling-framework.readthedocs.io/en/latest/?badge=latest
+    :target: https://reduced-order-modeling-framework.readthedocs.io/en/develop/?badge=develop
     :alt: Documentation Status
