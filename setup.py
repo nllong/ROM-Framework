@@ -3,7 +3,7 @@
 from setuptools import setup, find_packages
 import re
 
-with open('README.rstrst') as f:
+with open('README.rst') as f:
     readme = f.read()
 
 with open('LICENSE') as f:
@@ -34,5 +34,7 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
     ],
-    packages=find_packages(exclude=('tests', 'docs'))
+    packages=find_packages(exclude=('tests', 'docs')),
+    test_suite='nose.collector',
+    tests_require=['nose'],
 )

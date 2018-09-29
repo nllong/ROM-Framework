@@ -95,7 +95,8 @@ class AnalysisDefinition:
         Return the dataframe with all the data needed to run the analysis defined in the
         json file.
 
-        Note that the first field in the sweep json file must be a value or an EPW
+        Note that the first field in the analysis definition json file must be a value or an EPW.
+
         :return: pandas dataframe
         """
         # Check if there is a epw file field
@@ -152,21 +153,3 @@ class AnalysisDefinition:
                         seed_df = pd.concat([seed_df, df_to_append])
 
         return seed_df
-
-    @property
-    def covariate_names(self):
-        if self.set_i is None:
-            raise Exception(
-                "Attempting to access analysis without setting. Run analysis.set_analysis(<id>)"
-            )
-
-        return [cv['name'] for cv in self.file[self.set_i]['covariates']]
-
-    @property
-    def response_names(self):
-        if self.set_i is None:
-            raise Exception(
-                "Attempting to access analysis without setting. Run analysis.set_analysis(<id>)"
-            )
-
-        return [cv['name'] for cv in self.file[self.set_i]['responses']]

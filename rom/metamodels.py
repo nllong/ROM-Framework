@@ -11,8 +11,8 @@ import seaborn as sns
 from .shared import unpickle_file, apply_cyclic_transform
 
 
-# do not remove multiprocessing.
-# import multiprocessing
+class DuplicateColumnName(Exception):
+    pass
 
 
 class ETSModel:
@@ -167,17 +167,35 @@ class Metamodels(object):
         """
         return self.file[self.set_i]['validation_datapoint_id']
 
-    def model_paths(self, model_type, response, downsample=None):
-        if downsample:
-            model_path = "output/%s_%s/%s/models/%s.pkl" % (self.analysis_name, downsample, model_type, response)
-            scaler_path = "output/%s_%s/%s/models/scalers.pkl" % (self.analysis_name, downsample, model_type)
+    def model_paths(self, model_type, response, downsample=None, root_path=None):
+        """
+        Return the paths to the model to be loaded. This includes the scalar value if the
+        model requires the data to scale the input.
+
+        If the root path is provided, then that path will take precedent over the downsample
+        and no values passed format.
+
+        :param model_type: str, The type of reduced order model (e.g. RandomForest)
+        :param response: str, The response (or model) to load (e.g. ETSOutletTemperature)
+        :param downsample: float, The downsample value to load.  Defaults to None.
+        :param root_path: If used, then it is the root path of the models. The models will be in subdirectories for each of the model_types.
+        :return: list, [model_path, scaler_path]
+        """
+        if root_path:
+            model_path = "%s/%s/%s.pkl" % (root_path, model_type, response)
+            scaler_path = "%s/%s/scalers.pkl" % (root_path, model_type)
+        elif downsample:
+            model_path = "output/%s_%s/%s/models/%s.pkl" % (
+                self.analysis_name, downsample, model_type, response)
+            scaler_path = "output/%s_%s/%s/models/scalers.pkl" % (
+                self.analysis_name, downsample, model_type)
         else:
             model_path = "output/%s/%s/models/%s.pkl" % (self.analysis_name, model_type, response)
             scaler_path = "output/%s/%s/models/scalers.pkl" % (self.analysis_name, model_type)
 
         return model_path, scaler_path
 
-    def models_exist(self, model_type, models_to_load=[], downsample=None):
+    def models_exist(self, model_type, models_to_load=[], downsample=None, root_path=None):
         # check if the models exist, if not, then return false
         self.rom_type = model_type
 
@@ -187,12 +205,14 @@ class Metamodels(object):
         print("Checking if models exist %s" % models_to_load)
         exist = []
         for response in models_to_load:
-            model_path, _ = self.model_paths(self.rom_type, response, downsample)
+            model_path, _ = self.model_paths(
+                self.rom_type, response, downsample=downsample, root_path=root_path
+            )
             exist.append(os.path.exists(model_path))
 
         return all(exist)
 
-    def load_models(self, model_type, models_to_load=[], downsample=None):
+    def load_models(self, model_type, models_to_load=[], downsample=None, root_path=None):
         """
         Load in the metamodels/generators
 
@@ -213,7 +233,9 @@ class Metamodels(object):
             print("Loading %s model for response: %s" % (model_type, response))
 
             start = time.time()
-            model_path, scaler_path = self.model_paths(self.rom_type, response, downsample)
+            model_path, scaler_path = self.model_paths(
+                self.rom_type, response, downsample=downsample, root_path=root_path
+            )
 
             self.models[response] = ETSModel(response, model_path, scaler_path)
             metrics['response'].append(response)
@@ -233,13 +255,44 @@ class Metamodels(object):
 
         return metrics
 
+    def yhats(self, data, prepend_name, response_names=None, ):
+        """
+        Run predict on multiple responses with the supplied data and store the results in the
+        supplied DataFrame.
+
+        The prepend_name is needed in order to not overwrite the existing data in the dataframe
+        after evaluation. For example, if the response name is HeatingElectricity, the supplied
+        data may already have that field provided; therefore, this method adds the prepend_name to
+        the newly predicted data. If prepend_name is set to 'abc', then the new column would be
+        'abc_HeatingElectricity'.
+
+        :param data:
+        :param prepend_name: str, name to prepend to the beginning of each of the response names
+        :param response_names: list, responses to evaluate. If None, then defaults to all the available_response_names.
+        :return:
+        """
+        if not response_names:
+            response_names = self.available_response_names(self.rom_type)
+
+        # verify that the prepend_name is not going to raise an exception
+        colnames = data.columns.values
+        for response_name in response_names:
+            if f'{prepend_name}_{response_name}' in colnames:
+                raise DuplicateColumnName(f'{prepend_name}_{response_name} will result in duplicate. Set prepend_name to another value')
+
+        for response_name in response_names:
+            data[f"{prepend_name}_{response_name}"] = self.yhat(response_name, data)
+
+        return data
+
     def yhat(self, response_name, data):
         """
-        Return the estimate from the response_name
+        Run predict on the selected model (response) with the supplied data
 
         :param response_name: Name of the model to evaluate
         :param data: pandas DataFrame
-        :return:
+        :return: pandas DataFrame
+        :raises: Exception: Model does not have the response.
         """
         if response_name not in self.available_response_names(self.rom_type):
             raise Exception("Model does not have the response '%s'" % response_name)
@@ -268,7 +321,8 @@ class Metamodels(object):
             self.covariate_types(self.rom_type)['int']
         ].astype(int)
 
-        # Order the data columns correctly -- this is a magic function.
+        # Order the data columns correctly -- this is a magic function but is the order is
+        # imperative when predicting.
         data = data[self.covariate_names(self.rom_type)]
 
         # transform cyclical columns

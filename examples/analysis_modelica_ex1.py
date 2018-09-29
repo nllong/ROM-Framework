@@ -1,7 +1,12 @@
+# -*- coding: utf-8 -*-
+"""
+.. moduleauthor:: Nicholas Long (nicholas.l.long@colorado.edu, nicholas.lee.long@gmail.com)
+"""
+
 # Make sure that the python path is set, such as by running
 # export PYTHONPATH=`pwd`
 
-from ..rom.metamodels import Metamodels
+from rom.metamodels import Metamodels
 
 
 def load_models(metamodel_filename, model_type, models_to_load, downsample):

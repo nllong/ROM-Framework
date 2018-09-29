@@ -1,46 +1,36 @@
-rom\.generators package
-=======================
+ROM Generators
+==============
 
-Submodules
-----------
 
-rom\.generators\.linear\_model module
--------------------------------------
-
-.. automodule:: rom.generators.linear_model
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-rom\.generators\.model\_generator\_base module
-----------------------------------------------
+Model Generator Base
+--------------------
 
 .. automodule:: rom.generators.model_generator_base
     :members:
     :undoc-members:
     :show-inheritance:
 
-rom\.generators\.random\_forest module
---------------------------------------
+Linear Model
+------------
+
+.. automodule:: rom.generators.linear_model
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+
+Random Forest Model
+-------------------
 
 .. automodule:: rom.generators.random_forest
     :members:
     :undoc-members:
     :show-inheritance:
 
-rom\.generators\.svr module
----------------------------
+Support Vector Regression
+-------------------------
 
 .. automodule:: rom.generators.svr
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: rom.generators
     :members:
     :undoc-members:
     :show-inheritance:
