@@ -81,28 +81,31 @@ class RandomForest(ModelGeneratorBase):
         """
         Save the cv_results to a CSV file. Data in the cv_results file looks like the following.
 
-        {
-            'param_kernel': masked_array(data=['poly', 'poly', 'rbf', 'rbf'],
-                                         mask=[False False False False]...)
-            'param_gamma': masked_array(data=[-- -- 0.1 0.2],
-                                        mask=[True  True False False]...),
-            'param_degree': masked_array(data=[2.0 3.0 - - --],
-                                         mask=[False False  True  True]...),
-            'split0_test_score': [0.8, 0.7, 0.8, 0.9],
-            'split1_test_score': [0.82, 0.5, 0.7, 0.78],
-            'mean_test_score': [0.81, 0.60, 0.75, 0.82],
-            'std_test_score': [0.02, 0.01, 0.03, 0.03],
-            'rank_test_score': [2, 4, 3, 1],
-            'split0_train_score': [0.8, 0.9, 0.7],
-            'split1_train_score': [0.82, 0.5, 0.7],
-            'mean_train_score': [0.81, 0.7, 0.7],
-            'std_train_score': [0.03, 0.03, 0.04],
-            'mean_fit_time': [0.73, 0.63, 0.43, 0.49],
-            'std_fit_time': [0.01, 0.02, 0.01, 0.01],
-            'mean_score_time': [0.007, 0.06, 0.04, 0.04],
-            'std_score_time': [0.001, 0.002, 0.003, 0.005],
-            'params': [{'kernel': 'poly', 'degree': 2}, ...],
-        }
+        The CV results are the results of the GridSearch k-fold cross validation. The form of the
+        results take the following from:
+
+         >>> {
+         >>>    'param_kernel': masked_array(data=['poly', 'poly', 'rbf', 'rbf'],
+         >>>                                 mask=[False False False False]...)
+         >>>    'param_gamma': masked_array(data=[-- -- 0.1 0.2],
+         >>>                                mask=[True  True False False]...),
+         >>>    'param_degree': masked_array(data=[2.0 3.0 - - --],
+         >>>                                 mask=[False False  True  True]...),
+         >>>    'split0_test_score': [0.8, 0.7, 0.8, 0.9],
+         >>>    'split1_test_score': [0.82, 0.5, 0.7, 0.78],
+         >>>    'mean_test_score': [0.81, 0.60, 0.75, 0.82],
+         >>>    'std_test_score': [0.02, 0.01, 0.03, 0.03],
+         >>>    'rank_test_score': [2, 4, 3, 1],
+         >>>    'split0_train_score': [0.8, 0.9, 0.7],
+         >>>    'split1_train_score': [0.82, 0.5, 0.7],
+         >>>    'mean_train_score': [0.81, 0.7, 0.7],
+         >>>    'std_train_score': [0.03, 0.03, 0.04],
+         >>>    'mean_fit_time': [0.73, 0.63, 0.43, 0.49],
+         >>>    'std_fit_time': [0.01, 0.02, 0.01, 0.01],
+         >>>    'mean_score_time': [0.007, 0.06, 0.04, 0.04],
+         >>>    'std_score_time': [0.001, 0.002, 0.003, 0.005],
+         >>>    'params': [{'kernel': 'poly', 'degree': 2}, ...],
+         >>> }
 
         :param cv_results:
         :param filename:
