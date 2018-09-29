@@ -4,6 +4,7 @@ import csv
 from collections import OrderedDict
 
 import pandas as pd
+from datetime import datetime
 
 
 class EpwFile:
@@ -75,7 +76,7 @@ class EpwFile:
         # 'pres_weath_obs', 'pres_weath_codes', 'precip_wtr', 'aerosol_opt_depth',
         # 'snow_depth', ' days_since_last_snow', 'albedo', 'rain', 'rain_quantity']
         # Date,HH:MM,Datasource,DryBulb {C},DewPoint {C},RelHum {%},Atmos Pressure {Pa},ExtHorzRad {Wh/m2},ExtDirRad {Wh/m2},HorzIRSky {Wh/m2},GloHorzRad {Wh/m2},DirNormRad {Wh/m2},DifHorzRad {Wh/m2},GloHorzIllum {lux},DirNormIllum {lux},DifHorzIllum {lux},ZenLum {Cd/m2},WindDir {deg},WindSpd {m/s},TotSkyCvr {.1},OpaqSkyCvr {.1},Visibility {km},Ceiling Hgt {m},PresWeathObs,PresWeathCodes,Precip Wtr {mm},Aerosol Opt Depth {.001},SnowDepth {cm},Days Last Snow,Albedo {.01},Rain {mm},Rain Quantity {hr}
-        with open(filepath, 'rb') as csvfile:
+        with open(filepath, 'r') as csvfile:
             reader = csv.reader(csvfile)
             for row in reader:
                 if row[0] == 'LOCATION':
@@ -115,12 +116,19 @@ class EpwFile:
             dt = "%s/%s/2017 %s:00" % (datum['month'], datum['day'], datum['hour'] - 1)
             self.data[index]['datetime'] = dt
 
+            # convert to dt
+            dt_obj = datetime.strptime(dt, '%m/%d/%Y %H:%M')
+
+            # Add in the DayOfYear for conveniency.
+            self.data[index]['DayOfYear'] = dt_obj.strftime('%j')
+
     def as_dataframe(self):
         """
         Return the EPW file as a dataframe. This drops the data_source column for brevity.
 
         :return: pandas DataFrame
         """
+
         return pd.DataFrame(self.data).drop(columns=['data_source'])
 
 

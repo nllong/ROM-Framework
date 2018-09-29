@@ -7,6 +7,16 @@ converted as needed in order to correctly populate the list of covariates in the
 For use in Modelica ake sure that the python path is set, such as by running
 export PYTHONPATH=`pwd`
 
+Call the following bash command shown below to run this example. This example runs as an
+entrypoint; however, when connected to modelica the def run_model will be called directory. Also,
+note that the run_model method loads the models every time it is called. This is non-ideal when
+using this code in a timestep by timestep simulation. Work needs to be done to determine how to
+load the reduced order models only once and call the reduced order model yhat methods each timestep.
+
+.. code-block:: bash
+
+        python analysis_modelica_ex1.py
+
 .. moduleauthor:: Nicholas Long (nicholas.l.long@colorado.edu, nicholas.lee.long@gmail.com)
 """
 # Add the parent directory to the path so the metamodel and analysis definitiona libraries
