@@ -52,7 +52,7 @@ Building Example Models
 A small office example has been included with the source code. The small office includes 3,300
 hourly samples of building energy consumption with several characteristics for each sample. The
 example shown here is only the basics, for further instructions view the complete documentation
-on `readthedocs <https://reduced-order-modeling-framework.readthedocs.io/en/latest/>`_.
+on `readthedocs <https://reduced-order-modeling-framework.readthedocs.io/en/develop/>`_.
 
     ./rom-runner build -a smoff_test
     ./rom-runner evaluate -a smoff_test
