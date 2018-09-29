@@ -1,5 +1,3 @@
-# pyenv virtualenv 2.7.14 modelica-2.7.14
-
 from rom.analysis_definition.analysis_definition import AnalysisDefinition
 from rom.metamodels import Metamodels
 

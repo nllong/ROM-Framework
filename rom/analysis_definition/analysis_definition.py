@@ -1,3 +1,10 @@
+#!/usr/bin/env python
+"""
+Parser for analysis definition JSON files.
+
+.. moduleauthor:: Nicholas Long (nicholas.l.long@colorado.edu, nicholas.lee.long@gmail.com)
+"""
+
 import json
 import os
 

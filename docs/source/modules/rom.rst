@@ -1,10 +1,10 @@
-rom package
-===========
+Reduced Order Models
+====================
 
 Submodules
 ----------
 
-rom\.evaluate\_helpers module
+Evaluate Helpers
 -----------------------------
 
 .. automodule:: rom.evaluate_helpers
@@ -12,7 +12,7 @@ rom\.evaluate\_helpers module
     :undoc-members:
     :show-inheritance:
 
-rom\.metamodels module
+Metamodels
 ----------------------
 
 .. automodule:: rom.metamodels

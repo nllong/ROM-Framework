@@ -1,12 +1,11 @@
-Documentation for the Code
-**************************
+Code Documentation
+******************
 
 .. toctree::
-    :maxdepth: 3
+    :maxdepth: 1
 
-    modules/example_analysis
     modules/modules
-    modules/rom.analysis_definition
+    modules/analysis_definition
 
 
 

@@ -7,5 +7,5 @@ ambient_loop
    example_analyses
    rom
    rom-runner
-   rom.analysis_definition
+   analysis_definition
    rom.generators
