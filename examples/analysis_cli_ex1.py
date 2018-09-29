@@ -15,9 +15,10 @@ from the command line and reports the values of the responses passed.
 """
 
 import argparse
-import sys
-import pandas as pd
 import json
+import sys
+
+import pandas as pd
 
 sys.path.append('..')  # Adds higher directory to python modules path.
 
@@ -69,4 +70,3 @@ df = pd.DataFrame([data])
 for response in args.responses:
     v = rom.yhat(response, df)
     print(v[0])
-
