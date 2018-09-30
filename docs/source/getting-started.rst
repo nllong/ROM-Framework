@@ -15,7 +15,8 @@ An explanation and example of how the metadata JSON config file looks is shown i
 .. image:: images/fig_rom_build_flow_chart.png
 
 
-The four main functions of this file include:
+The four main functions of the rom-runner.py file includes:
+
 
 1) Build
 
@@ -23,11 +24,77 @@ The four main functions of this file include:
     metamodels.json file. There are several arguments that can be passed with the build command
     including:
 
+    .. code-block:: bash
+
+          -f FILE, --file FILE  Metadata file to use
+          -a ANALYSIS_MONIKER, --analysis-moniker ANALYSIS_MONIKER
+                                Name of the Analysis Model
+          -m [{LinearModel,RandomForest,SVR}], --model-type [{LinearModel,RandomForest,SVR}]
+                                Type of model to build
+          -d DOWNSAMPLE, --downsample DOWNSAMPLE
+                                Specific down sample value
+
+    .. code-block:: bash
+
+        ./rom-runner build -a smoff_test
+
+2) Evaluate
+
+    Use the build positional argument to build a new reduced order model as defined in the
+    metamodels.json file. There are several arguments that can be passed with the build command
+    including:
+
+    .. code-block:: bash
+
+          -f FILE, --file FILE  Metadata file to use
+          -a ANALYSIS_MONIKER, --analysis-moniker ANALYSIS_MONIKER
+                                Name of the Analysis Model
+          -m [{LinearModel,RandomForest,SVR}], --model-type [{LinearModel,RandomForest,SVR}]
+                                Type of model to build
+          -d DOWNSAMPLE, --downsample DOWNSAMPLE
+                                Specific down sample value
+
+    .. code-block:: bash
+
+        ./rom-runner evaluate -a smoff_test
+
+
+3) Validate
+
+    Use the build positional argument to build a new reduced order model as defined in the
+    metamodels.json file. There are several arguments that can be passed with the build command
+    including:
+
+    .. code-block:: bash
+
+          -f FILE, --file FILE  Metadata file to use
+          -a ANALYSIS_MONIKER, --analysis-moniker ANALYSIS_MONIKER
+                                Name of the Analysis Model
+          -m [{LinearModel,RandomForest,SVR}], --model-type [{LinearModel,RandomForest,SVR}]
+                                Type of model to build
+          -d DOWNSAMPLE, --downsample DOWNSAMPLE
+                                Specific down sample value
+
+    .. code-block:: bash
+
+        ./rom-runner validate -a smoff_test
+
+4) Run
+
+    Use the build positional argument to build a new reduced order model as defined in the
+    metamodels.json file. There are several arguments that can be passed with the build command
+    including:
+
+    .. code-block:: bash
+
+        -ad ANALYSIS_DEFINITION, --analysis-definition ANALYSIS_DEFINITION
+                                Definition of an analysis to run using the ROMs
+        -w WEATHER, --weather WEATHER
+                                Weather file to run analysis-definition
+        -o OUTPUT, --output OUTPUT
+                                File to save the results to
+
 
     .. code-block:: bash
 
         ./rom-runner.py run -a smoff_parametric_sweep -m RandomForest -ad examples/smoff-one-year.json -w examples/lib/USA_CO_Golden-NREL.724666_TMY3.epw -d 0.15 -o output.csv
-
-
-
-

@@ -1,3 +1,4 @@
+# /usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 This example file shows how to load the models using a method based approach for use in Modelica.

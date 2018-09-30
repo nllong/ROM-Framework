@@ -1,5 +1,7 @@
-# Author: Nicholas Long (nicholas.l.long@colorado.edu)
-
+# -*- coding: utf-8 -*-
+"""
+.. moduleauthor:: Nicholas Long (nicholas.l.long@colorado.edu, nicholas.lee.long@gmail.com)
+"""
 import os
 
 import matplotlib.pyplot as plt

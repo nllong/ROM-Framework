@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+"""
+.. moduleauthor:: Nicholas Long (nicholas.l.long@colorado.edu, nicholas.lee.long@gmail.com)
+"""
 # import cPickle  # python 2
 import pickle
 import csv

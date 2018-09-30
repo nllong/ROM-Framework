@@ -7,7 +7,6 @@ arguments. Ideally, the processing portion of this file is removed from the pars
 helper rom-runner.py file as a helper file at the root of the repository that passed
 the arguments to this file.
 
-
 .. moduleauthor:: Nicholas Long (nicholas.l.long@colorado.edu, nicholas.lee.long@gmail.com)
 """
 
@@ -48,7 +47,7 @@ print(f.renderText('ROM Framework'))
 
 parser = argparse.ArgumentParser()
 parser.add_argument('action', default=None, choices=['build', 'evaluate', 'validate', 'run'])
-parser.add_argument('-f', '--file', help='Description file to use', default='metamodels.json')
+parser.add_argument('-f', '--file', help='Metadata file to use', default='metamodels.json')
 parser.add_argument('-a', '--analysis-moniker', help='Name of the Analysis Model', required=True)
 available_models = parser.add_argument("-m", "--model-type", nargs='*',
                                        choices=['LinearModel', 'RandomForest', 'SVR'],
