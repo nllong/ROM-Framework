@@ -1,62 +1,35 @@
 Reduced Order Models
 ====================
 
-Submodules
-----------
-
-Evaluate Helpers
------------------------------
-
-.. automodule:: rom.evaluate_helpers
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 Metamodels
-----------------------
+----------
 
 .. automodule:: rom.metamodels
     :members:
     :undoc-members:
     :show-inheritance:
 
-rom\.rom module
----------------
+Evaluate Helpers
+----------------
 
-.. automodule:: rom.rom
+.. automodule:: rom.evaluate_helpers
     :members:
     :undoc-members:
     :show-inheritance:
 
-rom\.shared module
-------------------
+Shared Methods
+--------------
 
 .. automodule:: rom.shared
     :members:
     :undoc-members:
     :show-inheritance:
 
-rom\.validation\_helpers module
--------------------------------
+Validation Helpers
+------------------
 
 .. automodule:: rom.validation_helpers
     :members:
     :undoc-members:
     :show-inheritance:
 
-rom\.version module
--------------------
-
-.. automodule:: rom.version
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-
-Module contents
----------------
-
-.. automodule:: rom
-    :members:
-    :undoc-members:
-    :show-inheritance:

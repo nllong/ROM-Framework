@@ -1,5 +1,5 @@
-Analysis Definition - Single
-============================
+Single
+======
 
 This example configuration file shows setting all the covariates to a single value.
 

@@ -1,12 +1,15 @@
 .. include:: ../../README.rst
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 0
    :caption: Contents:
 
    getting-started
+   metadata_json_ex
+   modules/analysis_definition
+   modules/example_analyses
+   developer_notes
    code
-
 
 Indices and tables
 ==================
@@ -15,14 +18,5 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-Development
 
-===========
-
-Building Documentation
-^^^^^^^^^^^^^^^^^^^^^^
-
-   $ sphinx-apidoc -o docs/source/modules . rom
-   $ cd docs
-   $ make html
 

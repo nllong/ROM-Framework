@@ -1,27 +1,14 @@
-Example Analyses
-================
-
-Submodules
-----------
+Using the ROMs
+==============
 
 CLI Example
---------------------
+-----------
 
-.. automodule:: example_analyses.analysis_cli_ex1
-    :members:
-    :undoc-members:
-    :show-inheritance:
+.. literalinclude:: ../../../examples/analysis_cli_ex1.py
+   :linenos:
 
 Analysis Example
 ----------------
-
-.. literalinclude:: ../../../examples/analysis_ex1.py
-   :linenos:
-
-.. automodule:: example_analyses.analysis_ex1
-    :members:
-    :undoc-members:
-    :show-inheritance:
 
 Example analysis script demonstrating how to programatically load and run already persisted
 reduced order models. This example loads two response variables (models) from the small office
@@ -35,10 +22,18 @@ To run this example
 
     python analysis_ex1.py
 
+
+.. literalinclude:: ../../../examples/analysis_ex1.py
+   :linenos:
+
+Sweep Example
+-------------
+
+.. literalinclude:: ../../../examples/analysis_sweep_ex1.py
+   :linenos:
+
 Modelica Example
 ----------------
 
-.. automodule:: example_analyses.analysis_modelica_ex1
-    :members:
-    :undoc-members:
-    :show-inheritance:
+.. literalinclude:: ../../../examples/analysis_modelica_ex1.py
+   :linenos:

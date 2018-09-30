@@ -2,9 +2,9 @@ Analysis Definition
 ===================
 
 .. toctree::
-   :maxdepth: 1
 
    analysis_definition_ex_single
+   analysis_definition_code
 
 
 The analysis definition module is used for loading an already generated reduced order and
@@ -24,18 +24,3 @@ To run an analysis with a JSON file, first load a metamodel, then load the analy
     from rom.analysis_definition.analysis_definition import AnalysisDefinition
     from rom.metamodels import Metamodels
 
-Analysis Definition
--------------------
-
-.. automodule:: rom.analysis_definition.analysis_definition
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-EPW File
---------
-
-.. automodule:: rom.analysis_definition.epw_file
-    :members:
-    :undoc-members:
-    :show-inheritance:

@@ -2,8 +2,6 @@ Getting Started
 ***************
 
 .. toctree::
-   :maxdepth: 1
-   :caption: Contents:
 
 The ROM Framework is designed to help users build, evaluate, validate, and run reduced order models.
 The image below shows the typical workflow and the required data. Each of the blue boxes
