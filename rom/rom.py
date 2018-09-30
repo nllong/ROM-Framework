@@ -7,7 +7,6 @@ arguments. Ideally, the processing portion of this file is removed from the pars
 helper rom-runner.py file as a helper file at the root of the repository that passed
 the arguments to this file.
 
-
 .. moduleauthor:: Nicholas Long (nicholas.l.long@colorado.edu, nicholas.lee.long@gmail.com)
 """
 

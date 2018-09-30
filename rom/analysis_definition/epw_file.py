@@ -1,5 +1,9 @@
-# process an EPW file
+# -*- coding: utf-8 -*-
+"""
+Process an EPW file
 
+.. moduleauthor:: Nicholas Long (nicholas.l.long@colorado.edu, nicholas.lee.long@gmail.com)
+"""
 import csv
 from collections import OrderedDict
 
