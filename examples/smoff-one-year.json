@@ -1,0 +1,39 @@
+{
+  "variables": [
+    {
+      "name": "Month",
+      "data_source": "epw",
+      "data_source_field": "month"
+    },
+    {
+      "name": "Hour",
+      "data_source": "epw",
+      "data_source_field": "hour"
+    },
+    {
+      "name": "DayofWeek",
+      "data_source": "epw",
+      "data_source_field": "day"
+    },
+    {
+      "name": "SiteOutdoorAirDrybulbTemperature",
+      "data_source": "epw",
+      "data_source_field": "dry_bulb"
+    },
+    {
+      "name": "SiteOutdoorAirRelativeHumidity",
+      "data_source": "epw",
+      "data_source_field": "rh"
+    },
+    {
+      "name": "ETSInletTemperature",
+      "data_source": "value",
+      "value": 20
+    },
+    {
+      "name": "lpd_average",
+      "data_source": "value",
+      "value": 9.4
+    }
+  ]
+}

@@ -1,0 +1,659 @@
+<Attribute>
+  <UUID>{0a7437ec-f097-49ca-936d-5987111757ff}</UUID>
+  <VersionUUID>{f3fdc469-e631-4853-a567-40c48ccc62b7}</VersionUUID>
+  <Name>summary_report</Name>
+  <ValueType>AttributeVector</ValueType>
+  <Value>
+    <Attribute>
+      <UUID>{2eb978a2-74dc-4c24-a6db-99995ed0ed09}</UUID>
+      <VersionUUID>{4883afe4-4f2e-45ab-b482-4489e3c0b184}</VersionUUID>
+      <Name>report</Name>
+      <ValueType>AttributeVector</ValueType>
+      <Value>
+        <Attribute>
+          <UUID>{768da650-ae6e-4270-a391-f6fac40e4205}</UUID>
+          <VersionUUID>{5f26a670-8b30-4d23-ad2e-98502167779b}</VersionUUID>
+          <Name>checks</Name>
+          <ValueType>AttributeVector</ValueType>
+          <Value>
+            <Attribute>
+              <UUID>{2aff98eb-cad0-480a-b401-3abe2c870160}</UUID>
+              <VersionUUID>{db6aa8c4-29c3-44df-8b0a-9bba7904391c}</VersionUUID>
+              <Name>check</Name>
+              <ValueType>AttributeVector</ValueType>
+              <Value>
+                <Attribute>
+                  <UUID>{319748b6-08a3-4536-bda3-ef4bb541cd4c}</UUID>
+                  <VersionUUID>{42468c5d-a199-411f-ac3d-e466c3adbfc9}</VersionUUID>
+                  <Name>name</Name>
+                  <ValueType>String</ValueType>
+                  <Value>EUI Reasonableness</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{9035ee3d-104b-4c40-8cc7-b6a4d3898189}</UUID>
+                  <VersionUUID>{e65f3182-f6a3-4f63-a62e-cc39a2b47d5a}</VersionUUID>
+                  <Name>category</Name>
+                  <ValueType>String</ValueType>
+                  <Value>General</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{3a827fae-a76f-4ea6-a167-9ef6b60c2cad}</UUID>
+                  <VersionUUID>{d8144a65-4698-48ac-a341-f3a35ab8f6c8}</VersionUUID>
+                  <Name>description</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Check EUI for model against 90.1-2013 DOE prototype buildings.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{4f5493d7-f8a7-483e-982f-7a579583d6a7}</UUID>
+                  <VersionUUID>{780176c4-ec97-4911-a723-444deff51875}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Can't calculate target EUI. Make sure model has expected climate zone and building type.</Value>
+                </Attribute>
+              </Value>
+            </Attribute>
+            <Attribute>
+              <UUID>{a1b119b3-d82e-415d-9696-429c14a5bdd2}</UUID>
+              <VersionUUID>{ef8c843f-a697-4183-89cd-63978f823347}</VersionUUID>
+              <Name>check</Name>
+              <ValueType>AttributeVector</ValueType>
+              <Value>
+                <Attribute>
+                  <UUID>{730a4baa-43bf-42db-82b3-e6a4ccfebe73}</UUID>
+                  <VersionUUID>{1e821970-9c05-46ed-9871-190f7a74f5a9}</VersionUUID>
+                  <Name>name</Name>
+                  <ValueType>String</ValueType>
+                  <Value>End Use by Category</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{912d48b8-4793-4d8f-ae61-6aea4d7a1f04}</UUID>
+                  <VersionUUID>{aeed3410-4f02-4d36-b135-f1d9057f6686}</VersionUUID>
+                  <Name>category</Name>
+                  <ValueType>String</ValueType>
+                  <Value>General</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{55f437f1-6fd0-4a6a-8916-6812ad10a238}</UUID>
+                  <VersionUUID>{8cb44688-91d1-43b1-a398-a844a16ad10c}</VersionUUID>
+                  <Name>description</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Check end use by category against 90.1-2013 DOE prototype buildings.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{ea01cfa0-ad9e-40fe-b4b4-ff724d34c936}</UUID>
+                  <VersionUUID>{96fed052-294d-4f83-911b-d4a94b21a808}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Can't calculate target end use EUIs. Make sure model has expected climate zone and building type.</Value>
+                </Attribute>
+              </Value>
+            </Attribute>
+            <Attribute>
+              <UUID>{d3e9ca66-9dec-4087-9847-169c7aa49801}</UUID>
+              <VersionUUID>{4d5276f0-7acd-43a7-b40c-2c8ee281e7d1}</VersionUUID>
+              <Name>check</Name>
+              <ValueType>AttributeVector</ValueType>
+              <Value>
+                <Attribute>
+                  <UUID>{b35ef4be-f3c8-4c89-8fba-5b5dad371bd2}</UUID>
+                  <VersionUUID>{0cd9032b-1d6e-4ea2-9dd5-cd89710d47cb}</VersionUUID>
+                  <Name>name</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Mechanical System Part Load Efficiency</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{38b18a8e-2355-49c5-bb1d-2464d7f0c35d}</UUID>
+                  <VersionUUID>{8dddbba0-09a7-4a0d-bdc6-dee3dbe91a79}</VersionUUID>
+                  <Name>category</Name>
+                  <ValueType>String</ValueType>
+                  <Value>General</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{d2bd234f-1ac7-4350-9477-9226d03031f0}</UUID>
+                  <VersionUUID>{3607babe-97ff-46f6-b271-2e5bf639a4db}</VersionUUID>
+                  <Name>description</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Check 40% and 80% part load efficency against ASHRAE 90.1-2013 for the following compenent types: ChillerElectricEIR, CoilCoolingDXSingleSpeed, CoilCoolingDXTwoSpeed, CoilHeatingDXSingleSpeed. Checking EIR Function of Part Load Ratio curve for chiller and EIR Function of Flow Fraction for DX coils.</Value>
+                </Attribute>
+              </Value>
+            </Attribute>
+            <Attribute>
+              <UUID>{b2fc77e9-cd02-4035-9d98-7343c632804f}</UUID>
+              <VersionUUID>{811871a3-02b4-42ee-ac6f-a7455b7ac2cc}</VersionUUID>
+              <Name>check</Name>
+              <ValueType>AttributeVector</ValueType>
+              <Value>
+                <Attribute>
+                  <UUID>{3002afc9-0900-4e9f-be7d-fb55bb10c18f}</UUID>
+                  <VersionUUID>{49a0b950-4e67-42c4-a0dc-13732ed06a0a}</VersionUUID>
+                  <Name>name</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Mechanical System Capacity</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{85b1573b-c589-482a-9bfd-0377d52b7ea5}</UUID>
+                  <VersionUUID>{44e07a7b-702c-4868-99db-afd08cd81067}</VersionUUID>
+                  <Name>category</Name>
+                  <ValueType>String</ValueType>
+                  <Value>General</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{f202c635-1cb4-4887-bff4-8f72e6d5ead9}</UUID>
+                  <VersionUUID>{1c48aa2e-7217-412c-a9e4-afce0f186353}</VersionUUID>
+                  <Name>description</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Check HVAC capacity against ASHRAE rules of thumb for chiller max flow rate, air loop max flow rate, air loop cooling capciaty, and zone heating capcaity. Zone heating check will skip thermal zones without any exterior exposure, and thermal zones that are not conditioned.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{6520d52f-e53c-4011-a97c-a6c48b1ae3c7}</UUID>
+                  <VersionUUID>{ec1e3624-4b66-4390-a965-680a07bb8970}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Heating Capacity of 26.88 Btu/ft^2*h for Back_Space ZN is more than 40.0 % above the typical value of 12.5 Btu/ft^2*h.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{a7e29586-a128-453f-a026-396ceba8e0ae}</UUID>
+                  <VersionUUID>{48f26df5-8eb9-4786-a62c-7646aee7d0b3}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Heating Capacity of 2041.38 Btu/ft^2*h for Front_Entry ZN is more than 40.0 % above the typical value of 12.5 Btu/ft^2*h.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{3c775f85-c3d0-4483-a1a2-0d0efe3d0d2e}</UUID>
+                  <VersionUUID>{fc59d4dd-750a-4f35-817d-437bb4982c40}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Heating Capacity of 35.15 Btu/ft^2*h for Front_Retail ZN is more than 40.0 % above the typical value of 12.5 Btu/ft^2*h.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{bd95ddee-ef4d-4240-b0ae-38c23d876721}</UUID>
+                  <VersionUUID>{11d71594-ae9b-4359-b3e3-7dd20ec784a2}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Heating Capacity of 35.15 Btu/ft^2*h for Point_Of_Sale ZN is more than 40.0 % above the typical value of 12.5 Btu/ft^2*h.</Value>
+                </Attribute>
+              </Value>
+            </Attribute>
+            <Attribute>
+              <UUID>{372dc3b6-7f2a-4ccf-aa00-d608333ceae4}</UUID>
+              <VersionUUID>{b9a19f6a-0a1d-4a99-adb1-e3f2933fe511}</VersionUUID>
+              <Name>check</Name>
+              <ValueType>AttributeVector</ValueType>
+              <Value>
+                <Attribute>
+                  <UUID>{0faca163-1ab2-4dbf-bb76-c3b610c3a206}</UUID>
+                  <VersionUUID>{52753bdb-1e47-406a-a912-958c9ff54ffd}</VersionUUID>
+                  <Name>name</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Simultaneous Heating and Cooling</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{a33c3c73-d3dc-4128-9c38-5f6e2b1ceec3}</UUID>
+                  <VersionUUID>{a2969ac3-ba2a-4c79-8990-74b1bb9e189e}</VersionUUID>
+                  <Name>category</Name>
+                  <ValueType>String</ValueType>
+                  <Value>General</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{b37d5d8f-a526-4f8d-81fe-cdca030f8f6a}</UUID>
+                  <VersionUUID>{37d1a3ec-8218-40d7-8dd0-9c826e9b010f}</VersionUUID>
+                  <Name>description</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Check for simultaneous heating and cooling by looping through all Single Duct VAV Reheat Air Terminals and analyzing hourly data when there is a cooling load. </Value>
+                </Attribute>
+              </Value>
+            </Attribute>
+            <Attribute>
+              <UUID>{fbff7dda-344f-4d18-9f62-0907497b927f}</UUID>
+              <VersionUUID>{c1aad909-3538-4929-a8bb-4cded0aac161}</VersionUUID>
+              <Name>check</Name>
+              <ValueType>AttributeVector</ValueType>
+              <Value>
+                <Attribute>
+                  <UUID>{3455d99a-d1ce-49d3-8f2a-4ecc7dd6c973}</UUID>
+                  <VersionUUID>{46805bdd-adc9-454d-a8bb-a9655665e08c}</VersionUUID>
+                  <Name>name</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Internal Loads</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{27b61379-abdb-40b6-9036-9c88209d352a}</UUID>
+                  <VersionUUID>{5be04191-81a3-44fb-ba12-4afc3c994a69}</VersionUUID>
+                  <Name>category</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Baseline</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{5add664f-b79f-4ad5-b6a3-d1b576c8814c}</UUID>
+                  <VersionUUID>{6a458501-b5ed-4d18-8ef9-eb5939d4dfff}</VersionUUID>
+                  <Name>description</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Check LPD, ventilation rates, occupant density, plug loads, and equipment loads against ASHRAE 90.1-2013 and DOE Prototype buildings.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{a9cdca04-b378-41e4-b7a8-b122de7084a8}</UUID>
+                  <VersionUUID>{4f8b3eec-5c12-4e82-9484-c749abc302e4}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Lighting Power Density of 1.68 (W/ft^2) for Retail Point_of_Sale is more than 10.0 % above the expected value of 1.44 (W/ft^2) for ASHRAE 90.1-2013.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{444ff29e-5814-4f0f-86f8-41f9242d951f}</UUID>
+                  <VersionUUID>{98772ddf-a460-450e-b88a-4257613dd2f5}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Lighting Power Density of 1.68 (W/ft^2) for Retail Retail is more than 10.0 % above the expected value of 1.44 (W/ft^2) for ASHRAE 90.1-2013.</Value>
+                </Attribute>
+              </Value>
+            </Attribute>
+            <Attribute>
+              <UUID>{714ac9d5-3169-482a-add6-9c0ef53bb020}</UUID>
+              <VersionUUID>{3ceccf05-2c2d-4e13-b08f-122839add04d}</VersionUUID>
+              <Name>check</Name>
+              <ValueType>AttributeVector</ValueType>
+              <Value>
+                <Attribute>
+                  <UUID>{21389648-f3e8-49d3-9298-1aff61d3aeb1}</UUID>
+                  <VersionUUID>{c5c24cde-f645-48bb-8869-98307ef76b6f}</VersionUUID>
+                  <Name>name</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Schedules</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{96b43d4c-65b6-4700-a272-f5ae970171d8}</UUID>
+                  <VersionUUID>{1dcc8d31-5c98-45a0-82ed-a596bb9d66df}</VersionUUID>
+                  <Name>category</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Baseline</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{d0267338-aafd-40cf-bbcc-0cde4cdcc6a7}</UUID>
+                  <VersionUUID>{896ef141-ba73-4820-8450-7d6c0c513f7f}</VersionUUID>
+                  <Name>description</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Check schedules for lighting, ventilation, occupant density, plug loads, and equipment based on DOE reference building schedules in terms of full load hours per year.</Value>
+                </Attribute>
+              </Value>
+            </Attribute>
+            <Attribute>
+              <UUID>{4b9fb797-fe78-4d5c-9655-a2799c27acf9}</UUID>
+              <VersionUUID>{d2734c23-8b94-44fa-a0e7-2905c755da98}</VersionUUID>
+              <Name>check</Name>
+              <ValueType>AttributeVector</ValueType>
+              <Value>
+                <Attribute>
+                  <UUID>{40e1acae-7fa6-4a93-bc0e-2952cb62a61e}</UUID>
+                  <VersionUUID>{d3ba93a0-bed8-4f67-8d43-960e0855ba07}</VersionUUID>
+                  <Name>name</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Envelope R-Value</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{caa14659-aaa7-40e8-b2dc-77eab4d04cbc}</UUID>
+                  <VersionUUID>{5cbd16ce-2510-4fd0-8d56-5dd868ba8936}</VersionUUID>
+                  <Name>category</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Baseline</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{1956da72-05e1-41b5-a34b-5e90a1c6d4f7}</UUID>
+                  <VersionUUID>{7d49aeb3-2679-48d4-bc8e-e01a3166cfb1}</VersionUUID>
+                  <Name>description</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Check envelope against ASHRAE 90.1-2013 Table 5.5.2, Table G2.1.5 b,c,d,e, Section 5.5.3.1.1a. Roof reflectance of 55%, wall relfectance of 30%.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{f93f6b00-eb29-44bb-8868-6503c3b3be7f}</UUID>
+                  <VersionUUID>{c6a4b8ff-7166-424c-ba76-62ddd35e4bdc}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Didn't find construction for SteelFramed ExteriorWall for Retail Point_of_Sale.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{f1defa79-535e-4204-a90c-bbd5a67962dc}</UUID>
+                  <VersionUUID>{9b2c611c-dd99-41b6-bfe9-edd2b5aaadef}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Didn't find construction for IEAD ExteriorRoof for Retail Point_of_Sale.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{8d0c8230-1983-43d6-a15c-4b08c21faa61}</UUID>
+                  <VersionUUID>{a62698b4-f923-4c16-b246-2506eb3c7f02}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Didn't find construction for Mass ExteriorFloor for Retail Point_of_Sale.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{941ce9a9-0671-4ee3-8584-3cecbcd325ac}</UUID>
+                  <VersionUUID>{c1fb62cc-3e98-49ef-845d-73fb6f071981}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Didn't find construction for Swinging ExteriorDoor for Retail Point_of_Sale.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{afeede62-8f4f-40d1-bbe0-d0ee37bb8617}</UUID>
+                  <VersionUUID>{bcce6121-9c3b-4562-a883-4a2287397575}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Didn't find construction for Metal framing (all other) ExteriorWindow for Retail Point_of_Sale.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{5aa67bbd-b0fc-45dd-b9ca-6477d970ac86}</UUID>
+                  <VersionUUID>{fd675cd0-28a7-4c89-9ee2-a0e6bdd7bbac}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Didn't find construction for Glass with Curb Skylight for Retail Point_of_Sale.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{30debc75-b326-45c3-88b5-1b86522bf74b}</UUID>
+                  <VersionUUID>{d7a6a4f7-a02c-4da3-9603-560c5946c93b}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Didn't find construction for SteelFramed ExteriorWall for Retail Entry.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{5d79a274-f1a2-4943-a1a9-dbe64c8a9ba3}</UUID>
+                  <VersionUUID>{822ca4d6-c151-446b-ae69-e03f1eb6a31b}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Didn't find construction for IEAD ExteriorRoof for Retail Entry.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{6154ad79-5145-48ac-83e0-8e7f61d4e4e8}</UUID>
+                  <VersionUUID>{54185106-41e9-4c4f-a01b-6bb415862564}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Didn't find construction for Mass ExteriorFloor for Retail Entry.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{bfbc96b8-bdcd-4f01-a563-59934c73d554}</UUID>
+                  <VersionUUID>{155b0b68-db09-4d9a-9faf-35cfa4c93c19}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Didn't find construction for Swinging ExteriorDoor for Retail Entry.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{bcbb29ac-e8c7-408c-b23f-14f3c5feb8a8}</UUID>
+                  <VersionUUID>{250d3a28-0e28-4025-a405-a310c93d968f}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Didn't find construction for Metal framing (all other) ExteriorWindow for Retail Entry.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{a67c71dc-e658-408f-b61e-2a1a0326e103}</UUID>
+                  <VersionUUID>{1339e323-cd90-480f-b6f7-778f27ca2e64}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Didn't find construction for Glass with Curb Skylight for Retail Entry.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{881ba8c3-832e-4dbe-8f01-06711470362e}</UUID>
+                  <VersionUUID>{82149aa0-e3b0-401b-9d1b-5ba96dee7312}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Didn't find construction for SteelFramed ExteriorWall for Retail Retail.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{7d25b92d-8641-4e93-8feb-388443f3a0ec}</UUID>
+                  <VersionUUID>{4c9c237f-333f-47d3-a965-506dea60d244}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Didn't find construction for IEAD ExteriorRoof for Retail Retail.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{c2ba0058-8cae-444a-8f5a-a3c94ae0a932}</UUID>
+                  <VersionUUID>{8d583e8c-5072-436a-8a24-553c5ee22534}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Didn't find construction for Mass ExteriorFloor for Retail Retail.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{6729e127-8759-4b51-ad67-6c33c8eda0ec}</UUID>
+                  <VersionUUID>{5b302713-c68e-461c-8152-7a1608e9a334}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Didn't find construction for Swinging ExteriorDoor for Retail Retail.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{3bbc173e-9b01-4dda-8b27-0256060358da}</UUID>
+                  <VersionUUID>{1eed09e1-902c-46d1-a478-594ecf55353c}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Didn't find construction for Metal framing (all other) ExteriorWindow for Retail Retail.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{bfa268df-9521-4763-a760-d17b1c86a07f}</UUID>
+                  <VersionUUID>{47ec5eee-a067-4f2b-a013-3b4c8825cfd7}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Didn't find construction for Glass with Curb Skylight for Retail Retail.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{58be0c8e-6787-4538-bc86-ccc61c5722ba}</UUID>
+                  <VersionUUID>{64c1fc6f-b282-47bc-b86f-37bfc394b6d4}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Didn't find construction for SteelFramed ExteriorWall for Retail Back_Space.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{6d7b5fc1-e799-4ed0-85b3-ced5b27ee1e9}</UUID>
+                  <VersionUUID>{cde6746f-639f-4e5c-9ec5-338d226dfca3}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Didn't find construction for IEAD ExteriorRoof for Retail Back_Space.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{446cc493-7ce5-4d66-90c2-36ab3391922c}</UUID>
+                  <VersionUUID>{c68cfadd-e459-4ce7-ab76-f2738dd5cd06}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Didn't find construction for Mass ExteriorFloor for Retail Back_Space.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{95ed759d-3d1a-4dbf-8007-ff592a9d3761}</UUID>
+                  <VersionUUID>{152a3932-7f58-42e6-b46a-f364158c36c4}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Didn't find construction for Swinging ExteriorDoor for Retail Back_Space.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{8870f776-aea0-4480-8faf-7e0456c08022}</UUID>
+                  <VersionUUID>{60e25cbe-c035-4e3b-827a-f5393eb022ef}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Didn't find construction for Metal framing (all other) ExteriorWindow for Retail Back_Space.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{01c3edc8-b475-42a8-b3b4-1ce547d1b347}</UUID>
+                  <VersionUUID>{18c17b02-58a6-4013-955e-247d87d24fd6}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Didn't find construction for Glass with Curb Skylight for Retail Back_Space.</Value>
+                </Attribute>
+              </Value>
+            </Attribute>
+            <Attribute>
+              <UUID>{fd71e2e3-46a9-4d72-9f3c-6c9eeb52f158}</UUID>
+              <VersionUUID>{57e611cd-e38c-466e-9b54-492944106e23}</VersionUUID>
+              <Name>check</Name>
+              <ValueType>AttributeVector</ValueType>
+              <Value>
+                <Attribute>
+                  <UUID>{6d08318e-1c69-4a88-864d-c5ebe718bb18}</UUID>
+                  <VersionUUID>{c05b81b3-0e17-4849-8e07-1f98b2ef7e29}</VersionUUID>
+                  <Name>name</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Domestic Hot Water</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{6c42b894-5b05-45ed-b4c4-b66890979353}</UUID>
+                  <VersionUUID>{ff9c088e-19f2-46d9-9c53-03b2a44ce9c7}</VersionUUID>
+                  <Name>category</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Baseline</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{c969dd96-de09-4a4e-a57c-1f7c31670e03}</UUID>
+                  <VersionUUID>{4c1da896-ed2c-4e53-bbf0-cc7992f9eb1c}</VersionUUID>
+                  <Name>description</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Check against the 2011 ASHRAE Handbook - HVAC Applications, Table 7 section 60.13.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{7cce7f7e-af7e-4b44-924e-b6b16e8c3a7d}</UUID>
+                  <VersionUUID>{0e5957fa-7471-4e6d-9efe-6d9af4a803c6}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>No rule of thumb values exist for  RetailStandalone. Hot water consumption was not checked.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{65af0c2b-0dc9-4981-8ca9-f685edd19544}</UUID>
+                  <VersionUUID>{6e7c98f2-c2a2-4a50-b1b6-5e886b948778}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Error prevented QAQC check from running (undefined method `*' for nil:NilClass).</Value>
+                </Attribute>
+              </Value>
+            </Attribute>
+            <Attribute>
+              <UUID>{aee18569-4338-422a-89ca-723bc16c443c}</UUID>
+              <VersionUUID>{eca04cf7-0aa0-49ef-9e7d-195ee61dc6af}</VersionUUID>
+              <Name>check</Name>
+              <ValueType>AttributeVector</ValueType>
+              <Value>
+                <Attribute>
+                  <UUID>{7148cb44-8b78-491e-b32d-71adeb11130b}</UUID>
+                  <VersionUUID>{236012ac-00bd-42e5-bc9e-a60ee48c2d15}</VersionUUID>
+                  <Name>name</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Mechanical System Efficiency</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{0a699424-80f0-4377-bd9a-de22735fb531}</UUID>
+                  <VersionUUID>{db0a586d-7151-4079-9ffd-3cb857e63d83}</VersionUUID>
+                  <Name>category</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Baseline</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{8bf88d2b-05b7-4f86-87f6-4ffd51ed930e}</UUID>
+                  <VersionUUID>{3892188f-ffee-4f20-bfcc-7e204cbf9129}</VersionUUID>
+                  <Name>description</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Check against ASHRAE 90.1-2013 Tables 6.8.1 A-K for the following component types: ChillerElectricEIR, CoilCoolingDXSingleSpeed, CoilCoolingDXTwoSpeed, CoilHeatingDXSingleSpeed, BoilerHotWater, FanConstantVolume, FanVariableVolume, PumpConstantSpeed, PumpVariableSpeed.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{0e4202d0-a2b1-45c9-9e54-024b874d1681}</UUID>
+                  <VersionUUID>{5d167e03-7966-4158-94aa-e86a9e0abf12}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Motor efficiency of 0.86 for Service Water Loop Pump is more than 10.0 % above the expected value of 0.7 for ASHRAE 90.1-2013.</Value>
+                </Attribute>
+              </Value>
+            </Attribute>
+            <Attribute>
+              <UUID>{24b157f2-f098-4bd0-81d2-85a0a5e5b2bf}</UUID>
+              <VersionUUID>{6e8b1b2c-fdb4-4816-8e5b-5c9cb139465a}</VersionUUID>
+              <Name>check</Name>
+              <ValueType>AttributeVector</ValueType>
+              <Value>
+                <Attribute>
+                  <UUID>{e92feb14-7270-47be-b5e6-409d0eeb3844}</UUID>
+                  <VersionUUID>{33e22ae6-960b-406a-bfda-84a9a3fc7e3d}</VersionUUID>
+                  <Name>name</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Mechanical System Type</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{8b2f425f-c54f-47bd-a375-b7da60d54381}</UUID>
+                  <VersionUUID>{f83ae46a-eda4-4ad2-b92f-b5274e9634a3}</VersionUUID>
+                  <Name>category</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Baseline</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{ad4a5d2d-40c7-48a0-9741-ecb6440c0f52}</UUID>
+                  <VersionUUID>{389ddfad-27b7-4a65-b88e-a58cbfdcaf3d}</VersionUUID>
+                  <Name>description</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Check against ASHRAE 90.1. Infers the baseline system type based on the equipment serving the zone and their heating/cooling fuels. Only does a high-level inference; does not look for the presence/absence of required controls, etc.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{a3e46b8a-ac2a-45fd-b8a4-a2dfcf24ec50}</UUID>
+                  <VersionUUID>{f323d643-1189-4ccf-a332-24d108fb010e}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Core_Retail ZN baseline system type is incorrect. Supposed to be PSZ_AC, but was Unknown instead.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{a8a39061-5afd-4a1b-9d1a-39b5e500604c}</UUID>
+                  <VersionUUID>{8187b20d-303c-4762-96d9-0cd956530107}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Back_Space ZN baseline system type is incorrect. Supposed to be PSZ_AC, but was Unknown instead.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{95982d56-1f34-4df7-8781-404a854de34e}</UUID>
+                  <VersionUUID>{f98e1977-5ba4-460b-bd12-393f3af86be0}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Front_Retail ZN baseline system type is incorrect. Supposed to be PSZ_AC, but was Unknown instead.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{f5b70e56-0060-4191-b66b-c59e0291205e}</UUID>
+                  <VersionUUID>{d5dd61d4-8f3a-438c-bacd-7a8a8d3eb913}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Point_Of_Sale ZN baseline system type is incorrect. Supposed to be PSZ_AC, but was Unknown instead.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{b348574e-3484-4b43-b621-bed6fcb52247}</UUID>
+                  <VersionUUID>{94378f2d-7349-42f0-ac91-f3e5adf4cfa4}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Front_Entry ZN baseline system type is incorrect. Supposed to be Gas_Furnace, but was Unknown instead.</Value>
+                </Attribute>
+              </Value>
+            </Attribute>
+            <Attribute>
+              <UUID>{3c1d5fea-7413-4623-b2f2-da2dc1f1bdee}</UUID>
+              <VersionUUID>{b39259d7-84ae-471e-ba91-6bbdde7e2b7f}</VersionUUID>
+              <Name>check</Name>
+              <ValueType>AttributeVector</ValueType>
+              <Value>
+                <Attribute>
+                  <UUID>{0ebea81b-3211-467a-af18-99447dec971c}</UUID>
+                  <VersionUUID>{f5d2bafc-a58a-4ab3-9486-dea59f92b233}</VersionUUID>
+                  <Name>name</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Supply and Zone Air Temperature</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{1033d63f-df44-4654-8c49-e24ede94fd6f}</UUID>
+                  <VersionUUID>{7216f8c7-48f7-4911-957f-2bb1314ced46}</VersionUUID>
+                  <Name>category</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Baseline</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{20a7cd85-b609-42f6-b352-a72868d929e2}</UUID>
+                  <VersionUUID>{b923aa4c-74ea-409d-a6d7-c09a43ade930}</VersionUUID>
+                  <Name>description</Name>
+                  <ValueType>String</ValueType>
+                  <Value>Check if fans modeled to ASHRAE 90.1 2013 Section G3.1.2.9 requirements. Compare the supply air temperature for each thermal zone against the thermostat setpoints. Throw flag if temperature difference excedes threshold of 20.0F plus the selected tolerance.</Value>
+                </Attribute>
+                <Attribute>
+                  <UUID>{0635ff54-f99d-47ed-9fd3-ad296cc4e143}</UUID>
+                  <VersionUUID>{5208151e-75ed-4341-bf5d-310338e31594}</VersionUUID>
+                  <Name>flag</Name>
+                  <ValueType>String</ValueType>
+                  <Value>For Front_Entry ZN the delta temp between the cooling supply air temp of 55.04 (F) and the minimum thermostat cooling temp of 212.0 (F) is more than 0.5 (F) larger than the expected delta of 20.0 (F)</Value>
+                </Attribute>
+              </Value>
+            </Attribute>
+          </Value>
+        </Attribute>
+      </Value>
+    </Attribute>
+  </Value>
+</Attribute>

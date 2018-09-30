@@ -1,0 +1,47 @@
+{
+  "variables": [
+    {
+      "name": "Month",
+      "data_source": "value",
+      "value": 3
+    },
+    {
+      "name": "Hour",
+      "data_source": "values",
+      "values": [1, 11],
+      "value": 1
+    },
+    {
+      "name": "DayofWeek",
+      "data_source": "value",
+      "value": 0
+    },
+    {
+      "name": "SiteOutdoorAirDrybulbTemperature",
+      "data_source": "values",
+      "values": [7.2, 7.8],
+      "value": 7.8
+    },
+    {
+      "name": "SiteOutdoorAirRelativeHumidity",
+      "data_source": "values",
+      "values": [73, 90],
+      "value": 73
+    },
+    {
+      "name": "ETSInletTemperature",
+      "data_source": "values",
+      "values": [15.4355, 17.565],
+      "distribution": {
+        "minimum": 15,
+        "maximum": 25,
+        "number_of_samples": 10
+      }
+    },
+    {
+      "name": "lpd_average",
+      "data_source": "value",
+      "value": 9.5
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+sudo: true
+language: python
+python:
+  - 3.7-dev
+rvm:
+  - 2.2.4
+before_install:
+  - rvm get stable --auto-dotfiles
+  - rvm install 2.2.4
+  - gem install bundler -v 1.16.1
+install:
+  - pip install -r requirements.txt
+before_script:
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
+  - sleep 3 # give xvfb some time to start
+env:
+  global:
+    - DISPLAY=:0.0
+  matrix:
+    - TOX_ENV=python
+    - TOX_ENV=flake8
+    - TOX_ENV=docs
+script:
+  - tox -e $TOX_ENV
+#  - ./ci/build.sh all
+#after_success:
+#  - ./ci/deploy-artifacts.sh
