@@ -1,3 +1,4 @@
+# /usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 This example CLI file shows how a simple application can be built that reads in all the values

@@ -7,9 +7,7 @@ excpet for the analysis.load_weather_file method. This method and the smoff-one-
 together specify how to parse the weather file.
 
 The second part of this script using seaborn to generate heatmaps of the two responses of
-interest. The plots are stored in a child directory.
-
-Run the example by calling the following:
+interest. The plots are stored in a child directory. Run the example by calling the following:
 
 .. code-block:: bash
 

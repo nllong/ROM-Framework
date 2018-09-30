@@ -7,8 +7,6 @@ random forest reduced order models. The loaded models are then passed through th
 swee-temp-test.json analysis definition file. The analysis definition has few fixed
 covariates and a few covariates with multiple values to run.
 
-To run this example
-
 .. code-block:: bash
 
     python analysis_ex1.py
