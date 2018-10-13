@@ -279,13 +279,19 @@ def validate_dataframe(df, metadata, image_save_dir):
                 else:
                     all_responses[response] = [modeled_name]
 
-        # plot each modeled response invividually
+        # Convert the actual data to watts - only run through each once!
         for model_type, model_data in metadata.items():
             for response in model_data['responses']:
+                if 'Temperature' not in response:
+                    season_df[response] = season_df[response] / 277777.77
+            break
+
+        # plot each modeled response invividually
+        for model_type, model_data in metadata.items():
+            for idx, response in enumerate(model_data['responses']):
                 modeled_name = "Modeled %s %s" % (model_data['moniker'], response)
                 if 'Temperature' not in response:
                     # convert to watts
-                    season_df[response] = season_df[response] / 277777.77
                     season_df[modeled_name] = season_df[modeled_name] / 277777.77
 
                 selected_columns = ['DateTime', response, modeled_name]
