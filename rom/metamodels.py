@@ -24,15 +24,15 @@ class ETSModel:
         """
         Load the model from a pandas pickled dataframe
 
-        :param path_to_models: String, String path to where the pickled models exist
+        :param path_to_models: String, String path to where the pickled models exist # TODO: Fix documetnation
         :param model: String or Int, Name of the resulting ensemble model to return
         :param season: String or Int, Season to analyze
 
         """
-        self.response_name = response_name
+        self.response_name = response_name  
         self.model_file = model_file
         self.scaler_file = scaler_file
-        if os.path.exists(model_file) and os.path.isfile(model_file):
+        if os.path.exists(model_file):
             gc.disable()
             self.model = unpickle_file(model_file)
             gc.enable()
