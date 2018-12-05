@@ -29,7 +29,7 @@ class ETSModel:
         :param season: String or Int, Season to analyze
 
         """
-        self.response_name = response_name  
+        self.response_name = response_name
         self.model_file = model_file
         self.scaler_file = scaler_file
         if os.path.exists(model_file):
