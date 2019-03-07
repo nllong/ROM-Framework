@@ -7,7 +7,7 @@ Reduced Order Modeling Framework
 The reduced order model (ROM) framework was created to build models to use for estimating
 commercial building energy loads. The framework currently supports linear models,
 random forests, and support vector regressions. The framework handles the building,
-evaluation, and validation of the models. During each set of the process, the framework
+evalulation, and validation of the models. During each set of the process, the framework
 exports diagnostic data for the user to evaluate the performance of the reduced
 order models. In addition to building, evaluating, and validating the reduced order models, the framework
 is able to load previously persisted model to be used in third-party applications (e.g. Modelica).
@@ -24,7 +24,11 @@ built ROM to be used to approximate building energy loads.
 Instructions
 ------------
 
-The ROM Framework requires `Python 3 <https://www.python.org/>`_. After installing Python and configuring Python 3, the ROM Framework can be installed from source code. If you are planning on building, evaluating, and validating custom models, then it is preferred to checkout this repository from Github.
+The ROM Framework requires `Python 3 <https://www.python.org/>`_. After installing Python and configuring Python 3,
+the ROM Framework can be installed from source code (recommended) or from `PyPI <https://pypi.python.org/pypi>`_.
+If you are planning on building, evaluating, and validating custom models, then it is preferred to checkout this
+repository from Github. If the use case is to only run prebuilt models, then installing from PyPI is most
+likely sufficient.
 
 Installation from Source
 ========================

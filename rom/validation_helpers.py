@@ -56,7 +56,7 @@ def validation_plot_timeseries(melted_df, filename):
         else:
             ax.set(xlabel='', ylabel='Power (W)')
 
-        # put the labels at an angle since they tend to be too long
+        # Put the labels at an angle since they tend to be too long
         fig.autofmt_xdate()
         fig.savefig(filename)
         fig.clf()
@@ -64,7 +64,7 @@ def validation_plot_timeseries(melted_df, filename):
 
 
 def validation_save_metrics(df, output_dir):
-    # save the model performance data
+    # Save the model performance data
     df.to_csv('%s/metrics.csv' % output_dir, index=False)
     df['disk_size'] = df['disk_size'].astype(float)
     df['ind'] = df.index
@@ -72,7 +72,7 @@ def validation_save_metrics(df, output_dir):
     df['Response'] = df.response
     df['Type'] = df.model_type
 
-    # plot the disk size
+    # Plot the disk size
     with plt.rc_context(dict(sns.axes_style("whitegrid"))):
         f, ax = plt.subplots(figsize=(10, 4))
         newplt = sns.scatterplot(x="ind", y="Disk Size (Log)",
@@ -84,17 +84,17 @@ def validation_save_metrics(df, output_dir):
         newplt.clf()
         plt.clf()
 
-    # plot the load and run times
+    # Plot the load and run times
     table = pd.DataFrame.pivot_table(df,
                                      index=['Type'],
                                      values=['load_time', 'run_time_8760', 'run_time_single'],
                                      aggfunc=np.average)
-    # covert back to a dataframe
+    # Convert back to a dataframe
     table = pd.DataFrame(table.to_records())
     # table['Load Time (Log)'] = np.log(table.load_time)
     with plt.rc_context(dict(sns.axes_style('whitegrid'))):
         fig = plt.figure(figsize=(10, 4))
-        # defaults to the ax in the figure.
+        # Defaults to the ax in the figure.
         ax = sns.barplot(x='Type', y='load_time', data=table)
         ax.set_xlabel('Model Type')
         ax.set_ylabel('Average Time (seconds)')
@@ -110,7 +110,7 @@ def validation_save_metrics(df, output_dir):
     melted_df = pd.melt(table[['Type', 'Run Time - Single', 'Run Time - 8760']], id_vars='Type')
     with plt.rc_context(dict(sns.axes_style('whitegrid'))):
         fig = plt.figure(figsize=(10, 4))
-        # defaults to the ax in the figure.
+        # Defaults to the ax in the figure
         ax = sns.barplot(x="Type", y="value", hue="variable", data=melted_df)
         ax.set_xlabel('Model Type')
         ax.set_ylabel('Average Time (seconds)')
@@ -127,12 +127,12 @@ def validate_dataframe(df, metadata, image_save_dir):
     :param df: Contains the actual and modeled data for various ROMs
     :return:
     """
-    # create some new columns for total energy
+    # Create some new columns for total energy
     df['Total Heating Energy'] = df['HeatingElectricity'] + df['DistrictHeatingHotWaterEnergy']
     df['Total Cooling Energy'] = df['CoolingElectricity'] + df['DistrictCoolingChilledWaterEnergy']
     df['Total HVAC Energy'] = df['Total Heating Energy'] + df['Total Cooling Energy']
 
-    # aggregate the data and break out the cooling and heating totals.
+    # Aggregate the data and break out the cooling and heating totals
     for model_type, model_data in metadata.items():
         for response in model_data['responses']:
             modeled_name = "Modeled %s %s" % (model_data['moniker'], response)
@@ -216,13 +216,13 @@ def validate_dataframe(df, metadata, image_save_dir):
                 )
             )
 
-            # save data to image dir, because that is the only directory that I know of right now
+            # Save data to image dir, because that is the only directory that I know of right now
         save_dict_to_csv(errors, "%s/statistics.csv" % image_save_dir)
 
     # Convert Energy to Watts
     df['Total HVAC Energy'] = df['Total HVAC Energy'] / 277777.77
 
-    # one off plots
+    # One off plots
     melted_df = pd.melt(
         df[['SiteOutdoorAirDrybulbTemperature', 'Total HVAC Energy']],
         id_vars='SiteOutdoorAirDrybulbTemperature',
@@ -235,7 +235,7 @@ def validate_dataframe(df, metadata, image_save_dir):
 
     all_columns = ['SiteOutdoorAirDrybulbTemperature', 'Total HVAC Energy']
     for model_type, model_data in metadata.items():
-        # covert to Watts
+        # Convert to Watts
         df['Total HVAC Energy %s' % model_data['moniker']] = df['Total HVAC Energy %s' % model_data['moniker']] / 277777.77
         all_columns.append('Total HVAC Energy %s' % model_data['moniker'])
         melted_df = pd.melt(
@@ -250,7 +250,7 @@ def validate_dataframe(df, metadata, image_save_dir):
             image_save_dir, model_data['moniker'])
         validation_plot_energy_temp(melted_df, filename)
 
-    # plot energy vs outdoor temperature for all of the responses
+    # Plot energy vs. outdoor temperature for all of the responses
     melted_df = pd.melt(
         df[all_columns],
         id_vars='SiteOutdoorAirDrybulbTemperature',
@@ -261,7 +261,7 @@ def validate_dataframe(df, metadata, image_save_dir):
     filename = '%s/fig_validation_energy_combined_all.png' % image_save_dir
     validation_plot_energy_temp(melted_df, filename)
 
-    # create a subselection of the data, and run some other plots
+    # Create a subselection of the data, and run some other plots
     sub_data = {
         'Swing': df[df["DateTime"].between("2009-03-01 01:00", "2009-03-10 00:00")],
         'Summer': df[df["DateTime"].between("2009-07-01 01:00", "2009-07-10 00:00")],
@@ -269,7 +269,7 @@ def validate_dataframe(df, metadata, image_save_dir):
     }
 
     for season, season_df in sub_data.items():
-        # gather a list of all the responses and the modeled column names
+        # Gather a list of all the responses and the modeled column names
         all_responses = {}
         for model_type, model_data in metadata.items():
             for response in model_data['responses']:
@@ -279,19 +279,13 @@ def validate_dataframe(df, metadata, image_save_dir):
                 else:
                     all_responses[response] = [modeled_name]
 
-        # Convert the actual data to watts - only run through each once!
+        # Plot each modeled response individually
         for model_type, model_data in metadata.items():
             for response in model_data['responses']:
-                if 'Temperature' not in response:
-                    season_df[response] = season_df[response] / 277777.77
-            break
-
-        # plot each modeled response invividually
-        for model_type, model_data in metadata.items():
-            for idx, response in enumerate(model_data['responses']):
                 modeled_name = "Modeled %s %s" % (model_data['moniker'], response)
                 if 'Temperature' not in response:
                     # convert to watts
+                    season_df[response] = season_df[response] / 277777.77
                     season_df[modeled_name] = season_df[modeled_name] / 277777.77
 
                 selected_columns = ['DateTime', response, modeled_name]
@@ -304,7 +298,7 @@ def validate_dataframe(df, metadata, image_save_dir):
                     image_save_dir, season, response, model_data['moniker'])
                 validation_plot_timeseries(melted_df, filename)
 
-        # now plot all the modeled responses together
+        # Now plot all the modeled responses together
         for response, models in all_responses.items():
             selected_columns = ['DateTime', response] + models
             melted_df = pd.melt(season_df[selected_columns],
@@ -316,4 +310,4 @@ def validate_dataframe(df, metadata, image_save_dir):
                 image_save_dir, season, response)
             validation_plot_timeseries(melted_df, filename)
 
-        # plot all the modeled timeseries resutls on a single plot
+        # Plot all the modeled timeseries results on a single plot

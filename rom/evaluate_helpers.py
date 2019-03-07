@@ -13,7 +13,7 @@ sns.set(style="ticks", color_codes=True)
 
 def evaluate_process_cv_results(cv_result_file, response, output_dir):
     if os.path.exists(cv_result_file):
-        # load the cv results
+        # Load the cv results
         print("Reading CV results file: %s" % cv_result_file)
         df = pd.read_csv(cv_result_file)
         df = df.drop('response', 1)
@@ -29,7 +29,7 @@ def evaluate_process_cv_results(cv_result_file, response, output_dir):
         newplt.savefig('%s/fig_cv_%s_pairplot.png' % (output_dir, response))
         plt.clf()
 
-        # plot specific xy plots
+        # Plot specific xy plots
         f, ax = plt.subplots(figsize=(6.5, 6.5))
         sns.despine(f, left=True, bottom=True)
         newplt = sns.jointplot(
@@ -38,7 +38,7 @@ def evaluate_process_cv_results(cv_result_file, response, output_dir):
         newplt.savefig('%s/fig_cv_%s_time_v_score_hex.png' % (output_dir, response))
         plt.clf()
 
-        # plot specific xy plots -- darkgrid background
+        # Plot specific xy plots -- darkgrid background
         with plt.rc_context(dict(sns.axes_style("whitegrid"))):
             f, ax = plt.subplots(figsize=(6.5, 6.5))
             newplt = sns.scatterplot(x=df['mean_fit_time'], y=df['mean_test_score'],
@@ -56,12 +56,12 @@ def evaluate_process_model_results(model_results_file, output_dir):
         # If best exists, then use that, otherwise, just use what is in the column
         if 'best' in df.model_type.unique():
             df = df[df.model_type == 'best']
-        # if there are two similar columns then remove one of them and update the name of the remaining item
+        # If there are two similar columns then remove one of them and update the name of the remaining item
         if all(x in ['ETSHeatingOutletTemperature', 'ETSCoolingOutletTemperature'] for x in df.name.unique()):
             df = df[df.name != 'ETSCoolingOutletTemperature']
             df.loc[df.name == 'ETSHeatingOutletTemperature', 'name'] = 'ETSOutletTemperature'
 
-        # melt the data for plot purposes
+        # Melt the data for plot purposes
         melted_df = pd.melt(
             df[['name', 'time_to_build', 'time_to_cv']],
             id_vars='name',
@@ -69,9 +69,9 @@ def evaluate_process_model_results(model_results_file, output_dir):
             value_name='time'
         )
 
-        # plot the data
+        # Plot the data
         fig = plt.figure(figsize=(8, 3), dpi=100)
-        # defaults to the ax in the figure.
+        # Defaults to the ax in the figure
         ax = sns.barplot(x='time', y='name', hue='model', data=melted_df, ci=None)
         ax.set_xlabel('Time (seconds)')
         ax.set_ylabel('')
@@ -82,7 +82,7 @@ def evaluate_process_model_results(model_results_file, output_dir):
 
 
 def evaluate_process_all_model_results(data, validation_dir):
-    # for unique_value in data['name'].unique():
+    # For unique_value in data['name'].unique():
     sub_df = data[data['model_type'] == 'best'].sort_values(by=['name', 'model_method'])
 
     data.to_csv('%s/all_model_results.csv' % validation_dir, index=False)

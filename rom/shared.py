@@ -21,7 +21,6 @@ def pickle_file(obj, filename, gzipfile=False):
     :param obj:
     :param filename: Filename, without the extension
     :param gzipfile:
-    :return:
     """
     if gzipfile:
         gfile = gzip.open('%s.pklzip' % filename, 'wb')
@@ -58,7 +57,6 @@ def zipdir(path, ziph, extension=None):
     :param path:
     :param ziph:
     :param extension:
-    :return:
     """
     # ziph is zipfile handle
     for root, dirs, files in os.walk(path):

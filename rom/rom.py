@@ -9,8 +9,6 @@ the arguments to this file.
 
 .. moduleauthor:: Nicholas Long (nicholas.l.long@colorado.edu, nicholas.lee.long@gmail.com)
 """
-
-
 import argparse
 import os
 import shutil
@@ -54,6 +52,8 @@ available_models = parser.add_argument("-m", "--model-type", nargs='*',
                                        default=['LinearModel', 'RandomForest', 'SVR'],
                                        help="Type of model to build")
 
+# TODO: FA - Can delete available_models variable
+
 # Run file options
 parser.add_argument('-ad', '--analysis-definition', help='Definition of an analysis to run using the ROMs', default=None)
 parser.add_argument('-w', '--weather', help='Weather file to run analysis-definition', default=None)
@@ -74,7 +74,7 @@ if metamodel.set_analysis(args.analysis_moniker):
                 print("Downsample argument must exist in the downsample list in the JSON")
                 exit(1)
 
-            # check if the model name has any downsampling override values
+            # Check if the model name has any downsampling override values
             algo_options = metamodel.algorithm_options.get(model_name, {})
             algo_options = Metamodels.resolve_algorithm_options(algo_options)
             downsamples = metamodel.downsamples
@@ -111,8 +111,8 @@ if metamodel.set_analysis(args.analysis_moniker):
                     model_results_file = '%s/model_results.csv' % base_dir_ds
                     evaluate_process_model_results(model_results_file, output_dir)
 
-                    # if this is the first file, then read it into the all_model_results to
-                    # create a dataframe to add all the model results together
+                    # If this is the first file, then read it into the all_model_results to
+                    # create a DataFrame to add all the model results together
                     if str(downsample) not in all_model_results.keys():
                         if os.path.exists(model_results_file):
                             all_model_results[str(downsample)] = pd.read_csv(model_results_file)
@@ -133,12 +133,12 @@ if metamodel.set_analysis(args.analysis_moniker):
                         cv_result_file = '%s/cv_results_%s.csv' % (base_dir_ds, response)
                         evaluate_process_cv_results(cv_result_file, response, output_dir)
 
-        # Below are some options that reqire all the models to be processed before running
+        # Below are some options that require all the models to be processed before running
         if args.action == 'evaluate':
-            # save any combined datasets for the downsampled instance
+            # Save any combined datasets for the downsampled instance
             for index, data in all_model_results.items():
                 if data.shape[0] > 0:
-                    # combine all the model results together and evaluate the results
+                    # Combine all the model results together and evaluate the results
                     validation_dir = "output/%s_%s/ValidationData/evaluation_images" % (
                         args.analysis_moniker, index
                     )
@@ -148,7 +148,7 @@ if metamodel.set_analysis(args.analysis_moniker):
 
                     evaluate_process_all_model_results(data, validation_dir)
     elif args.action == 'validate':
-        # validate requires iterating over the downsamples before the models
+        # Validate requires iterating over the downsamples before the models
         if args.downsample and args.downsample not in metamodel.downsamples:
             print("Downsample argument must exist in the downsample list in the JSON")
             exit(1)
@@ -185,7 +185,7 @@ if metamodel.set_analysis(args.analysis_moniker):
 
             models = [(m, NAMEMAP[m]) for m in args.model_type]
 
-            # dict to store the load time results
+            # Dict to store the load time results
             metrics = {'response': [], 'model_type': [], 'downsample': [], 'load_time': [],
                        'disk_size': [], 'run_time_single': [], 'run_time_8760': []}
             for model_type in models:
@@ -205,7 +205,7 @@ if metamodel.set_analysis(args.analysis_moniker):
                         validation_df[var_name] = metamodel.yhat(response, validation_df)
                         metrics['run_time_8760'].append(time.time() - start)
 
-                        # grab a single row for performance benchmarking
+                        # Grab a single row for performance benchmarking
                         single_row = validation_df.iloc[[5]]
                         start = time.time()
                         metamodel.yhat(response, single_row)
@@ -213,10 +213,10 @@ if metamodel.set_analysis(args.analysis_moniker):
                 else:
                     print("Persisted models for %s:%s do not exist" % (model_type[0], downsample))
 
-            # save the model performance data
+            # Save the model performance data
             validation_save_metrics(pd.DataFrame.from_dict(metrics), output_dir)
 
-            # run bunch of validations on the loaded models
+            # Run bunch of validations on the loaded models
             validate_dataframe(validation_df, metadata, output_dir)
     elif args.action == 'run':
         print("Running")
@@ -229,12 +229,12 @@ if metamodel.set_analysis(args.analysis_moniker):
 
         analysis = AnalysisDefinition(args.analysis_definition)
 
-        # load the weather data if it exists
+        # Load the weather data if it exists
         if args.weather:
             analysis.load_weather_file(args.weather)
         data = analysis.as_dataframe()
 
-        # get a list of models with short names
+        # Get a list of models with short names
         metadata = {}
         models = [(m, NAMEMAP[m]) for m in args.model_type]
         for model in models:

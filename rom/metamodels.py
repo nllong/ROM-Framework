@@ -22,17 +22,17 @@ class DuplicateColumnName(Exception):
 class ETSModel:
     def __init__(self, response_name, model_file, scaler_file=None):
         """
-        Load the model from a pandas pickled dataframe
-
-        :param path_to_models: String, String path to where the pickled models exist # TODO: Fix documetnation
-        :param model: String or Int, Name of the resulting ensemble model to return
-        :param season: String or Int, Season to analyze
-
+        Load the model from a pandas pickled dataframe.
+        
+        :param response_name: str, The response to load (e.g. ETSOutletTemperature).
+        :param model_file: str, The pickled model file path.
+        :param scaler_file: str, The scaler file path.
         """
+
         self.response_name = response_name
         self.model_file = model_file
         self.scaler_file = scaler_file
-        if os.path.exists(model_file):
+        if os.path.exists(model_file) and os.path.isfile(model_file):
             gc.disable()
             self.model = unpickle_file(model_file)
             gc.enable()
@@ -48,15 +48,15 @@ class ETSModel:
 
     def yhat(self, data):
         """
-        Pass in the data as an array of array. The format is dependent on the model, but it must be an
-        array of values to predict.
-
+        Run predict on supplied data.
+        
+        :param data: array, Values to predict on. The format is dependent on the model.
         e.g. [[month, hour, dayofweek, t_outdoor, rh, inlet_temp]]
-
-        :param data: array of data to estimate
-        :return:
+        # TODO: FA - pandas DataFrame
+        :return: array, Model predictions.
         """
-        # Transform the feature data
+
+        # Transform the feature data if scaler file exists
         if self.scalers:
             data[data.columns] = self.scalers['features'].transform(data[data.columns])
 
@@ -69,14 +69,13 @@ class ETSModel:
         return predictions
 
     def __str__(self):
+        """
+        Create string representation of model file.
+        """
         return self.model_file
 
 
 class Metamodels(object):
-    """
-    Parse the file that defines the ROMs that have been created.
-    """
-
     def __init__(self, filename):
         self.filename = None
         self.file = None
@@ -86,6 +85,11 @@ class Metamodels(object):
         self.rom_type = None
 
     def load_file(self, filename):
+        """
+        Parse the file that defines the ROMs that have been created.
+
+        :param filename: str, The JSON ROM file path.
+        """
         if not os.path.exists(filename):
             raise Exception("File does not exist: %s" % filename)
 
@@ -96,8 +100,8 @@ class Metamodels(object):
         """
         Set the index of the analysis based on the ID or the name of the analysis.
 
-        :param moniker: str, Analysis ID or Name
-        :return: boolean
+        :param moniker: str, Analysis ID or name.
+        :return: bool
         """
         for idx, analysis in enumerate(self.file):
             if analysis['name'] == moniker:
@@ -113,40 +117,41 @@ class Metamodels(object):
         Return the analysis ID from the metamodels.json file that was passed in. This should only
         be used to get the data out of the downloaded results from OpenStudio Server.
 
-        :return: str, ID
+        :return: str, Analysis ID.
         """
         return self.file[self.set_i]['results_directory']
 
     @property
     def analysis_name(self):
         """
-        Return the analysis name from the metamodels.json file that was passed in
+        Return the analysis name from the metamodels.json file that was passed in.
 
-        :return: str, name
+        :return: str, Analysis name.
         """
         return self.file[self.set_i]['name']
 
     @property
     def downsamples(self):
         """
-        Return the downsamples list
+        Return the downsamples list from the metamodels.json file that was passed in.
 
-        :return: list, downsamples
+        :return: list, Downsamples.
         """
         return self.file[self.set_i].get('downsamples', None)
 
     @property
     def algorithm_options(self):
         """
-        Return the algorithm options from the JSON data
+        Return the algorithm options from the metamodels.json file that was passed in.
 
-        :return: dict, algorithm options
+        :return: dict, Algorithm options.
         """
 
         def _remove_comments(data):
             """
-            This method recursively goes through a dict and removes any '_comments' keys
-            :param data:
+            This method recursively goes through a dict and removes any '_comments' keys.
+
+            :param data: dict, Data.
             :return:
             """
             for k, v in data.items():
@@ -165,26 +170,28 @@ class Metamodels(object):
     @property
     def validation_id(self):
         """
-        Return the validation id
+        Return the validation ID from the metamodels.json file that was passed in.
 
-        :return: str, name
+        :return: str, Validation ID.
         """
         return self.file[self.set_i]['validation_datapoint_id']
 
     def model_paths(self, model_type, response, downsample=None, root_path=None):
         """
-        Return the paths to the model to be loaded. This includes the scalar value if the
+        Return the paths to the model to be loaded. This includes the scaler value if the
         model requires the data to scale the input.
 
         If the root path is provided, then that path will take precedent over the downsample
         and no values passed format.
 
-        :param model_type: str, The type of reduced order model (e.g. RandomForest)
-        :param response: str, The response (or model) to load (e.g. ETSOutletTemperature)
+        :param model_type: str, The type of reduced order model (e.g. RandomForest).
+        :param response: str, The response (or model) to load (e.g. ETSOutletTemperature).
         :param downsample: float, The downsample value to load.  Defaults to None.
-        :param root_path: If used, then it is the root path of the models. The models will be in subdirectories for each of the model_types.
-        :return: list, [model_path, scaler_path]
+        :param root_path: If used, then it is the root path of the models. The models will be in subdirectories for each
+        of the model_types.
+        :return: list, [model_path, scaler_path].
         """
+
         if root_path:
             model_path = "%s/%s/%s.pkl" % (root_path, model_type, response)
             scaler_path = "%s/%s/scalers.pkl" % (root_path, model_type)
@@ -200,7 +207,16 @@ class Metamodels(object):
         return model_path, scaler_path
 
     def models_exist(self, model_type, models_to_load=[], downsample=None, root_path=None):
-        # check if the models exist, if not, then return false
+        """
+        Check if the models exist, if not, then return false.
+
+        :param model_type: str, The type of reduced order model (e.g. RandomForest).
+        :param models_to_load: list, Name of responses to load.
+        :param downsample: float, The downsample value to load.  Defaults to None.
+        :param root_path: If used, then it is the root path of the models. The models will be in subdirectories for each
+        of the model_types.
+        :return: bool
+        """
         self.rom_type = model_type
 
         if not models_to_load:
@@ -218,13 +234,12 @@ class Metamodels(object):
 
     def load_models(self, model_type, models_to_load=[], downsample=None, root_path=None):
         """
-        Load in the metamodels/generators
+        Load in the metamodels/generators.
 
-        :param model_type: str, type of model (e.g. RandomForest, LinearModel, etc)
-        :param models_to_load: list, name of responses to load
-        :param downsample: float, percent of downsample for loading the correct model
-        :return: dict, { model, response, load time, disk size]
-
+        :param model_type: str, The type of reduced order model (e.g. RandomForest).
+        :param models_to_load: list, Name of responses to load.
+        :param downsample: float, The downsample value to load.  Defaults to None.
+        :return: dict, Metrics {response, model type, downsample, load time, disk size}.
         """
         self.rom_type = model_type
 
@@ -270,15 +285,15 @@ class Metamodels(object):
         the newly predicted data. If prepend_name is set to 'abc', then the new column would be
         'abc_HeatingElectricity'.
 
-        :param data:
-        :param prepend_name: str, name to prepend to the beginning of each of the response names
-        :param response_names: list, responses to evaluate. If None, then defaults to all the available_response_names.
-        :return:
+        :param data: pandas DataFrame, Values to predict on.
+        :param prepend_name: str, Name to prepend to the beginning of each of the response names.
+        :param response_names: list, Responses to evaluate. If None, then defaults to all the available_response_names.
+        :return: pandas DataFrame, Original data with added predictions.
         """
         if not response_names:
             response_names = self.available_response_names(self.rom_type)
 
-        # verify that the prepend_name is not going to raise an exception
+        # Verify that the prepend_name is not going to raise an exception
         colnames = data.columns.values
         for response_name in response_names:
             if f'{prepend_name}_{response_name}' in colnames:
@@ -291,19 +306,19 @@ class Metamodels(object):
 
     def yhat(self, response_name, data):
         """
-        Run predict on the selected model (response) with the supplied data
+        Run predict on the selected model (response) with the supplied data.
 
-        :param response_name: Name of the model to evaluate
-        :param data: pandas DataFrame
-        :return: pandas DataFrame
+        :param response_name: str, Name of the model to evaluate.
+        :param data: pandas DataFrame, Values to predict on.
+        :return: pandas DataFrame, Predictions.
         :raises: Exception: Model does not have the response.
         """
+
         if response_name not in self.available_response_names(self.rom_type):
             raise Exception("Model does not have the response '%s'" % response_name)
 
-        # verify that the covariates are defined in the dataframe, if not, then remove them before
+        # Verify that the covariates are defined in the DataFrame, if not, then remove them before
         # calling the yhat method
-
         extra_columns_in_df = list(
             set(data.columns.values) - set(self.covariate_names(self.rom_type)))
         missing_data_in_df = list(
@@ -317,7 +332,7 @@ class Metamodels(object):
             print("Error: The following columns are missing in the DataFrame")
             raise Exception("Need to define %s in DataFrame for model" % missing_data_in_df)
 
-        # typecast the columns before running the analysis
+        # Typecast the columns before running the analysis
         data[self.covariate_types(self.rom_type)['float']] = data[
             self.covariate_types(self.rom_type)['float']
         ].astype(float)
@@ -329,7 +344,7 @@ class Metamodels(object):
         # imperative when predicting.
         data = data[self.covariate_names(self.rom_type)]
 
-        # transform cyclical columns
+        # Transform cyclical columns
         for cv in self.covariates(self.rom_type):
             if cv.get('algorithm_options', None):
                 if cv['algorithm_options'].get(self.rom_type, None):
@@ -347,6 +362,13 @@ class Metamodels(object):
         return self.models[response_name].yhat(data)
 
     def save_csv(self, data, csv_name):
+        """
+        Save pandas DataFrame in CSV format.
+
+        :param data: pandas DataFrame, Data to be exported.
+        :param csv_name: str, Name of the CSV file.
+        :return:
+        """
         lookup_table_dir = 'output/%s/%s/lookup_tables/' % (
             self.analysis_name,
             self.rom_type
@@ -364,16 +386,18 @@ class Metamodels(object):
         """
         Generate 2D (time, first) CSVs based on the model loaded and the two dimensions.
 
-        The rows are the datetimes as defined in the data (dataframe)
+        The rows are the datetimes as defined in the data (DataFrame).
 
-        :param data: pandas dataframe
-        :param first_dimension: str, the column heading variable
-        :param prepend_file_id: str, special variable to prepend to the file name
+        :param data: pandas DataFrame
+        :param first_dimension: str, The column heading variable.
+        :param file_prepend: str, Special variable to prepend to the file name.
         :return: None
+
+        # TODO: FA - save_figure can be deleted.
         """
 
-        # create the lookup table directory - probably want to make this a base class for all
-        # python scripts that use the filestructure to store the data
+        # Create the lookup table directory - probably want to make this a base class for all
+        # python scripts that use the filestructure to store the data.
         lookup_table_dir = 'output/%s/%s/lookup_tables/' % (
             self.analysis_name,
             self.rom_type
@@ -391,7 +415,7 @@ class Metamodels(object):
                 response
             )
 
-            # Save the data times in a new dataframe (will be in order)
+            # Save the data times in a new DataFrame (will be in order).
             save_df = pd.DataFrame.from_dict({'datetime': data['datetime'].unique()})
             for unique_value in data[first_dimension].unique():
                 new_df = data[data[first_dimension] == unique_value]
@@ -405,18 +429,18 @@ class Metamodels(object):
         Generate 3D (time, first, second) CSVs based on the model loaded and the two dimensions.
         The second dimension becomes individual files.
 
-        The rows are the datetimes as defined in the data (dataframe)
+        The rows are the datetimes as defined in the data (DataFrame)
 
-        :param data: pandas dataframe
-        :param first_dimension: str, the column heading variable
-        :param second_dimension: str, the values that will be reported in the table
-        :param second_dimension_short_name: str, short display name for second variable (for filename)
-        :param file_prepend: str, special variable to prepend to the file name
+        :param data: pandas DataFrame
+        :param first_dimension: str, The column heading variable.
+        :param second_dimension: str, The values that will be reported in the table.
+        :param second_dimension_short_name: str, Short display name for second variable (for filename).
+        :param file_prepend: str, Special variable to prepend to the file name.
         :return: None
         """
 
-        # create the lookup table directory - probably want to make this a base class for all
-        # python scripts that use the filestructure to store the data
+        # Create the lookup table directory - probably want to make this a base class for all
+        # python scripts that use the filestructure to store the data.
         lookup_table_dir = 'output/%s/%s/lookup_tables/' % (
             self.analysis_name,
             self.rom_type
@@ -455,7 +479,7 @@ class Metamodels(object):
                         second_dimension_short_name,
                         unique_value)
 
-                    # this is a bit cheezy right now, load in the file and process again
+                    # This is a bit cheezy right now, load in the file and process again
                     df_heatmap = pd.read_csv(file_name, header=0)
 
                     # Remove the datetime column before converting the column headers to rounded floats
@@ -472,6 +496,11 @@ class Metamodels(object):
                     plt.close('all')
 
     def model(self, response_name):
+        """
+        Return model for specific response.
+
+        :param response_name: str, Name of model response.
+        """
         if response_name not in self.available_response_names(self.rom_type):
             raise Exception("Model does not have the response '%s'" % response_name)
 
@@ -479,10 +508,20 @@ class Metamodels(object):
 
     @property
     def loaded_models(self):
+        """
+        Return the list of available keys in the models dictionary.
+
+        :return: list, Responses.
+        """
         return self.models.keys()
 
     @property
     def analysis(self):
+        """
+        Return the ROM analysis file.
+
+        :return: Parsed JSON ROM file.
+        """
         if self.set_i is None:
             raise Exception(
                 "Attempting to access analysis without setting. Run analysis.set_analysis(<id>)"
@@ -491,12 +530,19 @@ class Metamodels(object):
         return self.file[self.set_i]
 
     def covariates(self, model_type):
+        """
+        Return dictionary of covariates for specified model type.
+
+        :param model_type: str, The type of reduced order model (e.g. RandomForest).
+        :return: dict, Covariates.
+        """
+
         if self.set_i is None:
             raise Exception(
                 "Attempting to access analysis without setting. Run analysis.set_analysis(<id>)"
             )
 
-        # only return the covariates that don't have ignore true for the type of model
+        # Only return the covariates that don't have ignore true for the type of model
         results = []
         for cv in self.file[self.set_i]['covariates']:
             if not cv.get('algorithm_options', {}).get(model_type, {}).get('ignore', False):
@@ -505,12 +551,19 @@ class Metamodels(object):
         return results
 
     def covariate_types(self, model_type):
+        """
+        Return dictionary of covariate types.
+
+        :param model_type: str, The type of reduced order model (e.g. RandomForest).
+        :return: dict, {'type':['covariate name']}.
+        """
+
         if self.set_i is None:
             raise Exception(
                 "Attempting to access analysis without setting. Run analysis.set_analysis(<id>)"
             )
 
-        # group the datetypes by column
+        # Group the datetypes by column
         data_types = {
             'float': [],
             'str': [],
@@ -523,10 +576,11 @@ class Metamodels(object):
 
     def covariate_names(self, model_type):
         """
-        Returns a list of covariates. The order in the JSON file must be the order that is
-        passed into the metamodel, otherwise the data will not make sense.
+        Return a list of covariate names. The order in the JSON file must be the order that is passed into the
+        metamodel, otherwise the data will not make sense.
 
-        :return: list
+        :param model_type: str, The type of reduced order model (e.g. RandomForest).
+        :return: list, Covariate names.
         """
 
         if self.set_i is None:
@@ -537,6 +591,13 @@ class Metamodels(object):
         return [cv['name'] for cv in self.covariates(model_type)]
 
     def available_response_names(self, _model_type):
+        """
+        Return a list of response names.
+
+        :param _model_type: str, The type of reduced order model (e.g. RandomForest).
+        :return: list, Response names.
+        """
+
         if self.set_i is None:
             raise Exception(
                 "Attempting to access analysis without setting. Run analysis.set_analysis(<id>)"
@@ -546,7 +607,6 @@ class Metamodels(object):
 
     @classmethod
     def resolve_algorithm_options(cls, algorithm_options):
-
         for k, v in algorithm_options.items():
             if isinstance(v, dict):
                 algorithm_options[k] = Metamodels.resolve_algorithm_options(v)
@@ -554,5 +614,4 @@ class Metamodels(object):
                 # remove eval() from string in file and then call it
                 string_value = re.search('eval\((.*)\)', v).groups()[0]
                 algorithm_options[k] = eval(string_value)
-
         return algorithm_options
