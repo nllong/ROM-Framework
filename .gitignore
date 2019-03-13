@@ -13,6 +13,8 @@ data/Gemfile.lock
 data/*/simulation_results.csv
 data/*/*/data_point/
 data/**/data_point.zip
+data/.bundle
+data/gems
 .ipynb_checkpoints
 /output
 ROM_Framework.egg-info/
