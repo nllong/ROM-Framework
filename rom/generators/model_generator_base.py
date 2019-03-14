@@ -165,7 +165,7 @@ class ModelGeneratorBase(object):
             # Constrain to minute precision to make this method much faster
             validate_xy['DateTime'] = validate_xy['DateTime'].astype('datetime64[m]')
 
-            dataset = dataset[dataset['_id'] != metamodel.validation_id]
+            dataset = dataset[dataset['id'] != metamodel.validation_id]
         else:
             raise Exception(
                 "Validation id does not exist in dataframe. ID was %s" % metamodel.validation_id)
