@@ -155,9 +155,9 @@ class ModelGeneratorBase(object):
         :return: dataframes, dataframe: 1) dataset with removed validation data, 2) validation data
         """
         print("Initial dataset size is %s" % len(dataset))
-        if metamodel.validation_id and metamodel.validation_id in dataset['_id'].unique():
+        if metamodel.validation_id and metamodel.validation_id in dataset['id'].unique():
             print('Extracting validation dataset and converting to date time')
-            validate_xy = dataset[dataset['_id'] == metamodel.validation_id]
+            validate_xy = dataset[dataset['id'] == metamodel.validation_id]
 
             # Covert the validation dataset datetime to actual datetime objects
             # validate_xy['DateTime'] = pd.to_datetime(dataset['DateTime'])
