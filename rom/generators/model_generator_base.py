@@ -17,13 +17,11 @@ from scipy import stats
 from scipy.stats import spearmanr, pearsonr
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+
 from ..shared import apply_cyclic_transform, pickle_file
 
 
 class ModelGeneratorBase(object):
-
-    ModelGeneratorBase('id', None, a=2213, b="hello", downsample=0.10)
-
     def __init__(self, analysis_id, random_seed=None, **kwargs):
         """
         Base class for generating ROMs
