@@ -1,6 +1,7 @@
 .idea
 *.pyc
 *.pkl
+.DS_Store
 .tox
 .python-version
 python/.python-version
@@ -21,3 +22,6 @@ ROM_Framework.egg-info/
 /build
 /dist
 docs/build
+
+# do not commit right now
+data/smoff_sweep_v2
