@@ -44,7 +44,156 @@ if options[:download] && !options[:analysis_id]
   exit
 end
 
-def post_process_analysis_id(analysis_id)
+# These are hard coded for now. Ideally, this would be a passed file.
+results_metadata = [
+    {
+        file: 'variables.json',
+        data: [
+            {level_1: '_id', rename_to: 'id', order: 1},
+            {level_1: 'run_start_time', order: 1},
+            {level_1: 'run_end_time', order: 2}
+        ]
+    },
+    {
+        file: 'results.json',
+        data: [
+            {
+                level_1: 'ambient_loop_prototype_building_by_location',
+                level_2: 'building_type',
+                rename_to: '', # if there is no rename_to, then the name is set to the key
+                order: 1 # if there are duplicates, then the fields will be sorted alphabetically
+            },
+            {
+                level_1: 'ambient_loop_temperature_setpoint',
+                level_2: 'design_delta',
+                rename_to: '',
+                order: 1
+            },
+            {
+                level_1: 'ambient_loop_temperature_setpoint',
+                level_2: 'setpoint_temperature',
+                rename_to: '',
+                order: 1
+            },
+            {
+                level_1: 'internal_loads_multiplier',
+                level_2: 'lpd_multiplier',
+                rename_to: '',
+                order: 1
+            },
+            {
+                level_1: 'internal_loads_multiplier',
+                level_2: 'epd_multiplier',
+                rename_to: '',
+                order: 1
+            },
+            {
+                level_1: 'internal_loads_multiplier',
+                level_2: 'lpd_average',
+                rename_to: '',
+                order: 1
+            },
+            {
+                level_1: 'internal_loads_multiplier',
+                level_2: 'epd_average',
+                rename_to: '',
+                order: 1
+            },
+            {
+                level_1: 'set_window_to_wall_ratio',
+                level_2: 'wwr',
+                rename_to: 'wwr',
+                order: 1
+            },
+            {
+                level_1: 'set_roof_insulation_r_value',
+                level_2: 'roof_r',
+                rename_to: 'roof.r_value',
+                order: 1
+            },
+            {
+                level_1: 'set_exterior_wall_insulation_r_value',
+                level_2: 'wall_r',
+                rename_to: 'wall.r_value',
+                order: 1
+            },
+            {
+                level_1: 'set_heat_pump_heating_coil_rated_cop',
+                level_2: 'heat_cop',
+                rename_to: 'heat_pump.heating_cop',
+                order: 1
+            },
+            {
+                level_1: 'set_heat_pump_cooling_coil_rated_cop',
+                level_2: 'cool_cop',
+                rename_to: 'heat_pump.cooling_cop',
+                order: 1
+            },
+            {
+                level_1: 'set_schedule_profile_start_end_times',
+                level_2: 'new_start',
+                rename_to: 'schedule.start',
+                order: 1
+            },
+            {
+                level_1: 'set_schedule_profile_start_end_times',
+                level_2: 'new_end',
+                rename_to: 'schedule.end',
+                order: 1
+            },
+            {
+                level_1: 'openstudio_results',
+                level_2: 'annual_peak_electric_demand',
+                rename_to: '',
+                order: 9
+            },
+            {
+                level_1: 'openstudio_results',
+                level_2: 'district_cooling_ip',
+                rename_to: '',
+                order: 9
+            },
+            {
+                level_1: 'openstudio_results',
+                level_2: 'district_heating_ip',
+                rename_to: '',
+                order: 9
+            },
+            {
+                level_1: 'openstudio_results',
+                level_2: 'electricity_ip',
+                rename_to: '',
+                order: 9
+            },
+            {
+                level_1: 'openstudio_results',
+                level_2: 'eui',
+                rename_to: '',
+                order: 9
+            },
+            {
+                level_1: 'openstudio_results',
+                level_2: 'total_site_eui',
+                rename_to: '',
+                order: 9
+            },
+            {
+                level_1: 'openstudio_results',
+                level_2: 'unmet_hours_during_occupied_cooling',
+                rename_to: '',
+                order: 9
+            },
+            {
+                level_1: 'openstudio_results',
+                level_2: 'unmet_hours_during_occupied_heating',
+                rename_to: '',
+                order: 9
+            },
+        ]
+    }
+]
+
+def post_process_analysis_id(analysis_id, results_metadata)
   save_dir = analysis_id
   FileUtils.mkdir_p save_dir
   # Go through the directories and update the reports to add in the last column of data.
@@ -57,29 +206,26 @@ def post_process_analysis_id(analysis_id)
       new_header = []
       new_data = []
 
-      json_file = "#{dir}/variables.json"
-      # add in the variables JSON
-      if File.exist? json_file
-        json = JSON.parse(File.read(json_file))
-        json.keys.each do |key|
-          next if ['name', 'status', 'data_point_uuid', 'status_message', 'internal_loads_multiplier.epd_multiplier', 'internal_loads_multiplier.lpd_multiplier'].include? key
-          new_header << key
-          new_data << json[key]
-        end
-      end
+      results_metadata.each do |file|
+        if File.exist? "#{dir}/#{file[:file]}"
+          json = JSON.parse(File.read("#{dir}/#{file[:file]}"))
+          metadata = file[:data].sort_by {|a| [a['order'], a['rename_to'], a['level_1'], a['level_2']]}
 
-      json_file = "#{dir}/results.json"
-      if File.exist? json_file
-        json = JSON.parse(File.read(json_file))
-        json.keys.each do |measure_name|
-          if ['internal_loads_multiplier'].include? measure_name
-            new_header << 'lpd_average'
-            new_header << 'epd_average'
-            new_header << 'ppl_average'
+          metadata.each do |metadatum|
+            # calculate the field name
+            if metadatum[:rename_to] && !metadatum[:rename_to].empty?
+              new_header << metadatum[:rename_to]
+            elsif metadatum[:level_2] && !metadatum[:level_2].empty?
+              new_header << "#{metadatum[:level_1]}.#{metadatum[:level_2]}"
+            else
+              new_header << metadatum[:level_1]
+            end
 
-            new_data << json[measure_name]['lpd_average']
-            new_data << json[measure_name]['epd_average']
-            new_data << json[measure_name]['ppl_average']
+            if metadatum[:level_2] && !metadatum[:level_2].empty?
+              new_data << json[metadatum[:level_1]][metadatum[:level_2]]
+            else
+              new_data << json[metadatum[:level_1]]
+            end
           end
         end
       end
@@ -181,9 +327,9 @@ if options[:download]
     base_dir = options[:rename_to].nil? ? options[:analysis_id] : options[:rename_to]
     puts base_dir
     if Dir.exist? base_dir
-        raise "Directory exists, remove first or change/add rename_to"
+      raise "Directory exists, remove first or change/add rename_to"
     else
-        Dir.mkdir base_dir
+      Dir.mkdir base_dir
     end
 
     puts "Downloading results for analysis id: #{options[:analysis_id]}"
@@ -223,7 +369,7 @@ if options[:post_process]
 
     Dir["#{File.dirname(__FILE__)}/*"].select {|f| File.directory? f}.each do |dir|
       next if dir =~ /single_simulations/
-      post_process_analysis_id(dir)
+      post_process_analysis_id(dir, results_metadata)
     end
   end
 end
