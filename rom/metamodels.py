@@ -23,7 +23,7 @@ class ETSModel:
     def __init__(self, response_name, model_file, scaler_file=None):
         """
         Load the model from a pandas pickled dataframe.
-        
+
         :param response_name: str, The response to load (e.g. ETSOutletTemperature).
         :param model_file: str, The pickled model file path.
         :param scaler_file: str, The scaler file path.
@@ -49,10 +49,9 @@ class ETSModel:
     def yhat(self, data):
         """
         Run predict on supplied data.
-        
+
         :param data: array, Values to predict on. The format is dependent on the model.
         e.g. [[month, hour, dayofweek, t_outdoor, rh, inlet_temp]]
-        # TODO: FA - pandas DataFrame
         :return: array, Model predictions.
         """
 
@@ -382,7 +381,7 @@ class Metamodels(object):
 
         data.to_csv(file_name, index=False)
 
-    def save_2d_csvs(self, data, first_dimension, file_prepend, save_figure=False):
+    def save_2d_csvs(self, data, first_dimension, file_prepend):
         """
         Generate 2D (time, first) CSVs based on the model loaded and the two dimensions.
 
@@ -392,8 +391,6 @@ class Metamodels(object):
         :param first_dimension: str, The column heading variable.
         :param file_prepend: str, Special variable to prepend to the file name.
         :return: None
-
-        # TODO: FA - save_figure can be deleted.
         """
 
         # Create the lookup table directory - probably want to make this a base class for all

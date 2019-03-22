@@ -47,15 +47,14 @@ parser = argparse.ArgumentParser()
 parser.add_argument('action', default=None, choices=['build', 'evaluate', 'validate', 'run'])
 parser.add_argument('-f', '--file', help='Metadata file to use', default='metamodels.json')
 parser.add_argument('-a', '--analysis-moniker', help='Name of the Analysis Model', required=True)
-available_models = parser.add_argument("-m", "--model-type", nargs='*',
-                                       choices=['LinearModel', 'RandomForest', 'SVR'],
-                                       default=['LinearModel', 'RandomForest', 'SVR'],
-                                       help="Type of model to build")
-
-# TODO: FA - Can delete available_models variable
+parser.add_argument('-m', '--model-type', nargs='*',
+                    choices=['LinearModel', 'RandomForest', 'SVR'],
+                    default=['LinearModel', 'RandomForest', 'SVR'],
+                    help='Type of model to build')
 
 # Run file options
-parser.add_argument('-ad', '--analysis-definition', help='Definition of an analysis to run using the ROMs', default=None)
+parser.add_argument('-ad', '--analysis-definition',
+                    help='Definition of an analysis to run using the ROMs', default=None)
 parser.add_argument('-w', '--weather', help='Weather file to run analysis-definition', default=None)
 parser.add_argument('-o', '--output', help='File to save the results to', default=None)
 downsample = parser.add_argument(

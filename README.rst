@@ -26,9 +26,6 @@ Instructions
 
 The ROM Framework requires `Python 3 <https://www.python.org/>`_. After installing Python and configuring Python 3,
 the ROM Framework can be installed from source code (recommended) or from `PyPI <https://pypi.python.org/pypi>`_.
-If you are planning on building, evaluating, and validating custom models, then it is preferred to checkout this
-repository from Github. If the use case is to only run prebuilt models, then installing from PyPI is most
-likely sufficient.
 
 Installation from Source
 ========================
