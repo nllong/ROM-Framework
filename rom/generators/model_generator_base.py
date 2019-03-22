@@ -17,11 +17,11 @@ from scipy import stats
 from scipy.stats import spearmanr, pearsonr
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+
 from ..shared import apply_cyclic_transform, pickle_file
 
 
 class ModelGeneratorBase(object):
-
     def __init__(self, analysis_id, random_seed=None, **kwargs):
         """
         Base class for generating ROMs
@@ -128,7 +128,7 @@ class ModelGeneratorBase(object):
 
         if 'DistrictCoolingOutletTemperature' in list(self.dataset.columns.values):
             self.dataset = self.dataset.drop('DistrictCoolingOutletTemperature', 1)
-        # update some of the column names so they make sense to this model
+        # Update some of the column names so they make sense to this model
 
         self.dataset = self.dataset.rename(columns={
             'DistrictHeatingOutletTemperature': 'ETSInletTemperature',
@@ -136,7 +136,7 @@ class ModelGeneratorBase(object):
             'DistrictCoolingInletTemperature': 'ETSCoolingOutletTemperature',
         })
 
-        # type cast the columns - this is probably not needed.
+        # Type cast the columns - this is probably not needed
         data_types = metamodel.covariate_types(self.model_type)
         self.dataset[data_types['float']] = self.dataset[data_types['float']].astype(float)
         self.dataset[data_types['int']] = self.dataset[data_types['int']].astype(int)
@@ -233,14 +233,14 @@ class ModelGeneratorBase(object):
         # This need to be updated with the creating a figure with a size
         sns.set(color_codes=True)
 
-        # find the items that are zero / zero across y and yhat and remove to look at
+        # Find the items that are zero / zero across y and yhat and remove to look at
         # plots and other statistics
         clean_data = zip(y_data, yhat)
         clean_data = [x for x in clean_data if x != (0, 0)]
         y_data = np.asarray([y[0] for y in clean_data])
         yhat = np.asarray([y[1] for y in clean_data])
 
-        # convert data to dataframe
+        # Convert data to dataframe
         data = pd.DataFrame.from_dict({'Y': y_data, 'Yhat': yhat})
 
         with plt.rc_context(dict(sns.axes_style("whitegrid"))):
