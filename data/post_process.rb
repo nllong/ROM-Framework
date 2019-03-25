@@ -322,39 +322,44 @@ end
 if options[:download]
   api = OpenStudio::Analysis::ServerApi.new(hostname: options[:server])
   if api.alive?
-    project_id = api.get_project_ids.last # This should be the last analysis that was run
-
     base_dir = options[:rename_to].nil? ? options[:analysis_id] : options[:rename_to]
-    puts base_dir
     if Dir.exist? base_dir
-      raise "Directory exists, remove first or change/add rename_to"
+      warn "Directory exists #{base_dir}. Will continue to add results into this directory, make sure that the results are from the same analysis."
     else
       Dir.mkdir base_dir
     end
 
     puts "Downloading results for analysis id: #{options[:analysis_id]}"
-
-    if api.get_analysis_status(options[:analysis_id], 'batch_run') == 'completed'
+    if ['completed', 'started'].include? api.get_analysis_status(options[:analysis_id], 'batch_run')
+      # This API endpoint will only return the completed simulations so there is no need to check if they
+      # are complete
       results = api.get_analysis_results(options[:analysis_id])
       results[:data].each do |dp|
         dir = "#{base_dir}/#{dp[:_id]}"
-        puts "Saving results for simulation into directory: #{dir}"
-        Dir.mkdir dir unless Dir.exist? dir
+        # check if this has already been downloaded by looking for the directory
+        if Dir.exist? dir
+          puts "Simulation already downloaded"
+        else
+          puts "Saving results for simulation into directory: #{dir}"
+          Dir.mkdir dir unless Dir.exist? dir
 
-        # save off the JSON snippet into the new directory
-        File.open("#{dir}/variables.json", 'w') {|f| f << JSON.pretty_generate(dp)}
+          # save off the JSON snippet into the new directory
+          File.open("#{dir}/variables.json", 'w') {|f| f << JSON.pretty_generate(dp)}
 
-        # grab the datapoint json, and save off the results (which contain some of the resulting covariates)
-        results = api.get_datapoint(dp[:_id])
-        File.open("#{dir}/results.json", 'w') {|f| f << JSON.pretty_generate(results[:data_point][:results])}
+          # grab the datapoint json, and save off the results (which contain some of the resulting covariates)
+          results = api.get_datapoint(dp[:_id])
+          File.open("#{dir}/results.json", 'w') {|f| f << JSON.pretty_generate(results[:data_point][:results])}
 
-        # save off some of the results: timeseries, datapoint json, and out.osw
-        api.download_datapoint_report(dp[:_id], 'ambient_loop_reports_report_timeseries.csv', dir)
-        api.download_datapoint_report(dp[:_id], 'out.osw', dir)
-        api.download_datapoint(dp[:_id], dir)
+          # save off some of the results: timeseries, datapoint json, and out.osw
+          api.download_datapoint_report(dp[:_id], 'ambient_loop_reports_report_timeseries.csv', dir)
+          api.download_datapoint_report(dp[:_id], 'out.osw', dir)
+
+          # Do not download the datapoint for now since it can be large
+          # api.download_datapoint(dp[:_id], dir)
+        end
       end
     else
-      puts "Simulations are still running. Try again later"
+      puts "Unknown status of analysis. Are you connecting to the right machine? Is the Analysis ID correct?"
     end
   else
     puts "Server is not running. Trying to process data using cached files"
