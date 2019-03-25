@@ -368,7 +368,7 @@ end
 
 if options[:post_process]
   if options[:analysis_id]
-    post_process_analysis_id(options[:analysis_id])
+    post_process_analysis_id(options[:analysis_id], results_metadata)
   else
     puts "No analysis_id passed, post processing all the results"
 
