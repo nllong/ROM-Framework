@@ -2,6 +2,7 @@
 """
 .. moduleauthor:: Nicholas Long (nicholas.l.long@colorado.edu, nicholas.lee.long@gmail.com)
 """
+import multiprocessing
 import os
 import time
 import zipfile
@@ -10,7 +11,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-import multiprocessing
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import GridSearchCV
 from sklearn.tree import export_graphviz
@@ -67,9 +67,11 @@ class RandomForest(ModelGeneratorBase):
         plt.clf()
 
         # plot a single tree
-        if downsample <= 0.01:
-            tree_file_name = '%s/fig_first_tree_%s.png' % (self.images_dir, model_name)
-            self.export_tree_png(model.estimators_[0], covariates, tree_file_name)
+        # TODO: add a configuration option on when to export the tree. This can take a long
+        # time to export with large trees.
+        #if downsample <= 0.01:
+        #  tree_file_name = '%s/fig_first_tree_%s.png' % (self.images_dir, model_name)
+        #  self.export_tree_png(model.estimators_[0], covariates, tree_file_name)
 
         # add some more data to the model evaluation dict
         performance['n_estimators'] = model.n_estimators
@@ -145,7 +147,7 @@ class RandomForest(ModelGeneratorBase):
             downsample=self.downsample
         )
 
-        # save the validate dataframe to be used later to validate the accuracy of the models
+        # Save the validate dataframe to be used later to validate the accuracy of the models
         self.save_dataframe(validate_xy, "%s/rf_validation" % self.validation_dir)
 
         for response in metamodel.available_response_names(self.model_type):
@@ -172,7 +174,7 @@ class RandomForest(ModelGeneratorBase):
 
                 kfold = 3
                 print('Perfoming CV with k-fold equal to %s' % kfold)
-                # grab the param grid from what was specified in the metamodels.json file
+                # Grab the param grid from what was specified in the metamodels.json file
                 param_grid = analysis_options.get('param_grid', {})
                 total_candidates = 1
                 for param, options in param_grid.items():
@@ -180,7 +182,7 @@ class RandomForest(ModelGeneratorBase):
 
                 print('CV will result in %s candidates' % total_candidates)
 
-                # allow for the computer to be responsive during grid_search
+                # Allow for the computer to be responsive during grid_search
                 n_jobs = multiprocessing.cpu_count() - 1
                 grid_search = GridSearchCV(estimator=rf, param_grid=param_grid, cv=kfold,
                                            verbose=2, refit=True, n_jobs=n_jobs)
@@ -195,13 +197,13 @@ class RandomForest(ModelGeneratorBase):
 
                 print('The best params were %s' % grid_search.best_params_)
 
-                # rebuild only the best rf, and save the results
+                # Rebuild only the best rf, and save the results
                 model = RandomForestRegressor(**grid_search.best_params_)
                 best_model = model.fit(train_x, train_y[response])
 
                 pickle_file(best_model, '%s/%s' % (self.models_dir, response))
 
-                # save the cv results
+                # Save the cv results
                 self.save_cv_results(
                     grid_search.cv_results_, response, self.downsample,
                     '%s/cv_results_%s.csv' % (self.base_dir, response)
@@ -221,12 +223,12 @@ class RandomForest(ModelGeneratorBase):
         if self.model_results:
             save_dict_to_csv(self.model_results, '%s/model_results.csv' % self.base_dir)
 
-        # zip up the models
+        # Zip up the models
         zipf = zipfile.ZipFile(
             '%s/models.zip' % self.models_dir, 'w', zipfile.ZIP_DEFLATED, allowZip64=True
         )
         zipdir(self.models_dir, zipf, '.pkl')
         zipf.close()
 
-        # save the data that was used in the models for future processing and analysis
+        # Save the data that was used in the models for future processing and analysis
         self.dataset.to_csv('%s/data.csv' % self.data_dir)
