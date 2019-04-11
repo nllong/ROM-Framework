@@ -12,7 +12,7 @@ exports diagnostic data for the user to evaluate the performance of the reduced
 order models. In addition to building, evaluating, and validating the reduced order models, the framework
 is able to load previously persisted model to be used in third-party applications (e.g. Modelica).
 
-The project was developed focused on evaluating ambient loop distric heating and cooling systems.
+The project was developed focusing on evaluating ambient loop distric heating and cooling systems.
 As a result, there are several hard coded methods designed to evaluate and validate building
 energy modeling data.
 
