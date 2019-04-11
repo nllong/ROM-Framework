@@ -222,7 +222,11 @@ def post_process_analysis_id(analysis_id, results_metadata)
             end
 
             if metadatum[:level_2] && !metadatum[:level_2].empty?
-              new_data << json[metadatum[:level_1]][metadatum[:level_2]]
+	      if json[metadatum[:level_1]]
+                new_data << json[metadatum[:level_1]][metadatum[:level_2]]
+              else
+	        puts "Could not find covariate #{metadatum[:level_1]}.#{metadatum[:level_2]}... will continue"
+	      end
             else
               new_data << json[metadatum[:level_1]]
             end
