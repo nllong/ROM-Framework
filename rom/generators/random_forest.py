@@ -69,9 +69,9 @@ class RandomForest(ModelGeneratorBase):
         # plot a single tree
         # TODO: add a configuration option on when to export the tree. This can take a long
         # time to export with large trees.
-        #if downsample <= 0.01:
-        #  tree_file_name = '%s/fig_first_tree_%s.png' % (self.images_dir, model_name)
-        #  self.export_tree_png(model.estimators_[0], covariates, tree_file_name)
+        # if downsample <= 0.01:
+        #   tree_file_name = '%s/fig_first_tree_%s.png' % (self.images_dir, model_name)
+        #   self.export_tree_png(model.estimators_[0], covariates, tree_file_name)
 
         # add some more data to the model evaluation dict
         performance['n_estimators'] = model.n_estimators
