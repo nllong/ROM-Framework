@@ -441,18 +441,10 @@
     "display_name": "Small Office Parametric Sweep",
     "description": "Approximately 2300 simulations, varying covariates.",
     "validation_datapoint_id": "e47d3c21-c123-4ff9-81cc-3e925820a85c",
-    "results_directory": "smoff_v2",
-    "building_type": "Small Office",
-    "name": "smoff_v2",
-    "display_name": "Small Office Parametric Sweep",
-    "description": "Approximately 2300 simulations, varying covariates.",
-    "validation_datapoint_id": "002daf12-daf4-4005-8f43-e3e8c53f4bb0",
-    "downsamples": [0.001, 0.002, 0.003, 0.005, 0.015, 0.025, 0.1],
     "algorithm_options": {
       "RandomForest": {
         "_comments": "If downsamples are specified here, then they will override the parent values",
-        "downsamples": [0.001, 0.002, 0.003, 0.005],
-        "downsamples": [0.001, 0.002, 0.003, 0.005, 0.015, 0.025, 0.1],
+        "downsamples": [0.001, 0.002, 0.003, 0.005, 0.015],
         "param_grid": {
           "_comments": "max_depth - default is None, max_features - default is p/3, min_samples_leaf - default is 1, min_samples_split - default is 2, n_estimators - default is 10",
           "max_depth": [null, 3, 6],
@@ -470,7 +462,7 @@
       },
       "SVR": {
         "_comments": "If downsamples are specified here, then they will override the parent values",
-        "downsamples": [0.001, 0.002, 0.003],
+        "downsamples": [0.001, 0.002, 0.003, 0.005],
         "base_fit_params": {
           "cache_size": 2000
         },
@@ -644,7 +636,7 @@
     "algorithm_options": {
       "RandomForest": {
         "_comments": "If downsamples are specified here, then they will override the parent values",
-        "downsamples": [0.001, 0.002, 0.003, 0.005],
+        "downsamples": [0.001, 0.002, 0.003, 0.005, 0.015],
         "param_grid": {
           "_comments": "max_depth - default is None, max_features - default is p/3, min_samples_leaf - default is 1, min_samples_split - default is 2, n_estimators - default is 10",
           "max_depth": [null, 3, 6],
@@ -837,7 +829,7 @@
     "algorithm_options": {
       "RandomForest": {
         "_comments": "If downsamples are specified here, then they will override the parent values",
-        "downsamples": [0.001, 0.002, 0.003, 0.005],
+        "downsamples": [0.001, 0.002, 0.003, 0.005, 0.015],
         "param_grid": {
           "_comments": "max_depth - default is None, max_features - default is p/3, min_samples_leaf - default is 1, min_samples_split - default is 2, n_estimators - default is 10",
           "max_depth": [null, 3, 6],
@@ -855,7 +847,7 @@
       },
       "SVR": {
         "_comments": "If downsamples are specified here, then they will override the parent values",
-        "downsamples": [0.001, 0.002, 0.003],
+        "downsamples": [0.001, 0.002, 0.003, 0.005],
         "base_fit_params": {
           "cache_size": 2000
         },
@@ -1029,7 +1021,7 @@
     "algorithm_options": {
       "RandomForest": {
         "_comments": "If downsamples are specified here, then they will override the parent values",
-        "downsamples": [0.001, 0.002, 0.003, 0.005],
+        "downsamples": [0.001, 0.002, 0.003, 0.005, 0.015],
         "param_grid": {
           "_comments": "max_depth - default is None, max_features - default is p/3, min_samples_leaf - default is 1, min_samples_split - default is 2, n_estimators - default is 10",
           "max_depth": [null, 3, 6],
@@ -1047,7 +1039,7 @@
       },
       "SVR": {
         "_comments": "If downsamples are specified here, then they will override the parent values",
-        "downsamples": [0.001, 0.002, 0.003],
+        "downsamples": [0.001, 0.002, 0.003, 0.005],
         "base_fit_params": {
           "cache_size": 2000
         },
@@ -1217,11 +1209,11 @@
     "display_name": "Restaurant Parametric Sweep",
     "description": "Approximately 600 simulations, varying covariates.",
     "validation_datapoint_id": "ea4f6d52-e555-4029-9a16-898d219ffe1f",
-    "downsamples": [0.004, 0.006, 0.012, 0.02, 0.06, 0.14, 0.4],
+    "downsamples": [0.001, 0.002, 0.003, 0.005, 0.015, 0.025, 0.1],
     "algorithm_options": {
       "RandomForest": {
         "_comments": "If downsamples are specified here, then they will override the parent values",
-        "downsamples": [0.004, 0.006, 0.012, 0.02],
+        "downsamples": [0.001, 0.002, 0.003, 0.005, 0.015],
         "param_grid": {
           "_comments": "max_depth - default is None, max_features - default is p/3, min_samples_leaf - default is 1, min_samples_split - default is 2, n_estimators - default is 10",
           "max_depth": [null, 3, 6],
@@ -1239,7 +1231,7 @@
       },
       "SVR": {
         "_comments": "If downsamples are specified here, then they will override the parent values",
-        "downsamples": [0.004, 0.006, 0.012],
+        "downsamples": [0.001, 0.002, 0.003, 0.005],
         "base_fit_params": {
           "cache_size": 2000
         },
@@ -1409,11 +1401,11 @@
     "display_name": "Primary School Parametric Sweep",
     "description": "Approximately 700 simulations, varying covariates.",
     "validation_datapoint_id": "b85b1f19-77a7-4168-9414-f8250db403d5",
-    "downsamples": [0.003, 0.006, 0.009, 0.015, 0.045, 0.075, 0.3],
+    "downsamples": [0.001, 0.002, 0.003, 0.005, 0.015, 0.025, 0.1],
     "algorithm_options": {
       "RandomForest": {
         "_comments": "If downsamples are specified here, then they will override the parent values",
-        "downsamples": [0.003, 0.006, 0.009, 0.015],
+        "downsamples": [0.001, 0.002, 0.003, 0.005],
         "param_grid": {
           "_comments": "max_depth - default is None, max_features - default is p/3, min_samples_leaf - default is 1, min_samples_split - default is 2, n_estimators - default is 10",
           "max_depth": [null, 3, 6],
@@ -1431,7 +1423,7 @@
       },
       "SVR": {
         "_comments": "If downsamples are specified here, then they will override the parent values",
-        "downsamples": [0.003, 0.006, 0.009],
+        "downsamples": [0.001, 0.002, 0.003, 0.005],
         "base_fit_params": {
           "cache_size": 2000
         },
@@ -1563,31 +1555,6 @@
     ],
     "responses":
       [
-       {
-        "name": "HeatingElectricity",
-        "display_name": "Heating Electric Energy",
-        "units": "J"
-      },
-      {
-        "name": "CoolingElectricity",
-        "display_name": "Cooling Electric Energy",
-        "units": "J"
-      },
-      {
-        "name": "DistrictCoolingChilledWaterEnergy",
-        "display_name": "Ambient Loop Cooling Energy",
-        "units": "J"
-      },
-      {
-        "name": "DistrictHeatingHotWaterEnergy",
-        "display_name": "Ambient Loop Heating Energy",
-        "units": "J"
-      },
-      {
-        "name": "ETSHeatingOutletTemperature",
-        "display_name": "Building Heating Outlet Temperature",
-        "units": "C"
-      },
       {
         "name": "ETSCoolingOutletTemperature",
         "display_name": "Building Cooling Outlet Temperature",
@@ -1596,13 +1563,13 @@
     ]
   },
   {
-    "results_directory": "midriseapartment_sweep_v2",
+    "results_directory": "midriseapartment_sweep",
     "building_type": "Midrise Apartment",
-    "name": "midriseapartment_sweep_v2",
+    "name": "midriseapartment_sweep",
     "display_name": "Midrise Apartment Parametric Sweep",
     "description": "Approximately 2300 simulations, varying covariates.",
     "validation_datapoint_id": "72d418d4-300b-4672-852b-f701afef4f9d",
-    "downsamples": [0.006],
+    "downsamples": [0.001, 0.002, 0.003, 0.005],
     "algorithm_options": {
       "RandomForest": {
         "_comments": "If downsamples are specified here, then they will override the parent values",
@@ -1624,7 +1591,7 @@
       },
       "SVR": {
         "_comments": "If downsamples are specified here, then they will override the parent values",
-        "downsamples": [0.006],
+        "downsamples": [0.001, 0.002, 0.003, 0.005],
         "base_fit_params": {
           "cache_size": 2000
         },
@@ -1782,4 +1749,5 @@
     ]
   }
 ]
+
 
