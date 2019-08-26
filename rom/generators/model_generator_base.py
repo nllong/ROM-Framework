@@ -146,18 +146,37 @@ class ModelGeneratorBase(object):
         Use the built in method to generate the train and test data. This adds an additional
         set of data for validation. This vaildation dataset is a unique ID that is pulled out
         of the dataset before the test_train method is called.
-
-        # :param dataset: dataframe, data to process
-        # :param covariates: list, dict of covariates and information
-        # :param responses: list, of responses to keep in the dataset
-        # :param validation_id: str, unique ID of model to extract
-        :param kwargs: downsample - fraction of dataframe to keep (after validation data extraction)
-        :return: dataframes, dataframe: 1) dataset with removed validation data, 2) validation data
         """
         print("Initial dataset size is %s" % len(dataset))
-        if metamodel.validation_id and metamodel.validation_id in dataset['id'].unique():
+        validate_id = None
+        if metamodel.validation_id == 'first':
+            # grab the first id in the dataset. This is non-ideal, but allow for rapid testing
+            validate_id = dataset.iloc[0]['id']
+        elif metamodel.validation_id == 'median':
+            raise Exception('Median validation ID is not implemented')
+            # look at all of the covariates and try to find the median value from them all
+            # this method should be deterministic
+
+            # Code below only works if the space is fully filled out and if only looking at variables
+            # that are constant for the whole annual simulation.
+            # closest_medians = dataset
+            # for cv in metamodel.covariates(self.model_type):
+            #     if cv.get('alogithm_option', None):
+            #         if cv['algorithm_options'].get(self.model_type, None):
+            #             if cv['algorithm_options'][self.model_type]['ignore']:
+            #                 continue
+            #     median = dataset[cv['name']].median()
+            #     print(f'my median is {median}')
+            #     closest_medians = closest_medians[closest_medians[cv['name']] == median]
+            #     print(f'len of dataframe is {len(closest_medians)}')
+
+        else:
+            # assume that there is a validation id that has been passed
+            validate_id = metamodel.validation_id
+
+        if validate_id and validate_id in dataset['id'].unique():
             print('Extracting validation dataset and converting to date time')
-            validate_xy = dataset[dataset['id'] == metamodel.validation_id]
+            validate_xy = dataset[dataset['id'] == validate_id]
 
             # Covert the validation dataset datetime to actual datetime objects
             # validate_xy['DateTime'] = pd.to_datetime(dataset['DateTime'])
@@ -165,10 +184,10 @@ class ModelGeneratorBase(object):
             # Constrain to minute precision to make this method much faster
             validate_xy['DateTime'] = validate_xy['DateTime'].astype('datetime64[m]')
 
-            dataset = dataset[dataset['id'] != metamodel.validation_id]
+            dataset = dataset[dataset['id'] != validate_id]
         else:
             raise Exception(
-                "Validation id does not exist in dataframe. ID was %s" % metamodel.validation_id)
+                "Validation id does not exist in dataframe. ID was %s" % validate_id)
 
         if downsample:
             num_rows = int(len(dataset.index.values) * downsample)

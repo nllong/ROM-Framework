@@ -7,6 +7,11 @@
 python/.python-version
 data/*/*.zip
 data/*/simulation_results.csv
+
+# ignore this whole folder
+data/smoff_sweep_v2_test
+
+# old R data
 R/.Rproj.user
 R/.RData
 R/.Rhistory

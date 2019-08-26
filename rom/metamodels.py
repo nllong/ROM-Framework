@@ -110,6 +110,15 @@ class Metamodels(object):
 
         raise Exception("Could not load the model: %s" % moniker)
 
+    def downsamples(self, model_name):
+        """
+        Return the downsamples list from the metamodels.json file that was passed in.
+
+        :param model_name: str, name of the model to look for down samples
+        :return: list, Downsamples.
+        """
+        return self.algorithm_options.get(model_name, {}).get('downsamples', None)
+
     @property
     def results_directory(self):
         """
@@ -128,15 +137,6 @@ class Metamodels(object):
         :return: str, Analysis name.
         """
         return self.file[self.set_i]['name']
-
-    @property
-    def downsamples(self):
-        """
-        Return the downsamples list from the metamodels.json file that was passed in.
-
-        :return: list, Downsamples.
-        """
-        return self.file[self.set_i].get('downsamples', None)
 
     @property
     def algorithm_options(self):

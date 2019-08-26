@@ -1,6 +1,6 @@
 [
   {
-    "results_directory": "smoff_parametric_sweep",
+    "results_directory": "smoff_parametric_sweep_v2",
     "building_type": "Small Office",
     "name": "smoff_parametric_sweep",
     "display_name": "Small Office Varying Inlet Temp",
@@ -435,12 +435,12 @@
     ]
   },
   {
-    "results_directory": "smoff_sweep_v2",
+    "results_directory": "smoff_sweep_v2_test",
     "building_type": "Small Office",
     "name": "smoff_sweep_v2",
     "display_name": "Small Office Parametric Sweep",
     "description": "Approximately 2300 simulations, varying covariates.",
-    "validation_datapoint_id": "e47d3c21-c123-4ff9-81cc-3e925820a85c",
+    "validation_datapoint_id": "first",
     "algorithm_options": {
       "RandomForest": {
         "_comments": "If downsamples are specified here, then they will override the parent values",
