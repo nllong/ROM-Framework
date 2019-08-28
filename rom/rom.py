@@ -78,7 +78,7 @@ if metamodel.set_analysis(args.analysis_moniker):
                     print("Downsample argument must exist in the downsample list in the JSON, remove downsample or add to list in metamodels.json")
                     exit(1)
                 else:
-                    downsamples = [args.downsample]
+                    downsamples = [downsamples]
             print("Running %s model '%s' with downsamples '%s'" % (args.action, model_name, downsamples))
 
             for downsample in downsamples:
