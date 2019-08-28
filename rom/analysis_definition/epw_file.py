@@ -92,7 +92,7 @@ class EpwFile:
                 elif row[0] == 'GROUND TEMPERATURES':
                     print('Parsing Ground Temperatures')
                 elif row[0] == 'HOLIDAYS/DAYLIGHT SAVINGS':
-                    print('Parsing Holidays / Dayling')
+                    print('Parsing Holidays / Daylight Savings')
                 elif row[0] == 'COMMENTS 1':
                     print('Parsing Comments 1')
                 elif row[0] == 'COMMENTS 2':
