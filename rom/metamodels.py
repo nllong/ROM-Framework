@@ -117,7 +117,12 @@ class Metamodels(object):
         :param model_name: str, name of the model to look for down samples
         :return: list, Downsamples.
         """
-        return self.algorithm_options.get(model_name, {}).get('downsamples', None)
+        # check if the model_name has the downsamples, else, rely on the default set
+        # of downsamples.
+        ds = self.algorithm_options.get(model_name, {}).get('downsamples', None)
+        if ds is None:
+            ds = self.file[self.set_i].get('downsamples', None)
+        return ds
 
     @property
     def results_directory(self):

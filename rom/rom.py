@@ -78,7 +78,7 @@ if metamodel.set_analysis(args.analysis_moniker):
                     print("Downsample argument must exist in the downsample list in the JSON, remove downsample or add to list in metamodels.json")
                     exit(1)
                 else:
-                    downsamples = [downsamples]
+                    downsamples = [args.downsample]
             print("Running %s model '%s' with downsamples '%s'" % (args.action, model_name, downsamples))
 
             for downsample in downsamples:
@@ -95,7 +95,7 @@ if metamodel.set_analysis(args.analysis_moniker):
                         f'data/{metamodel.results_directory}/simulation_results.csv',
                     )
                     if args.action == 'inspect':
-                        # this will 'describe' the data and persist the file to the data folder.
+                        # this will
                         model.inspect()
                     elif args.action == 'build':
                         model.build(
