@@ -84,8 +84,8 @@ class SVR(ModelGeneratorBase):
         df = pd.DataFrame.from_dict(data)
         df.to_csv(filename)
 
-    def build(self, data_file, metamodel, **kwargs):
-        super(SVR, self).build(data_file, metamodel, **kwargs)
+    def build(self, metamodel, **kwargs):
+        super(SVR, self).build(metamodel, **kwargs)
 
         analysis_options = kwargs.get('algorithm_options', {})
 

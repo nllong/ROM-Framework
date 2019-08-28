@@ -28,8 +28,8 @@ class LinearModel(ModelGeneratorBase):
         self.anova_plots(y_data, yhat, model_name)
         return performance
 
-    def build(self, data_file, metamodel, **kwargs):
-        super(LinearModel, self).build(data_file, metamodel, **kwargs)
+    def build(self, metamodel, **kwargs):
+        super(LinearModel, self).build(metamodel, **kwargs)
 
         # analysis_options = kwargs.get('algorithm_options', {})
 

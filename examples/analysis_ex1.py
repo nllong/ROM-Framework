@@ -4,7 +4,7 @@
 Example analysis script demonstrating how to programatically load and run already persisted
 reduced order models. This example loads two response variables (models) from the small office
 random forest reduced order models. The loaded models are then passed through the
-swee-temp-test.json analysis definition file. The analysis definition has few fixed
+sweep-temp-test.json analysis definition file. The analysis definition has a few fixed
 covariates and a few covariates with multiple values to run.
 
 .. code-block:: bash
@@ -25,7 +25,7 @@ from rom.analysis_definition.analysis_definition import AnalysisDefinition
 
 # Load in the models for analysis
 rom = Metamodels('./smoff/metamodels.json')
-rom.set_analysis('smoff_parametric_sweep')
+rom.set_analysis('smoff_sweep_v2')
 
 # Load the exising models
 if rom.models_exist(

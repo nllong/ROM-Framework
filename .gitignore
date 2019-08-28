@@ -4,29 +4,37 @@
 .DS_Store
 .tox
 .python-version
+.ipynb_checkpoints
 python/.python-version
+
+# never commit these data files because they will be too large
 data/*/*.zip
 data/*/simulation_results.csv
 
 # ignore this whole folder
+data/.bundle
+data/gems
+data/Gemfile.lock
+data/*/*/data_point/
+data/**/data_point.zip
+data/smoff_sweep_v2
 data/smoff_sweep_v2_test
+data/smoff_sweep_no_ets_v2/
+data/retail_sweep_v2/
+data/retail_sweep_no_ets_v2/
+examples/output/
 
 # old R data
 R/.Rproj.user
 R/.RData
 R/.Rhistory
-data/Gemfile.lock
-data/*/simulation_results.csv
-data/*/*/data_point/
-data/**/data_point.zip
-data/.bundle
-data/gems
-.ipynb_checkpoints
+
+# general folders
 /output
+
+# package information
 ROM_Framework.egg-info/
 /build
 /dist
 docs/build
 
-# do not commit right now
-data/smoff_sweep_v2

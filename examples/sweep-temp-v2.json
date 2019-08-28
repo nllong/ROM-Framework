@@ -1,0 +1,79 @@
+{
+  "variables": [
+    {
+      "name": "Month",
+      "data_source": "epw",
+      "data_source_field": "month"
+    },
+    {
+      "name": "Hour",
+      "data_source": "epw",
+      "data_source_field": "hour"
+    },
+    {
+      "name": "DayofWeek",
+      "data_source": "epw",
+      "data_source_field": "day"
+    },
+    {
+      "name": "SiteOutdoorAirDrybulbTemperature",
+      "data_source": "epw",
+      "data_source_field": "dry_bulb"
+    },
+    {
+      "name": "SiteOutdoorAirRelativeHumidity",
+      "data_source": "epw",
+      "data_source_field": "rh"
+    },
+    {
+      "name": "ETSInletTemperature",
+      "data_source": "distribution",
+      "values": [15.4355, 17.565],
+      "distribution": {
+        "minimum": 15,
+        "maximum": 25,
+        "number_of_samples": 10
+      }
+    },
+    {
+      "name": "wall.r_value",
+      "data_source": "value",
+      "value": 36.5
+    },
+    {
+      "name": "wwr",
+      "data_source": "value",
+      "value": 0.5
+    },
+    {
+      "name": "roof.r_value",
+      "data_source": "value",
+      "value": 55
+    },
+    {
+      "name": "heat_pump.cooling_cop",
+      "data_source": "value",
+      "value": 4.3
+    },
+    {
+      "name": "heat_pump.heating_cop",
+      "data_source": "value",
+      "value": 4.3
+    },
+    {
+      "name": "schedule.start",
+      "data_source": "value",
+      "value": 7
+    },
+    {
+      "name": "schedule.end",
+      "data_source": "value",
+      "value": 18
+    },
+    {
+      "name": "internal_loads_multiplier.lpd_average",
+      "data_source": "value",
+      "value": 16
+    }
+  ]
+}

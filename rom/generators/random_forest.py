@@ -47,6 +47,7 @@ class RandomForest(ModelGeneratorBase):
         :param covariates:
         :return:
         """
+        # TODO: Python 3, remove RandomForest from super call
         _yhat, performance = super(RandomForest, self).evaluate(
             model, model_name, model_type, x_data, y_data, downsample,
             build_time, cv_time, covariates, scaler
@@ -136,8 +137,8 @@ class RandomForest(ModelGeneratorBase):
         df = pd.DataFrame.from_dict(data)
         df.to_csv(filename)
 
-    def build(self, data_file, metamodel, **kwargs):
-        super(RandomForest, self).build(data_file, metamodel, **kwargs)
+    def build(self, metamodel, **kwargs):
+        super(RandomForest, self).build(metamodel, **kwargs)
 
         analysis_options = kwargs.get('algorithm_options', {})
 

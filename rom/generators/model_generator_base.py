@@ -43,7 +43,7 @@ class ModelGeneratorBase(object):
         self.dataset = None
         self.downsample = kwargs.get('downsample', None)
 
-        print("initializing %s" % self.model_type)
+        print("Initializing %s" % self.model_type)
 
         # Initialize the directories where results are to be stored.
         if self.downsample:
@@ -60,15 +60,15 @@ class ModelGeneratorBase(object):
         self.data_dir = '%s/data' % self.base_dir
 
         # Remove some directories if they exist
-        for dir in ['images_dir', 'models_dir', 'data_dir']:
-            if os.path.exists(getattr(self, dir)):
+        for dir_n in ['images_dir', 'models_dir', 'data_dir']:
+            if os.path.exists(getattr(self, dir_n)):
                 # print("removing the directory %s" % dir)
-                shutil.rmtree(getattr(self, dir))
+                shutil.rmtree(getattr(self, dir_n))
 
         # create directory if not exist for each of the above
-        for dir in ['base_dir', 'images_dir', 'models_dir', 'data_dir', 'validation_dir']:
-            if not os.path.exists(getattr(self, dir)):
-                os.makedirs(getattr(self, dir))
+        for dir_n in ['base_dir', 'images_dir', 'models_dir', 'data_dir', 'validation_dir']:
+            if not os.path.exists(getattr(self, dir_n)):
+                os.makedirs(getattr(self, dir_n))
 
         for root, dirnames, filenames in os.walk(self.base_dir):
             for filename in fnmatch.filter(filenames, 'cv_results_*.csv'):
@@ -79,6 +79,45 @@ class ModelGeneratorBase(object):
 
     def save_dataframe(self, dataframe, path):
         pickle_file(dataframe, path)
+
+    def inspect(self):
+        """
+        Inspect the dataframe and return the statistics of the dataframe.
+
+        :return:
+        """
+        # look at the entire datatset and save the statistics from the file to the data_dir
+        out_df = self.dataset.describe()
+        out_df.to_csv(f'{self.data_dir}/statistics.csv')
+
+    def load_data(self, datafile):
+        """
+        Load the data into a dataframe. The data needs to be a CSV file at the moment.
+
+        :param datafile: str, path to the CSV file to load
+        :return: None
+        """
+        if os.path.exists(datafile):
+            self.dataset = pd.read_csv(datafile)
+        else:
+            raise Exception(f"Datafile does not exist: {datafile}")
+
+        print(f'Loading data file: {datafile}')
+        # message the data as needed based on the kwargs arg
+        # TODO: remove these hard coded options and pass in as kwargs.
+        drop_columns = ['DistrictCoolingOutletTemperature']
+        rename_columns = {
+            'DistrictHeatingOutletTemperature': 'ETSInletTemperature',
+            'DistrictHeatingInletTemperature': 'ETSHeatingOutletTemperature',
+            'DistrictCoolingInletTemperature': 'ETSCoolingOutletTemperature',
+        }
+
+        for column in drop_columns:
+            if column in list(self.dataset.columns.values):
+                self.dataset = self.dataset.drop(column, 1)
+
+        if rename_columns:
+            self.dataset = self.dataset.rename(columns=rename_columns)
 
     def evaluate(self, model, model_name, model_moniker, x_data, y_data, downsample,
                  build_time, cv_time, covariates=None, scaler=None):
@@ -93,7 +132,6 @@ class ModelGeneratorBase(object):
         :param build_time:
         :return: Ordered dict
         """
-
         yhat = model.predict(x_data)
 
         if scaler:
@@ -123,18 +161,9 @@ class ModelGeneratorBase(object):
             ('time_to_cv', cv_time),
         ])
 
-    def build(self, data_file, metamodel, **kwargs):
-        self.dataset = pd.read_csv(data_file)
-
-        if 'DistrictCoolingOutletTemperature' in list(self.dataset.columns.values):
-            self.dataset = self.dataset.drop('DistrictCoolingOutletTemperature', 1)
-        # Update some of the column names so they make sense to this model
-
-        self.dataset = self.dataset.rename(columns={
-            'DistrictHeatingOutletTemperature': 'ETSInletTemperature',
-            'DistrictHeatingInletTemperature': 'ETSHeatingOutletTemperature',
-            'DistrictCoolingInletTemperature': 'ETSCoolingOutletTemperature',
-        })
+    def build(self, metamodel, **kwargs):
+        if self.dataset is None:
+            raise Exception("Need to load the datafile first by calling Metamodel.load_data(<path-to-file>)")
 
         # Type cast the columns - this is probably not needed
         data_types = metamodel.covariate_types(self.model_type)

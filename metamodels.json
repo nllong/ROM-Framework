@@ -100,20 +100,6 @@
         "display_name": "LPD Average",
         "units": "W/m2",
         "type": "float"
-      },
-      {
-        "name": "hvac_mode",
-        "display_name": "HVAC Mode",
-        "units": "",
-        "type": "int",
-        "algorithm_options": {
-          "RandomForest": {
-            "ignore": true
-          },
-          "LinearModel": {
-            "ignore": true
-          }
-        }
       }
     ],
     "responses": [
@@ -250,20 +236,6 @@
         "display_name": "LPD Average",
         "units": "W/m2",
         "type": "float"
-      },
-      {
-        "name": "hvac_mode",
-        "display_name": "HVAC Mode",
-        "units": "",
-        "type": "int",
-        "algorithm_options": {
-          "RandomForest": {
-            "ignore": true
-          },
-          "LinearModel": {
-            "ignore": true
-          }
-        }
       }
     ],
     "responses": [
@@ -400,20 +372,6 @@
         "display_name": "LPD Average",
         "units": "W/m2",
         "type": "float"
-      },
-      {
-        "name": "hvac_mode",
-        "display_name": "HVAC Mode",
-        "units": "",
-        "type": "int",
-        "algorithm_options": {
-          "RandomForest": {
-            "ignore": true
-          },
-          "LinearModel": {
-            "ignore": true
-          }
-        }
       }
     ],
     "responses": [
@@ -435,7 +393,7 @@
     ]
   },
   {
-    "results_directory": "smoff_sweep_v2_test",
+    "results_directory": "smoff_sweep_v2",
     "building_type": "Small Office",
     "name": "smoff_sweep_v2",
     "display_name": "Small Office Parametric Sweep",
@@ -576,20 +534,6 @@
         "display_name": "Schedule End Hour",
         "units": "hr",
         "type": "float"
-      },
-      {
-        "name": "hvac_mode",
-        "display_name": "HVAC Mode",
-        "units": "",
-        "type": "int",
-        "algorithm_options": {
-          "RandomForest": {
-            "ignore": true
-          },
-          "LinearModel": {
-            "ignore": true
-          }
-        }
       }
     ],
     "responses": [
@@ -626,12 +570,151 @@
     ]
   },
   {
+    "results_directory": "smoff_sweep_no_ets_v2",
+    "building_type": "Small Office",
+    "name": "smoff_sweep_no_ets_v2",
+    "display_name": "Small Office Parametric Sweep No ETS",
+    "description": "Approximately 2300 simulations, varying covariates.",
+    "validation_datapoint_id": "first",
+    "algorithm_options": {
+      "RandomForest": {
+        "_comments": "If downsamples are specified here, then they will override the parent values",
+        "downsamples": [0.001, 0.002, 0.003, 0.005, 0.015],
+        "param_grid": {
+          "_comments": "max_depth - default is None, max_features - default is p/3, min_samples_leaf - default is 1, min_samples_split - default is 2, n_estimators - default is 10",
+          "max_depth": [null, 3, 6],
+          "max_features": [0.50, 0.66, 0.75],
+          "min_samples_leaf": [1, 2, 4],
+          "min_samples_split": [2, 3, 5],
+          "n_estimators": [10, 100, 200]
+        },
+        "base_fit_params": {
+          "_comments": "These can take on python eval commands, see n_jobs as example.",
+          "max_depth": null,
+          "n_estimators": 20,
+          "min_samples_split": 2
+        }
+      },
+      "SVR": {
+        "_comments": "If downsamples are specified here, then they will override the parent values",
+        "downsamples": [0.001, 0.002, 0.003, 0.005],
+        "base_fit_params": {
+          "cache_size": 2000
+        },
+        "param_grid": {
+          "_comments": "gamma - default is 1/n_features, C - default is 1",
+          "C": [0.1, 1, 10],
+          "gamma": [0.5, 0.1, 0.01],
+          "epsilon": [0.1, 0.25]
+        }
+      }
+    },
+    "covariates": [
+      {
+        "name": "Month",
+        "display_name": "Month",
+        "units": "",
+        "type": "int",
+        "algorithm_options": {
+          "SVR": {
+            "variable_type": "cyclical",
+            "category_count": 12
+          }
+        }
+      },
+      {
+        "name": "Hour",
+        "display_name": "Hour",
+        "units": "",
+        "type": "int",
+        "algorithm_options": {
+          "SVR": {
+            "variable_type": "cyclical",
+            "category_count": 24
+          }
+        }
+      },
+      {
+        "name": "DayofWeek",
+        "display_name": "Day of Week",
+        "units": "",
+        "type": "int",
+        "algorithm_options": {
+          "SVR": {
+            "variable_type": "cyclical",
+            "category_count": 7
+          }
+        }
+      },
+      {
+        "name": "SiteOutdoorAirDrybulbTemperature",
+        "display_name": "Dry Bulb Temperature",
+        "units": "C",
+        "type": "float"
+      },
+      {
+        "name": "SiteOutdoorAirRelativeHumidity",
+        "display_name": "Relative Humidity",
+        "units": "%",
+        "type": "float"
+      },
+      {
+        "name": "wwr",
+        "display_name": "Window to Wall Ratio",
+        "units": "",
+        "type": "float"
+      },
+      {
+        "name": "roof.r_value",
+        "display_name": "Roof Insulation R Value",
+        "units": "m2-K/W",
+        "type": "float"
+      },
+      {
+        "name": "wall.r_value",
+        "display_name": "Wall Insulation R Value",
+        "units": "m2-K/W",
+        "type": "float"
+      },
+      {
+        "name": "internal_loads_multiplier.lpd_average",
+        "display_name": "LPD Average",
+        "units": "W/m2",
+        "type": "float"
+      },
+      {
+        "name": "schedule.start",
+        "display_name": "Schedule Start Hour",
+        "units": "hr",
+        "type": "float"
+      },
+      {
+        "name": "schedule.end",
+        "display_name": "Schedule End Hour",
+        "units": "hr",
+        "type": "float"
+      }
+    ],
+    "responses": [
+       {
+        "name": "HeatingTotal",
+        "display_name": "Heating Total Energy",
+        "units": "J"
+      },
+      {
+        "name": "CoolingElectricity",
+        "display_name": "Cooling Electric Energy",
+        "units": "J"
+      }
+    ]
+  },
+  {
     "results_directory": "retail_sweep_v2",
     "building_type": "Retail",
     "name": "retail_sweep_v2",
     "display_name": "Retail Parametric Sweep",
     "description": "Approximately 2300 simulations, varying covariates.",
-    "validation_datapoint_id": "00864406-533b-44ff-b220-84e3f3310516",
+    "validation_datapoint_id": "first",
     "downsamples": [0.001, 0.002, 0.003, 0.005, 0.015, 0.025, 0.1],
     "algorithm_options": {
       "RandomForest": {
@@ -769,20 +852,6 @@
         "display_name": "Schedule End Hour",
         "units": "hr",
         "type": "float"
-      },
-      {
-        "name": "hvac_mode",
-        "display_name": "HVAC Mode",
-        "units": "",
-        "type": "int",
-        "algorithm_options": {
-          "RandomForest": {
-            "ignore": true
-          },
-          "LinearModel": {
-            "ignore": true
-          }
-        }
       }
     ],
     "responses": [
@@ -815,6 +884,147 @@
         "name": "ETSCoolingOutletTemperature",
         "display_name": "Building Cooling Outlet Temperature",
         "units": "C"
+      }
+    ]
+  },
+  {
+    "results_directory": "retail_sweep_no_ets_v2",
+    "building_type": "Retail",
+    "name": "retail_sweep_no_ets_v2",
+    "display_name": "Retail Parametric Sweep No ETS",
+    "description": "Approximately 2300 simulations, varying covariates.",
+    "validation_datapoint_id": "first",
+    "downsamples": [0.001, 0.002, 0.003, 0.005, 0.015, 0.025, 0.1],
+    "algorithm_options": {
+      "RandomForest": {
+        "_comments": "If downsamples are specified here, then they will override the parent values",
+        "downsamples": [0.001, 0.002, 0.003, 0.005, 0.015],
+        "param_grid": {
+          "_comments": "max_depth - default is None, max_features - default is p/3, min_samples_leaf - default is 1, min_samples_split - default is 2, n_estimators - default is 10",
+          "max_depth": [null, 3, 6],
+          "max_features": [0.50, 0.66, 0.75],
+          "min_samples_leaf": [1, 2, 4],
+          "min_samples_split": [2, 3, 5],
+          "n_estimators": [10, 100, 200]
+        },
+        "base_fit_params": {
+          "_comments": "These can take on python eval commands, see n_jobs as example.",
+          "max_depth": null,
+          "n_estimators": 20,
+          "min_samples_split": 2
+        }
+      },
+      "SVR": {
+        "_comments": "If downsamples are specified here, then they will override the parent values",
+        "downsamples": [0.001, 0.002, 0.003],
+        "downsamples": [0.001, 0.002, 0.003, 0.005],
+        "base_fit_params": {
+          "cache_size": 2000
+        },
+        "param_grid": {
+          "_comments": "gamma - default is 1/n_features, C - default is 1",
+          "C": [0.1, 1, 10],
+          "gamma": [0.5, 0.1, 0.01],
+          "epsilon": [0.1, 0.25]
+        }
+      }
+    },
+    "covariates": [
+      {
+        "name": "Month",
+        "display_name": "Month",
+        "units": "",
+        "type": "int",
+        "algorithm_options": {
+          "SVR": {
+            "variable_type": "cyclical",
+            "category_count": 12
+          }
+        }
+      },
+      {
+        "name": "Hour",
+        "display_name": "Hour",
+        "units": "",
+        "type": "int",
+        "algorithm_options": {
+          "SVR": {
+            "variable_type": "cyclical",
+            "category_count": 24
+          }
+        }
+      },
+      {
+        "name": "DayofWeek",
+        "display_name": "Day of Week",
+        "units": "",
+        "type": "int",
+        "algorithm_options": {
+          "SVR": {
+            "variable_type": "cyclical",
+            "category_count": 7
+          }
+        }
+      },
+      {
+        "name": "SiteOutdoorAirDrybulbTemperature",
+        "display_name": "Dry Bulb Temperature",
+        "units": "C",
+        "type": "float"
+      },
+      {
+        "name": "SiteOutdoorAirRelativeHumidity",
+        "display_name": "Relative Humidity",
+        "units": "%",
+        "type": "float"
+      },
+      {
+        "name": "wwr",
+        "display_name": "Window to Wall Ratio",
+        "units": "",
+        "type": "float"
+      },
+      {
+        "name": "roof.r_value",
+        "display_name": "Roof Insulation R Value",
+        "units": "m2-K/W",
+        "type": "float"
+      },
+      {
+        "name": "wall.r_value",
+        "display_name": "Wall Insulation R Value",
+        "units": "m2-K/W",
+        "type": "float"
+      },
+      {
+        "name": "internal_loads_multiplier.lpd_average",
+        "display_name": "LPD Average",
+        "units": "W/m2",
+        "type": "float"
+      },
+      {
+        "name": "schedule.start",
+        "display_name": "Schedule Start Hour",
+        "units": "hr",
+        "type": "float"
+      },
+      {
+        "name": "schedule.end",
+        "display_name": "Schedule End Hour",
+        "units": "hr",
+        "type": "float"
+      }
+    ],
+    "responses": [
+      {
+        "name": "HeatingTotal",
+        "display_name": "Heating Total Energy",
+        "units": "J"
+      },
+      {
+        "name": "CoolingElectricity",
+        "display_name": "Cooling Electric Energy",
+        "units": "J"
       }
     ]
   },
@@ -961,20 +1171,6 @@
         "display_name": "Schedule End Hour",
         "units": "hr",
         "type": "float"
-      },
-      {
-        "name": "hvac_mode",
-        "display_name": "HVAC Mode",
-        "units": "",
-        "type": "int",
-        "algorithm_options": {
-          "RandomForest": {
-            "ignore": true
-          },
-          "LinearModel": {
-            "ignore": true
-          }
-        }
       }
     ],
     "responses": [
@@ -1153,20 +1349,6 @@
         "display_name": "Schedule End Hour",
         "units": "hr",
         "type": "float"
-      },
-      {
-        "name": "hvac_mode",
-        "display_name": "HVAC Mode",
-        "units": "",
-        "type": "int",
-        "algorithm_options": {
-          "RandomForest": {
-            "ignore": true
-          },
-          "LinearModel": {
-            "ignore": true
-          }
-        }
       }
     ],
     "responses": [
@@ -1345,20 +1527,6 @@
         "display_name": "Schedule End Hour",
         "units": "hr",
         "type": "float"
-      },
-      {
-        "name": "hvac_mode",
-        "display_name": "HVAC Mode",
-        "units": "",
-        "type": "int",
-        "algorithm_options": {
-          "RandomForest": {
-            "ignore": true
-          },
-          "LinearModel": {
-            "ignore": true
-          }
-        }
       }
     ],
     "responses": [
@@ -1537,20 +1705,6 @@
         "display_name": "Schedule End Hour",
         "units": "hr",
         "type": "float"
-      },
-      {
-        "name": "hvac_mode",
-        "display_name": "HVAC Mode",
-        "units": "",
-        "type": "int",
-        "algorithm_options": {
-          "RandomForest": {
-            "ignore": true
-          },
-          "LinearModel": {
-            "ignore": true
-          }
-        }
       }
     ],
     "responses":
@@ -1699,20 +1853,6 @@
         "display_name": "Schedule End Hour",
         "units": "hr",
         "type": "float"
-      },
-      {
-        "name": "hvac_mode",
-        "display_name": "HVAC Mode",
-        "units": "",
-        "type": "int",
-        "algorithm_options": {
-          "RandomForest": {
-            "ignore": true
-          },
-          "LinearModel": {
-            "ignore": true
-          }
-        }
       }
     ],
     "responses": [

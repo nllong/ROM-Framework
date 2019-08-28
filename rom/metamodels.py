@@ -190,22 +190,23 @@ class Metamodels(object):
         of the model_types.
         :return: list, [model_path, scaler_path].
         """
-
         if root_path:
-            model_path = "%s/%s/%s.pkl" % (root_path, model_type, response)
-            scaler_path = "%s/%s/scalers.pkl" % (root_path, model_type)
+            if downsample:
+                model_path = "%s_%s/%s/models/%s.pkl" % (root_path, downsample, model_type, response)
+                scaler_path = "%s_%s/%s/scalers.pkl" % (root_path, downsample, model_type)
+            else:
+                model_path = "%s/%s/models/%s.pkl" % (root_path, model_type, response)
+                scaler_path = "%s/%s/scalers.pkl" % (root_path, model_type)
         elif downsample:
-            model_path = "output/%s_%s/%s/models/%s.pkl" % (
-                self.analysis_name, downsample, model_type, response)
-            scaler_path = "output/%s_%s/%s/models/scalers.pkl" % (
-                self.analysis_name, downsample, model_type)
+            model_path = "output/%s_%s/%s/models/%s.pkl" % (self.analysis_name, downsample, model_type, response)
+            scaler_path = "output/%s_%s/%s/models/scalers.pkl" % (self.analysis_name, downsample, model_type)
         else:
             model_path = "output/%s/%s/models/%s.pkl" % (self.analysis_name, model_type, response)
             scaler_path = "output/%s/%s/models/scalers.pkl" % (self.analysis_name, model_type)
 
         return model_path, scaler_path
 
-    def models_exist(self, model_type, models_to_load=[], downsample=None, root_path=None):
+    def models_exist(self, model_type, models_to_load=None, downsample=None, root_path=None):
         """
         Check if the models exist, if not, then return false.
 
@@ -216,6 +217,9 @@ class Metamodels(object):
         of the model_types.
         :return: bool
         """
+        if models_to_load is None:
+            models_to_load = []
+
         self.rom_type = model_type
 
         if not models_to_load:
@@ -231,7 +235,7 @@ class Metamodels(object):
 
         return all(exist)
 
-    def load_models(self, model_type, models_to_load=[], downsample=None, root_path=None):
+    def load_models(self, model_type, models_to_load=None, downsample=None, root_path=None):
         """
         Load in the metamodels/generators.
 
@@ -240,6 +244,9 @@ class Metamodels(object):
         :param downsample: float, The downsample value to load.  Defaults to None.
         :return: dict, Metrics {response, model type, downsample, load time, disk size}.
         """
+        if models_to_load is None:
+            models_to_load = []
+
         self.rom_type = model_type
 
         if not models_to_load:
@@ -296,7 +303,8 @@ class Metamodels(object):
         colnames = data.columns.values
         for response_name in response_names:
             if f'{prepend_name}_{response_name}' in colnames:
-                raise DuplicateColumnName(f'{prepend_name}_{response_name} will result in duplicate. Set prepend_name to another value')
+                raise DuplicateColumnName(
+                    f'{prepend_name}_{response_name} will result in duplicate. Set prepend_name to another value')
 
         for response_name in response_names:
             data[f"{prepend_name}_{response_name}"] = self.yhat(response_name, data)
@@ -382,6 +390,7 @@ class Metamodels(object):
         data.to_csv(file_name, index=False)
 
     def save_2d_csvs(self, data, first_dimension, file_prepend):
+        # TODO: move this to a general helper location and remove the auto generation of the save path
         """
         Generate 2D (time, first) CSVs based on the model loaded and the two dimensions.
 
@@ -416,12 +425,18 @@ class Metamodels(object):
             save_df = pd.DataFrame.from_dict({'datetime': data['datetime'].unique()})
             for unique_value in data[first_dimension].unique():
                 new_df = data[data[first_dimension] == unique_value]
-                save_df[unique_value] = new_df[response].values
+                # add in the type of model
+                if self.rom_type == 'RandomForest':
+                    short_model_name = f'RF_{response}'
+                else:
+                    raise Exception("Need to create model lookup!")
+                save_df[unique_value] = new_df[short_model_name].values
 
             save_df.to_csv(file_name, index=False)
 
     def save_3d_csvs(self, data, first_dimension, second_dimension, second_dimension_short_name,
                      file_prepend, save_figure=False):
+        # TODO: move this to a general helper location and remove the auto generation of the save path
         """
         Generate 3D (time, first, second) CSVs based on the model loaded and the two dimensions.
         The second dimension becomes individual files.
@@ -604,6 +619,15 @@ class Metamodels(object):
 
     @classmethod
     def resolve_algorithm_options(cls, algorithm_options):
+        """
+        Go through the algorithm options that are in the metamodel.json file and run 'eval' on the strings.
+        This allows complex strings to exist in the json file that get expanded as necessary.
+
+        # TODO: Add an example
+
+        :param algorithm_options: dict, the algorithm options to run eval on
+        :return:
+        """
         for k, v in algorithm_options.items():
             if isinstance(v, dict):
                 algorithm_options[k] = Metamodels.resolve_algorithm_options(v)
