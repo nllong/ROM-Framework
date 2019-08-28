@@ -16,9 +16,10 @@ version = re.search(
     re.M).group(1)
 
 setup(
+    # TODO: rename to Metamodeling Framework
     name='ROM Framework',
     version=version,
-    description='Generate Reduced Order Models for Ambient Loop Analysis from OpenStudio-Server Results',
+    description='Generate metamodels based on arbitrary CSV files',
     long_description=readme,
     author='Nicholas Long',
     author_email='nicholas.lee.long@gmail.com',
@@ -36,6 +37,4 @@ setup(
         'Programming Language :: Python :: 3.7',
     ],
     packages=find_packages(exclude=('tests', 'docs')),
-    test_suite='nose.collector',
-    tests_require=['nose'],
 )
