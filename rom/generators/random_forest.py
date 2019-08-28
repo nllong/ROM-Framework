@@ -47,7 +47,6 @@ class RandomForest(ModelGeneratorBase):
         :param covariates:
         :return:
         """
-        # TODO: Python 3, remove RandomForest from super call
         _yhat, performance = super().evaluate(
             model, model_name, model_type, x_data, y_data, downsample,
             build_time, cv_time, covariates, scaler

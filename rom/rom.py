@@ -158,7 +158,7 @@ if metamodel.set_analysis(args.analysis_moniker):
             print("Downsample argument must exist in the downsample list in the JSON")
             exit(1)
 
-        for downsample in metamodel.downsamples:
+        for downsample in metamodel.downsamples(None):
             if args.downsample and args.downsample != downsample:
                 continue
 
