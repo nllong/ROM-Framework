@@ -26,6 +26,12 @@ setup(
     url='https://github.com/nllong/ROM-Framework',
     license=license,
     python_requires='>=3',
+    install_requires=[
+        'scikit-learn==0.19.2',
+        'matplotlib==2.2.3',
+        'pandas==0.23.2',
+        'seaborn==0.9.0',
+    ],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',

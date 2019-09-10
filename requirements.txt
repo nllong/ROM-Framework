@@ -1,4 +1,6 @@
-# core libraries
+# if updating then make sure to update the install_requires in setup.py
+
+# core libraries (required by package)
 matplotlib==2.2.3
 pandas==0.23.2
 numpy==1.14.5
