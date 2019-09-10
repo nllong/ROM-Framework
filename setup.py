@@ -26,6 +26,7 @@ setup(
     url='https://github.com/nllong/ROM-Framework',
     license=license,
     python_requires='>=3',
+    # If updating here, then make sure to update requirements.txt file as well.
     install_requires=[
         'scikit-learn==0.19.2',
         'matplotlib==2.2.3',
