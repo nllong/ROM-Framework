@@ -5,6 +5,7 @@
 .tox
 .python-version
 .ipynb_checkpoints
+.coverage
 python/.python-version
 
 # never commit these data files because they will be too large
