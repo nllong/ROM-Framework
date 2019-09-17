@@ -6,7 +6,6 @@
 .python-version
 .ipynb_checkpoints
 .coverage*
-python/.python-version
 
 # never commit these data files because they will be too large
 data/*/*.zip
@@ -18,17 +17,6 @@ data/gems
 data/Gemfile.lock
 data/*/*/data_point/
 data/**/data_point.zip
-data/smoff_sweep_v2
-data/smoff_sweep_v2_test
-data/smoff_sweep_no_ets_v2/
-data/retail_sweep_v2/
-data/retail_sweep_no_ets_v2/
-examples/output/
-
-# old R data
-R/.Rproj.user
-R/.RData
-R/.Rhistory
 
 # general folders
 /output

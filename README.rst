@@ -59,7 +59,7 @@ To Dos
 * Allow for CLI to save results in specific location
 * Move tests up to root directory
 * Remove downloaded simulation data from repository
-* Write test for running the analyssi_definition (currently untested!)
+* Write test for running the analysis_definition (currently untested!)
 
 .. |build| image:: https://travis-ci.org/nllong/ROM-Framework.svg?branch=develop
     :target: https://travis-ci.org/nllong/ROM-Framework
