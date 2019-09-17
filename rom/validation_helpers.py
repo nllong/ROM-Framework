@@ -128,6 +128,8 @@ def validate_dataframe(df, metadata, image_save_dir):
     :return:
     """
     # Create some new columns for total energy
+
+    # TODO: remove hard coded response variables
     df['Total Heating Energy'] = df['HeatingElectricity'] + df['DistrictHeatingHotWaterEnergy']
     df['Total Cooling Energy'] = df['CoolingElectricity'] + df['DistrictCoolingChilledWaterEnergy']
     df['Total HVAC Energy'] = df['Total Heating Energy'] + df['Total Cooling Energy']
