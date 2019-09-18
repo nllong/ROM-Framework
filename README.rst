@@ -57,7 +57,6 @@ To Dos
 
 * Configure better CLI
 * Allow for CLI to save results in specific location
-* Move tests up to root directory
 * Remove downloaded simulation data from repository
 * Write test for running the analysis_definition (currently untested!)
 
