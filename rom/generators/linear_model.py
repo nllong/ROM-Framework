@@ -13,7 +13,7 @@ from .model_generator_base import ModelGeneratorBase
 
 class LinearModel(ModelGeneratorBase):
     def __init__(self, analysis_id, random_seed=None, **kwargs):
-        super(LinearModel, self).__init__(analysis_id, random_seed, **kwargs)
+        super().__init__(analysis_id, random_seed, **kwargs)
 
     def evaluate(self, model, model_name, model_type, x_data, y_data, downsample,
                  build_time, cv_time, covariates=None, scaler=None):
@@ -21,15 +21,15 @@ class LinearModel(ModelGeneratorBase):
         Evaluate the performance of the forest based on known x_data and y_data. If the
         model was scaled, then the test data will already be scaled.
         """
-        yhat, performance = super(LinearModel, self).evaluate(
+        yhat, performance = super().evaluate(
             model, model_name, model_type, x_data, y_data, downsample,
             build_time, cv_time, covariates, scaler
         )
         self.anova_plots(y_data, yhat, model_name)
         return performance
 
-    def build(self, data_file, metamodel, **kwargs):
-        super(LinearModel, self).build(data_file, metamodel, **kwargs)
+    def build(self, metamodel, **kwargs):
+        super().build(metamodel, **kwargs)
 
         # analysis_options = kwargs.get('algorithm_options', {})
 

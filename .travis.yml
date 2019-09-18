@@ -1,22 +1,25 @@
 sudo: true
-language: python
+dist: xenial
 python:
-  - 3.7-dev
+  - 3.7
+language: python
 rvm:
-  - 2.2.4
+  - 2.5.1
+services:
+  - xvfb
 before_install:
+  - gpg --keyserver hkp://keys.gnupg.net --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
   - rvm get stable --auto-dotfiles
-  - rvm install 2.2.4
+  - rvm install 2.5.1
   - gem install bundler -v 1.16.1
 install:
   - pip install -r requirements.txt
 before_script:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
+#  - "sh -e /etc/init.d/xvfb start"
   - sleep 3 # give xvfb some time to start
 env:
   global:
-    - DISPLAY=:0.0
+    - DISPLAY=:99.0
   matrix:
     - TOX_ENV=python
     - TOX_ENV=flake8
