@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+"""
+.. moduleauthor:: Nicholas Long (nicholas.l.long@colorado.edu, nicholas.lee.long@gmail.com)
+"""
+
 import os
 from shutil import rmtree
 from unittest import TestCase

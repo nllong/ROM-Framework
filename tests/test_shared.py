@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+"""
+.. moduleauthor:: Nicholas Long (nicholas.l.long@colorado.edu, nicholas.lee.long@gmail.com)
+"""
+
 from unittest import TestCase
 
 from rom.shared import is_int
