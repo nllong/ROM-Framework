@@ -17,6 +17,7 @@ tests/post_process/data/**/data_point.zip
 post_process/.bundle
 post_process/gems
 post_process/Gemfile.lock
+post_process/.ruby-version
 
 # Don't commit any of the output that gets generated from the framework
 /output
