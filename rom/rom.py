@@ -34,7 +34,7 @@ from .generators.random_forest import RandomForest # noqa
 from .generators.svr import SVR # noqa
 # End include
 
-
+# TODO: move this to a generic location and use in other locations (e.g. save_2d/3d).
 NAMEMAP = {
     'LinearModel': 'LM',
     'RandomForest': 'RF',
@@ -44,7 +44,7 @@ f = Figlet()
 print(f.renderText('ROM Framework'))
 
 parser = argparse.ArgumentParser()
-parser.add_argument('action', default=None, choices=['build', 'evaluate', 'validate', 'run'])
+parser.add_argument('action', default=None, choices=['inspect', 'build', 'evaluate', 'validate', 'run'])
 parser.add_argument('-f', '--file', help='Metadata file to use', default='metamodels.json')
 parser.add_argument('-a', '--analysis-moniker', help='Name of the Analysis Model', required=True)
 parser.add_argument('-m', '--model-type', nargs='*',
@@ -66,11 +66,9 @@ print('Loading definition file: %s' % args.file)
 metamodel = Metamodels(args.file)
 
 if metamodel.set_analysis(args.analysis_moniker):
-    if args.action in ['build', 'evaluate']:
+    if args.action in ['inspect', 'build', 'evaluate']:
         all_model_results = {}
         for model_name in args.model_type:
-            # print(metamodel.downsamples(model_name))
-
             # Check if the model name has any downsampling override values
             algo_options = metamodel.algorithm_options.get(model_name, {})
             algo_options = Metamodels.resolve_algorithm_options(algo_options)
@@ -87,17 +85,22 @@ if metamodel.set_analysis(args.analysis_moniker):
                 if args.downsample and args.downsample != downsample:
                     continue
 
-                if args.action == 'build':
+                if args.action in ['inspect', 'build']:
+                    # for these two actions we need to load the data into the dataframe.
                     klass = globals()[model_name]
                     # Set the random seed so that the test libraries are the same across the
                     # models
                     model = klass(metamodel.analysis_name, 79, downsample=downsample)
-                    model.build(
-                        'data/%s/simulation_results.csv' % metamodel.results_directory,
-                        metamodel,
-                        algorithm_options=algo_options,
-                        skip_cv=downsample > 0.5
-                    )
+                    model.load_data(metamodel.results_file)
+                    if args.action == 'inspect':
+                        # this will
+                        model.inspect()
+                    elif args.action == 'build':
+                        model.build(
+                            metamodel,
+                            algorithm_options=algo_options,
+                            skip_cv=downsample > 0.5
+                        )
                 elif args.action == 'evaluate':
                     base_dir_ds = "output/%s_%s/%s" % (
                         args.analysis_moniker, downsample, model_name)
@@ -153,7 +156,7 @@ if metamodel.set_analysis(args.analysis_moniker):
             print("Downsample argument must exist in the downsample list in the JSON")
             exit(1)
 
-        for downsample in metamodel.downsamples:
+        for downsample in metamodel.downsamples(None):
             if args.downsample and args.downsample != downsample:
                 continue
 

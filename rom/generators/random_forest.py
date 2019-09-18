@@ -21,7 +21,7 @@ from ..shared import pickle_file, save_dict_to_csv, zipdir
 
 class RandomForest(ModelGeneratorBase):
     def __init__(self, analysis_id, random_seed=None, **kwargs):
-        super(RandomForest, self).__init__(analysis_id, random_seed, **kwargs)
+        super().__init__(analysis_id, random_seed, **kwargs)
 
     def export_tree_png(self, tree, covariates, filename):
         export_graphviz(tree, feature_names=np.asarray(covariates), filled=True, rounded=True)
@@ -47,7 +47,7 @@ class RandomForest(ModelGeneratorBase):
         :param covariates:
         :return:
         """
-        _yhat, performance = super(RandomForest, self).evaluate(
+        _yhat, performance = super().evaluate(
             model, model_name, model_type, x_data, y_data, downsample,
             build_time, cv_time, covariates, scaler
         )
@@ -136,8 +136,8 @@ class RandomForest(ModelGeneratorBase):
         df = pd.DataFrame.from_dict(data)
         df.to_csv(filename)
 
-    def build(self, data_file, metamodel, **kwargs):
-        super(RandomForest, self).build(data_file, metamodel, **kwargs)
+    def build(self, metamodel, **kwargs):
+        super().build(metamodel, **kwargs)
 
         analysis_options = kwargs.get('algorithm_options', {})
 

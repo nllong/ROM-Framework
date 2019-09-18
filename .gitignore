@@ -4,29 +4,27 @@
 .DS_Store
 .tox
 .python-version
-python/.python-version
-data/*/*.zip
-data/*/simulation_results.csv
-
-# ignore this whole folder
-data/smoff_sweep_v2_test
-
-# old R data
-R/.Rproj.user
-R/.RData
-R/.Rhistory
-data/Gemfile.lock
-data/*/simulation_results.csv
-data/*/*/data_point/
-data/**/data_point.zip
-data/.bundle
-data/gems
 .ipynb_checkpoints
+.coverage*
+
+# never commit these data files because they will be too large
+tests/post_process/data/*/*.zip
+tests/post_process/data/*/simulation_results.csv
+tests/post_process/data/*/*/data_point/
+tests/post_process/data/**/data_point.zip
+
+# ignore the ruby specific files
+post_process/.bundle
+post_process/gems
+post_process/Gemfile.lock
+post_process/.ruby-version
+
+# Don't commit any of the output that gets generated from the framework
 /output
+
+# package information
 ROM_Framework.egg-info/
 /build
 /dist
 docs/build
 
-# do not commit right now
-data/smoff_sweep_v2

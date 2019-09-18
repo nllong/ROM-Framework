@@ -16,14 +16,14 @@ from ..shared import pickle_file, save_dict_to_csv, zipdir
 
 class SVR(ModelGeneratorBase):
     def __init__(self, analysis_id, random_seed=None, **kwargs):
-        super(SVR, self).__init__(analysis_id, random_seed, **kwargs)
+        super().__init__(analysis_id, random_seed, **kwargs)
 
     def evaluate(self, model, model_name, model_moniker, x_data, y_data, downsample,
                  build_time, cv_time, covariates=None, scaler=None):
         """
         Evaluate the performance of the forest based on known x_data and y_data.
         """
-        yhat, performance = super(SVR, self).evaluate(
+        yhat, performance = super().evaluate(
             model, model_name, model_moniker, x_data, y_data, downsample,
             build_time, cv_time, covariates, scaler
         )
@@ -84,8 +84,8 @@ class SVR(ModelGeneratorBase):
         df = pd.DataFrame.from_dict(data)
         df.to_csv(filename)
 
-    def build(self, data_file, metamodel, **kwargs):
-        super(SVR, self).build(data_file, metamodel, **kwargs)
+    def build(self, metamodel, **kwargs):
+        super().build(metamodel, **kwargs)
 
         analysis_options = kwargs.get('algorithm_options', {})
 
