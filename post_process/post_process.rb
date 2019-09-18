@@ -13,15 +13,11 @@ options = {
 parser = OptionParser.new do |opts|
   opts.banner = "Usage: post_process.rb [options]"
 
-  opts.on('-p', '--path path', 'Path to where to save or access results') do |path|
-    options[:path] = path
-  end
-
   opts.on('-s', '--server host', 'Server Host URL') do |server|
     options[:server] = server
   end
 
-  opts.on('-a', '--analysis id', 'Analysis ID to Download or Dir Name to Post Process') do |id|
+  opts.on('-a', '--analysis id', 'Analysis ID to Download or Directory Name to Post Process') do |id|
     options[:analysis_id] = id
   end
 
@@ -198,12 +194,15 @@ results_metadata = [
     }
 ]
 
-def post_process_analysis_id(analysis_id, results_metadata)
-  save_dir = analysis_id
-  FileUtils.mkdir_p save_dir
+def post_process_analysis_id(results_dir, results_metadata)
+  if !Dir.exist?(results_dir)
+    raise "Results directory does not exist, exiting: #{results_dir}"
+    exit 1
+  end
+
   # Go through the directories and update the reports to add in the last column of data.
-  File.open("#{save_dir}/simulation_results.csv", 'w') do |new_file|
-    Dir["#{analysis_id}/*/*.csv"].each.with_index do |file, file_index|
+  File.open("#{results_dir}/simulation_results.csv", 'w') do |new_file|
+    Dir["#{results_dir}/*/*.csv"].each.with_index do |file, file_index|
       puts "Processing file #{file}"
       dir = File.dirname(file)
       new_header = []
@@ -253,8 +252,8 @@ def post_process_analysis_id(analysis_id, results_metadata)
   end
 
   # generate summary statistics on the simulations
-  File.open("#{save_dir}/summary.csv", 'w') do |out_file|
-    Dir["#{analysis_id}/*/*.osw"].each.with_index do |file, file_index|
+  File.open("#{results_dir}/summary.csv", 'w') do |out_file|
+    Dir["#{results_dir}/*/*.osw"].each.with_index do |file, file_index|
       headers = ["index", "uuid", "total_runtime", "energyplus_runtime", "total_measure_runtime", "other_runtime", "number_of_measures"]
       dir = File.dirname(file)
       json = JSON.parse(File.read(file))
@@ -303,9 +302,7 @@ def post_process_analysis_id(analysis_id, results_metadata)
       out_file << "#{new_data.join(',')}\n"
     end
   end
-
 end
-
 
 if options[:download]
   api = OpenStudio::Analysis::ServerApi.new(hostname: options[:server])
@@ -358,12 +355,8 @@ if options[:post_process]
   if options[:analysis_id]
     post_process_analysis_id(options[:analysis_id], results_metadata)
   else
-    puts 'Must pass in analysis id'
-
-    Dir["#{File.dirname(__FILE__)}/*"].select {|f| File.directory? f}.each do |dir|
-      next if dir =~ /single_simulations/
-      post_process_analysis_id(dir, results_metadata)
-    end
+    puts 'Must pass in path of folder (use -a <analysis_id> argument>)'
+    exit 1
   end
 end
 
