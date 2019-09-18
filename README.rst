@@ -1,8 +1,11 @@
+
+THIS PROJECT HAS MOVED TO: https://github.com/nllong/metamodeling-framework
+===========================================================================
+
+This repo will remain for the time being to maintain history, but it is highly recommended to use the newly name repository.
+
 Reduced Order Modeling Framework
 ================================
-
-|build| |docs|
-
 
 The reduced order model (ROM) framework was created to build models to use for estimating commercial building energy loads. The framework currently supports linear models, random forests, and support vector regressions. The framework handles the building, evalulation, and validation of the models. During each set of the process, the framework exports diagnostic data for the user to evaluate the performance of the reduced order models. In addition to building, evaluating, and validating the reduced order models, the framework is able to load previously persisted model to be used in third-party applications (e.g. Modelica).
 
