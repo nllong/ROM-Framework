@@ -96,7 +96,7 @@
         "type": "float"
       },
       {
-        "name": "lpd_average",
+        "name": "internal_loads_multiplier.lpd_average",
         "display_name": "LPD Average",
         "units": "W/m2",
         "type": "float"
