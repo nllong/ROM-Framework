@@ -12,6 +12,11 @@ options = {
 
 parser = OptionParser.new do |opts|
   opts.banner = "Usage: post_process.rb [options]"
+
+  opts.on('-p', '--path path', 'Path to where to save or access results') do |path|
+    options[:path] = path
+  end
+
   opts.on('-s', '--server host', 'Server Host URL') do |server|
     options[:server] = server
   end
@@ -353,7 +358,7 @@ if options[:post_process]
   if options[:analysis_id]
     post_process_analysis_id(options[:analysis_id], results_metadata)
   else
-    puts "No analysis_id passed, post processing all the results"
+    puts 'Must pass in analysis id'
 
     Dir["#{File.dirname(__FILE__)}/*"].select {|f| File.directory? f}.each do |dir|
       next if dir =~ /single_simulations/

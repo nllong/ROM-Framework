@@ -91,9 +91,7 @@ if metamodel.set_analysis(args.analysis_moniker):
                     # Set the random seed so that the test libraries are the same across the
                     # models
                     model = klass(metamodel.analysis_name, 79, downsample=downsample)
-                    model.load_data(
-                        f'data/{metamodel.results_directory}/simulation_results.csv',
-                    )
+                    model.load_data(metamodel.results_file)
                     if args.action == 'inspect':
                         # this will
                         model.inspect()

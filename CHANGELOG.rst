@@ -7,6 +7,8 @@ Version 0.1.1
 * Use Python 3's super syntax
 * Move example runs to a unittest
 * Add Python coverage
+* Move Ruby post processing script to 'post_process' folder
+* Add results_file to the metamodel.json config file to point to the CSV that needs to be loaded
 
 
 Version 0.1.0

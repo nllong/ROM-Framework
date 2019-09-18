@@ -20,7 +20,7 @@ class TestRunningSmallOfficeTest(TestCase):
 
     @pytest.mark.run(order=1)
     def test_inspect(self):
-        cmd = 'python rom-runner.py inspect -f rom/tests/smoff_test/metamodels.json -a smoff_test'
+        cmd = 'python rom-runner.py inspect -f tests/integration/data/smoff.json -a smoff_test'
         os.system(cmd)
         # verify the results exist
         for d in self.output_dirs:
@@ -35,7 +35,7 @@ class TestRunningSmallOfficeTest(TestCase):
     @pytest.mark.run(order=2)
     def test_build(self):
         # call via the command line interface
-        cmd = 'python rom-runner.py build -f rom/tests/smoff_test/metamodels.json -a smoff_test'
+        cmd = 'python rom-runner.py build -f tests/integration/data/smoff.json -a smoff_test'
         os.system(cmd)
 
         files_to_check = [
@@ -60,7 +60,7 @@ class TestRunningSmallOfficeTest(TestCase):
 
     @pytest.mark.run(order=3)
     def test_evaluate(self):
-        cmd = 'python rom-runner.py evaluate -f rom/tests/smoff_test/metamodels.json -a smoff_test'
+        cmd = 'python rom-runner.py evaluate -f tests/integration/data/smoff.json -a smoff_test'
         os.system(cmd)
 
         files_to_check = [
@@ -75,7 +75,7 @@ class TestRunningSmallOfficeTest(TestCase):
 
     @pytest.mark.run(order=4)
     def test_validate(self):
-        cmd = 'python rom-runner.py validate -f rom/tests/smoff_test/metamodels.json -a smoff_test -m LinearModel RandomForest'
+        cmd = 'python rom-runner.py validate -f tests/integration/data/smoff.json -a smoff_test -m LinearModel RandomForest'
         os.system(cmd)
 
         # Pick some random files to spot check their existence

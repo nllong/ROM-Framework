@@ -125,14 +125,13 @@ class Metamodels(object):
         return ds
 
     @property
-    def results_directory(self):
+    def results_file(self):
         """
-        Return the analysis ID from the metamodels.json file that was passed in. This should only
-        be used to get the data out of the downloaded results from OpenStudio Server.
+        Path to the results file that is to be processed. This is a CSV file.
 
-        :return: str, Analysis ID.
+        :return: str, path.
         """
-        return self.file[self.set_i]['results_directory']
+        return self.file[self.set_i]['results_file']
 
     @property
     def analysis_name(self):
