@@ -52,6 +52,18 @@ Installation from PyPI
 
 Not yet complete.
 
+Example Repository
+==================
+
+An example repository was developed using the ROM Framework to evaluate the results of OpenStudio using PAT. There are several repositories to generate the datasets; however, the first link below contains a basic dataset in order to demonstrate the functionality of the ROM Framework.
+
+* `Ambient Loop Metamodels <https://github.com/nllong/Ambient-Loop-Metamodels>`_
+
+The two repositories below were used to generate the OpenStudio/EnergyPlus models used for the ROM FRamework.
+
+* `OpenStudio's Parametric Analysis Tool Projects <https://github.com/nllong/ambient-loop-pat-projects>`_
+* `OpenStudio Measures <https://github.com/nllong/ambient-loop-measures>`_
+
 To Dos
 ======
 
